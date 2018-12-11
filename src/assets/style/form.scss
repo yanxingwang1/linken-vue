@@ -1,0 +1,103 @@
+@function px($px) {
+  @return ($px/20)+rem;
+}
+
+$nomal-color: #3E3E3E;
+$disabled-color: #E2E2E2;
+.wx-form {
+  //display: flex;
+  .wx-input-wrap {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: $nomal-color;
+
+    .wx-label {
+      width: 26%;
+      font-weight: 400;
+      .reqired {color: red;}
+    }
+
+    .wx-content {
+      width: 74%;
+      display: flex;
+      align-items: center;
+      height: 60px;
+
+      .wx-input,.wx-licen-wrap {
+        position: relative;
+        width: 100%;
+        height: 40px;
+        border-radius: 3px;
+        border: 1px solid rgb(230, 230, 230);
+        padding: 0 10px;
+        -webkit-appearance: none;
+        &::placeholder{
+          font-size: 14px;
+        }
+      }
+      &.wx-validation{
+        justify-content: space-between;
+        .wx-input{
+          width: 50%;
+        }
+        button{
+          width: 40%;
+          font-size: 14px;
+          height: 36px;
+        }
+      }
+
+
+      .wx-licen-wrap {
+        display: flex;
+        .capital{
+          width: 40px;
+          line-height: 40px;
+          font-size: 14px;
+          background: url("./../img/bottom-arrow-one.png") 27px/10px no-repeat;
+        }
+        .licen-input{
+          border: none;
+          padding: 0 10px;
+          -webkit-appearance: none;
+          &::placeholder{
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+    &.disabled {
+      .lk-label {
+        color: $disabled-color;
+        .reqired {color: $disabled-color;}
+      }
+    }
+  }
+  //一行2个文本框
+  &.wx-form-2{
+    display: flex;
+    .wx-input-wrap:first-child{
+      width: 60%;
+      .wx-label{width: 43.333333%;}
+      .wx-content{width: 46.666666%;}
+    }
+    .wx-input-wrap:last-child{
+      width: 40%;
+      .wx-label{width: 30%;}
+      .wx-content{width: 70%;}
+    }
+  }
+}
+
+//mint-btn 按钮
+.mint-button{
+  label.mint-button-text{
+    margin-bottom: 0;
+  }
+}
+
+

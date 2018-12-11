@@ -1,0 +1,24 @@
+@function px($px) {
+  @return ($px/20)+rem;
+}
+
+.mint-swipe {
+  .mint-swipe-indicators {
+    bottom: px(15);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    .mint-swipe-indicator {
+      width: 6px;
+      height: 4px;
+      border-radius: 8px;
+      background: #A5A5A5;
+      opacity: 1;
+      transition: all .1s;
+      &.is-active{
+        width: 14px;
+        background-color: #B45F1A;
+      }
+    }
+  }
+}

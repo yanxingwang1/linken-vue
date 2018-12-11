@@ -1,0 +1,1 @@
+webpackJsonp([43],{59:function(e,n,t){"use strict";Object.defineProperty(n,"__esModule",{value:!0});var a=t(0),u=t(2),i=function(){return t.e(10).then(t.bind(null,163))};a.default.use(u.a);var o=new u.a({routes:[{path:"/",name:"index",component:i,meta:{keepAlive:!0}},{path:"/index",name:"index",component:i,meta:{keepAlive:!0}}]});n.default=o}},[59]);

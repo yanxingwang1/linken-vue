@@ -1,0 +1,267 @@
+@function px($px) {
+  @return ($px/20)+rem;
+}
+
+.wx-dialog-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .3);
+  z-index: 888;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .wx-dialog-wrap {
+    width: 80%;
+    padding: px(20);
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: px(10);
+    overflow: hidden;
+
+    .wx-dialog-content {
+      .wx-dialog-title {
+        height: px(30);
+        line-height: px(30);
+        text-align: center;
+        font-size: px(18);
+        font-weight: 500;
+        color: #323232;
+      }
+
+      .wx-dialog-body {
+        max-height: 50vh;
+        font-size: px(16);
+        text-align: center;
+        margin-top: px(10);
+        margin-bottom: px(20);
+      }
+
+      .wx-dialog-footer {
+        margin-bottom: px(10);
+
+        .wx-dialog-btn {
+          background-color: #B86122;
+          width: 100%;
+          text-align: center;
+          line-height: px(45);
+          font-size: px(17);
+          color: #ffffff;
+          border-radius: px(3);
+        }
+      }
+    }
+
+  }
+}
+
+
+//Dialog
+.wx-popup-backdrop {
+  position: fixed;
+  z-index: 998;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transition-duration: 400ms;
+  opacity: 0;
+  background: rgba(0, 0, 0, .4);
+
+  &.wx-active {
+    opacity: 1;
+  }
+}
+
+.wx-popup {
+  position: fixed;
+  z-index: 10000;
+  top: 40%;
+  left: 50%;
+  overflow: hidden;
+  width: 280px;
+  text-align: center;
+  opacity: 0;
+  color: #323232;
+  border-radius: 8px;
+  transform: translate3d(-50%, -50%, 0) scale(1.185);
+
+  &.wx-popup-in {
+    transition-duration: 400ms;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+    opacity: 1;
+  }
+  .wx-popup-inner{
+    position: relative;
+    padding: 15px;
+    background: rgba(255, 255, 255, .95);
+    transition-property: transform, opacity;
+    .wx-popup-title {
+      font-size: 18px;
+      font-weight: 500;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .wx-popup-text {
+      font-family: inherit;
+      font-size: 16px;
+      margin: 5px 0 0;
+      word-break: break-word;
+    }
+  }
+  .wx-popup-buttons {
+    position: relative;
+    display: flex;
+    .wx-popup-button {
+      font-size: 18px;
+      height: 50px;
+      line-height: 50px;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: #000000;
+      background: rgba(255, 255, 255, .95);
+    }
+  }
+}
+.wx-popup.wx-dialog{
+  .wx-popup-inner {
+    padding: 15px;
+    &:after {
+      position: absolute;
+      z-index: 15;
+      top: auto;
+      right: auto;
+      bottom: 0;
+      left: 0;
+      display: block;
+      width: 100%;
+      height: 1px;
+      content: '';
+      transform: scaleY(.5);
+      transform-origin: 50% 100%;
+      background-color: #DDDDDD;
+    }
+
+    input {
+      font-size: 14px;
+      width: 100%;
+      height: 40px;
+      margin: 16px 0 0;
+      padding: 0 10px;
+      border: 1px solid #E5E5E5;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, .95);
+      -webkit-appearance: none;
+    }
+  }
+
+  .wx-popup-buttons {
+    height: 50px;
+
+    .wx-popup-button {
+      &:active{
+        background: #EEEEEE;
+      }
+      &:after {
+        position: absolute;
+        z-index: 15;
+        top: 0;
+        right: 0;
+        bottom: auto;
+        left: auto;
+        display: block;
+        width: 1px;
+        height: 100%;
+        content: '';
+        transform: scaleX(.5);
+        transform-origin: 100% 50%;
+        background-color: #DDDDDD;
+      }
+
+      &.wx-popup-button-bold {
+        color: #0BABFE;
+      }
+    }
+  }
+}
+.wx-popup.wx-alert{
+  width: 300px;
+  background: rgba(255, 255, 255, .95);
+  .wx-popup-inner {
+    padding: 20px;
+    .wx-popup-text {
+      margin: 10px 0 0;
+    }
+  }
+  .wx-popup-buttons {
+    padding: 0 25px 30px 25px;
+
+    .wx-popup-button {
+      height: 45px;
+      line-height: 45px;
+      background-color: #B86122;
+      color: #ffffff;
+      border-radius: 4px;
+      &:active{
+        background-color: #B86122 * 0.7;
+      }
+    }
+  }
+}
+
+//数字键盘
+.wx-number-keyboard-wrap{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /*background-color: rgba(0,0,0,.3);*/
+  z-index: 10002;
+}
+.wx-number-keyboard-wrap .num-keyboard{
+  width: 100%;
+  height: 200px;
+  background-color: #ffffff;
+  border-top: 1px solid rgba(0,0,0,.1);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transform: translateY(100%);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-wrap: wrap;
+}
+.wx-number-keyboard-wrap.active .num-keyboard{
+  transform: translateY(0%);
+  transition: all 0.2s ease;
+}
+.wx-number-keyboard-wrap .num-keyboard .key{
+  width: 33.33333333%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+  border-left: 1px solid rgba(0,0,0,.1);
+}
+.wx-number-keyboard-wrap .num-keyboard .key:nth-of-type(3n+1){
+  border-left:none;
+}
+.wx-number-keyboard-wrap .num-keyboard .key:nth-of-type(n+10){
+  border-bottom: none;
+}
+.wx-number-keyboard-wrap .num-keyboard .key.del{
+  background-color: rgba(0,0,0,.1);
+}
+.wx-number-keyboard-wrap .num-keyboard .key:active{
+  background-color: #EEEEEE;
+}
