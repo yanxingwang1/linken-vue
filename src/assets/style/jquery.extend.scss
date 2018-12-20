@@ -2,66 +2,39 @@
   @return ($px/20)+rem;
 }
 
-.wx-dialog-mask {
+//toast
+.wx-toast-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, .3);
-  z-index: 888;
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
+  bottom: 48%;
+  width: 100%;
+  opacity: 0;
+  transition: opacity .5s;
 
-  .wx-dialog-wrap {
-    width: 80%;
-    padding: px(20);
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: px(10);
-    overflow: hidden;
+  &.wx-active {
+    opacity: 1;
+  }
 
-    .wx-dialog-content {
-      .wx-dialog-title {
-        height: px(30);
-        line-height: px(30);
-        text-align: center;
-        font-size: px(18);
-        font-weight: 500;
-        color: #323232;
-      }
-
-      .wx-dialog-body {
-        max-height: 50vh;
-        font-size: px(16);
-        text-align: center;
-        margin-top: px(10);
-        margin-bottom: px(20);
-      }
-
-      .wx-dialog-footer {
-        margin-bottom: px(10);
-
-        .wx-dialog-btn {
-          background-color: #B86122;
-          width: 100%;
-          text-align: center;
-          line-height: px(45);
-          font-size: px(17);
-          color: #ffffff;
-          border-radius: px(3);
-        }
-      }
-    }
-
+  .wx-toast-message {
+    max-width: 80%;
+    word-break: break-all;
+    font-size: 14px;
+    margin: 5px auto;
+    padding: 5px 15px;
+    text-align: center;
+    color: #ffffff;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, .7);
   }
 }
-
 
 //Dialog
 .wx-popup-backdrop {
   position: fixed;
-  z-index: 998;
+  z-index: 9998;
   top: 0;
   right: 0;
   bottom: 0;
@@ -87,17 +60,19 @@
   color: #323232;
   border-radius: 8px;
   transform: translate3d(-50%, -50%, 0) scale(1.185);
+  background: rgba(255, 255, 255, .97);
 
   &.wx-popup-in {
     transition-duration: 400ms;
     transform: translate3d(-50%, -50%, 0) scale(1);
     opacity: 1;
   }
-  .wx-popup-inner{
+
+  .wx-popup-inner {
     position: relative;
     padding: 15px;
-    background: rgba(255, 255, 255, .95);
     transition-property: transform, opacity;
+
     .wx-popup-title {
       font-size: 18px;
       font-weight: 500;
@@ -110,11 +85,15 @@
       font-size: 16px;
       margin: 5px 0 0;
       word-break: break-word;
+      max-height: 50vh;
+      overflow: auto;
     }
   }
+
   .wx-popup-buttons {
     position: relative;
     display: flex;
+
     .wx-popup-button {
       font-size: 18px;
       height: 50px;
@@ -127,13 +106,14 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       color: #000000;
-      background: rgba(255, 255, 255, .95);
     }
   }
 }
-.wx-popup.wx-dialog{
+
+.wx-popup.wx-dialog {
   .wx-popup-inner {
     padding: 15px;
+
     &:after {
       position: absolute;
       z-index: 15;
@@ -158,7 +138,7 @@
       padding: 0 10px;
       border: 1px solid #E5E5E5;
       border-radius: 5px;
-      background: rgba(255, 255, 255, .95);
+      background: initial;
       -webkit-appearance: none;
     }
   }
@@ -167,9 +147,10 @@
     height: 50px;
 
     .wx-popup-button {
-      &:active{
+      &:active {
         background: #EEEEEE;
       }
+
       &:after {
         position: absolute;
         z-index: 15;
@@ -192,17 +173,20 @@
     }
   }
 }
-.wx-popup.wx-alert{
+
+.wx-popup.wx-alert {
   width: 300px;
-  background: rgba(255, 255, 255, .95);
+
   .wx-popup-inner {
     padding: 20px;
+
     .wx-popup-text {
       margin: 10px 0 0;
     }
   }
+
   .wx-popup-buttons {
-    padding: 0 25px 30px 25px;
+    padding: 0 20px 25px 20px;
 
     .wx-popup-button {
       height: 45px;
@@ -210,7 +194,8 @@
       background-color: #B86122;
       color: #ffffff;
       border-radius: 4px;
-      &:active{
+
+      &:active {
         background-color: #B86122 * 0.7;
       }
     }
@@ -218,50 +203,144 @@
 }
 
 //数字键盘
-.wx-number-keyboard-wrap{
+.wx-number-keyboard-mask {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   /*background-color: rgba(0,0,0,.3);*/
-  z-index: 10002;
+  z-index: 10001;
 }
-.wx-number-keyboard-wrap .num-keyboard{
-  width: 100%;
-  height: 200px;
-  background-color: #ffffff;
-  border-top: 1px solid rgba(0,0,0,.1);
-  position: absolute;
+
+.wx-number-keyboard-wrap {
+  z-index: 9999;
+  position: fixed;
+  width: 100vw;
   bottom: 0;
   left: 0;
+  .num-keyboard {
+    width: 100%;
+    height: 230px;
+    background-color: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, .1);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transform: translateY(100%);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &.active .num-keyboard {
+    transform: translateY(0%);
+  }
+
+  .num-keyboard {
+    .key {
+      width: 33.33333333%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, .1);
+      border-left: 1px solid rgba(0, 0, 0, .1);
+    }
+
+    .key:nth-of-type(3n+1) {
+      border-left: none;
+    }
+
+    .key:nth-of-type(n+10) {
+      border-bottom: none;
+    }
+
+    .key.del {
+      background-color: rgba(0, 0, 0, .1);
+    }
+
+    .key:active {
+      background-color: #EEEEEE;
+    }
+  }
+}
+
+
+// 车牌号键盘
+.wx-license-plate-keyboard-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  //background-color: rgba(0,0,0,.1);
+  z-index: 999;
+}
+
+.wx-license-plate-keyboard-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100vw;
+  height: px(220);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding-bottom: px(10);
+  z-index: 1000;
+  background-color: #CFD3DD;
   transform: translateY(100%);
   transition: all 0.3s ease;
-  display: flex;
-  flex-wrap: wrap;
-}
-.wx-number-keyboard-wrap.active .num-keyboard{
-  transform: translateY(0%);
-  transition: all 0.2s ease;
-}
-.wx-number-keyboard-wrap .num-keyboard .key{
-  width: 33.33333333%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  border-bottom: 1px solid rgba(0,0,0,.1);
-  border-left: 1px solid rgba(0,0,0,.1);
-}
-.wx-number-keyboard-wrap .num-keyboard .key:nth-of-type(3n+1){
-  border-left:none;
-}
-.wx-number-keyboard-wrap .num-keyboard .key:nth-of-type(n+10){
-  border-bottom: none;
-}
-.wx-number-keyboard-wrap .num-keyboard .key.del{
-  background-color: rgba(0,0,0,.1);
-}
-.wx-number-keyboard-wrap .num-keyboard .key:active{
-  background-color: #EEEEEE;
+
+  .key-wrap {
+    height: px(50);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: px(15);
+
+    .key {
+      width: px(33);
+      height: px(45);
+      line-height: px(45);
+      background-color: #ffffff;
+      text-align: center;
+      margin: 0 px(2);
+      border-radius: 4px;
+
+      &:active {
+        background-color: #CFD3DD * 0.9;
+      }
+    }
+  }
+
+  &.wx-active {
+    transform: translateY(0%);
+  }
+
+  &.license-provice .key-wrap.letter {
+    display: none;
+  }
+
+  &.license-letter .key-wrap.provice {
+    display: none;
+  }
+
+  .key.del {
+    position: absolute;
+    right: px(4);
+    bottom: px(12);
+    width: px(40);
+    height: px(45);
+    line-height: px(45);
+    text-align: center;
+    border-radius: 4px;
+    background: #ABB1BD url("./../img/key-delete.png") center/24px no-repeat;
+
+    &:active {
+      background-color: #ABB1BD * 0.9;
+    }
+  }
+
 }

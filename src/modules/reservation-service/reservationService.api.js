@@ -17,7 +17,7 @@ try {
     //查询用户绑定车辆信息
     {
       id: 'getBaseInfo',
-      url: '/OSB/api/v1/vechicle/getBaseInfo',
+      url: 'OSB/api/v1/vechicle/getBaseInfo',
       format: false
     },
     //添加车辆信息
@@ -27,18 +27,48 @@ try {
       "format": false
     },
     //更新车牌信息
+    {
+      "id": "updateTieCar",
+      "url": "OSB/api/v1/dealer/WBO4",
+      "format": false
+    },
     //查询常用经销商 根据服务类型
     {
       "id": "queryAftersaleDealer",
-      "url": "/OSB/api/v1/dealer/queryAftersaleDealer",
+      "url": "OSB/api/v1/dealer/queryAftersaleDealer",
       "format": false
     },
     //
     {
-      "id": "getIdfyCode",
-      "url": "appointment/api/v1/testDrive/getIdfyCode",
+      "id": "getMessageCode",
+      // "url": "appointment/api/v1/testDrive/getIdfyCode",    //B
+      "url":"appointment/api/v1/store/getAuthCodeforAll",  //C
       "format": false
     },
+    //创建预约售后单
+    {
+      "id": "creatAftersale",
+      "url":"OSB/api/v1/dealer/creatAftersale",
+      "format": false
+    },
+    //修改预约售后单
+    {
+      "id": "updateAftersale",
+      "url":"OSB/api/v1/dealer/updateAftersale",
+      "format": false
+    },
+    //查询售后预约单 详细
+    {
+      "id": "afterSaledetail",
+      "url": "OSB/api/v1/appointment/detail",
+      "format": false
+    },
+    //查询 时间范围
+    {
+      "id": "WBO1",
+      "url": "OSB/api/v1/dealer/WBO1",
+      "format": false
+    }
 
   ];
 

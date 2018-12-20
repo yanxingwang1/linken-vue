@@ -6,7 +6,8 @@
         v-for="(item,i) in list"
         @click.native="detail(item,i)"
         :key="item.id"
-        :right="[
+
+        :right="item.status=='3'?'':[
                   {
                     content: 'DeleteDel',
                     style: {

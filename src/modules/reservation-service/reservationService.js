@@ -5,7 +5,6 @@ import cover from './reservationService.app'
 import http from './reservationService.api'
 import '../../config/rem'
 import '../../config/click'
-import  { ConfirmPlugin } from 'vux'
 import router from './reservationService.router'
 
 import MintUI from 'mint-ui'
@@ -15,10 +14,11 @@ import './../../assets/style/common-style.scss'
 import './style/style.scss'
 import './../../assets/style/jquery.extend.scss'
 import './../../common/jquery.extend'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
 
 Vue.use(MintUI)
-Vue.use(N3Components)
-Vue.use(ConfirmPlugin)
+// Vue.use(N3Components)
+Vue.use(VueAwesomeSwiper)
 Vue.prototype.http = http;
 
 Vue.config.productionTip = false

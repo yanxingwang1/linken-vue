@@ -1,9 +1,7 @@
 <template>
     <div class="wninput">
-        <div  :class="(label.length>4)?'label label3':'label'">
-            <span class="label1">{{label.substring(0,4)}}</span>
-            <!-- <span :class="(label.length>4)?'label2':'label1'">{{label.substring(4)}}</span> -->
-            <span class="red">*</span>
+        <div class="label">
+            <span class="label1">{{label}}<span class="red">*</span></span>
            
         </div><input type="text" :placeholder="placeholder" @blur="onblur" :maxlength="maxlength" :class="unpass?'error1':''" v-model="value"  >
         <!-- <div  v-show="unpass" class="error" >抱歉，你填写的{{label}}错误</div> -->
@@ -39,6 +37,11 @@ import { Toast } from "mint-ui";
          },
         methods: {
             onblur(){
+                try {
+                    $("body").scrollTop(0);
+                }catch(error){
+
+                }
                 // 跟后台交互保存
                 if(!this.value){//用户默认手机号，验证不输入
                     return;
@@ -51,7 +54,6 @@ import { Toast } from "mint-ui";
                         return;
                     }
                 }
-               
             },
         },
         watch: {
@@ -82,7 +84,7 @@ import { Toast } from "mint-ui";
             display:inline-block;
             width:26%;
             font-size: 16px;
-            color: #000000;
+            color: #3E3E3E;
             text-align:left;
             font-weight: normal;
             padding:0;

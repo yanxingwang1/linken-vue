@@ -22,3 +22,22 @@
     }
   }
 }
+.swiper-pagination.swiper-pagination-bullets {
+  bottom: px(16) !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  .swiper-pagination-bullet {
+    width: 6px !important;
+    height: 4px !important;
+    border-radius: 8px !important;
+    background: #A5A5A5 !important;
+    opacity: 1 !important;
+    transition: all .1s !important;
+    &.swiper-pagination-bullet-active {
+      width: 14px !important;
+      background-color: #B45F1A !important;
+    }
+
+  }
+}

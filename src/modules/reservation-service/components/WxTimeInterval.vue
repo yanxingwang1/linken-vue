@@ -16,8 +16,8 @@
         </div>
         <div class="days">
           <div class="day"
-               v-for="(item,i) in weeksList"
-               @click="weekListItemHandleClick(item,i)"
+               v-for="(item,i) in calendarDays"
+               @click="calendarDaysItemHandleClick(item,i)"
           >
             <div
               :class="{ today: item.isToday, active: item.isActive, disabled: item.isDisabled}"
@@ -28,16 +28,19 @@
       </div>
     </div>
     <div class="morn-after">
-      <div class="morn" :class="{active:this.mornAfter}" @click="mornAfterHandleClick(true)">上午</div>
-      <div class="after" :class="{active:!this.mornAfter}" @click="mornAfterHandleClick(false)">下午</div>
+      <div class="morn" :class="{active:hourType===0}" @click="mornAfterHandleClick(0)">上午</div>
+      <div class="after" :class="{active:hourType===1}" @click="mornAfterHandleClick(1)">下午</div>
     </div>
-    <div class="hour-list">
-      <div class="hour-list-item"
+    <div class="hour-list" :class="{'hour-list-hidden':hourListHidden}">
+      <div class="hour-list-item-wrap"
            v-for="(item,i) in hourList"
-           :class="{active:item.isActive}"
-           :style="item.style"
-           @click="hourListItemHandleClick(i)"
-      >{{item.date}}
+           v-if="item.type===hourType">
+        <div class="hour-list-item"
+             :class="{active:item.isActive,disabled:item.isDisabled}"
+             :style="item.style"
+             @click="hourListItemHandleClick(item,i)"
+        >{{item.date}}
+        </div>
       </div>
     </div>
     <div class="btn-wrap">
@@ -49,167 +52,233 @@
 <script>
   import WxButton from './../../../components/WxButton'
 
-  let morningArr = [
-    {"isActive": false, "date": "08:00"},
-    {"isActive": false, "date": "08:30"},
-    {"isActive": false, "date": "09:00"},
-    {"isActive": false, "date": "09:30"},
-    {"isActive": false, "date": "10:00"},
-    {"isActive": false, "date": "10:30"},
-    {"isActive": false, "date": "11:00"},
-    {"isActive": false, "date": "11:30"},
-    {"isActive": false, "date": "12:00"},
-    {"isActive": false, "date": "12:30", style: {visibility: 'hidden'}}
-  ];
-  let afternoonArr = [
-    {"isActive": false, "date": "12:30"},
-    {"isActive": false, "date": "13:00"},
-    {"isActive": false, "date": "13:30"},
-    {"isActive": false, "date": "14:00"},
-    {"isActive": false, "date": "14:30"},
-    {"isActive": false, "date": "15:00"},
-    {"isActive": false, "date": "15:30"},
-    {"isActive": false, "date": "16:00"},
-    {"isActive": false, "date": "16:30"},
-    {"isActive": false, "date": "17:00"},
-    {"isActive": false, "date": "17:30"},
-    {"isActive": false, "date": "18:00"},
-    {"isActive": false, "date": "18:30"},
-    {"isActive": false, "date": "19:00"},
-    {"isActive": false, "date": "19:30"},
-    {"isActive": false, "date": "20:00"}
+  //时间字典
+  const hourListArr = [
+    {isActive: false, date: "08:00", code: '31001001', type: 0, isDisabled: false},
+    {isActive: false, date: "08:30", code: '31001002', type: 0, isDisabled: false},
+    {isActive: false, date: "09:00", code: '31001003', type: 0, isDisabled: false},
+    {isActive: false, date: "09:30", code: '31001004', type: 0, isDisabled: false},
+    {isActive: false, date: "10:00", code: '31001005', type: 0, isDisabled: false},
+    {isActive: false, date: "10:30", code: '31001006', type: 0, isDisabled: false},
+    {isActive: false, date: "11:00", code: '31001007', type: 0, isDisabled: false},
+    {isActive: false, date: "11:30", code: '31001008', type: 0, isDisabled: false},
+    {isActive: false, date: "12:00", code: '31001009', type: 0, isDisabled: false},
+    {isActive: false, date: "12:30", code: '31001010', type: 1, isDisabled: false},
+    {isActive: false, date: "13:00", code: '31001011', type: 1, isDisabled: false},
+    {isActive: false, date: "13:30", code: '31001012', type: 1, isDisabled: false},
+    {isActive: false, date: "14:00", code: '31001013', type: 1, isDisabled: false},
+    {isActive: false, date: "14:30", code: '31001014', type: 1, isDisabled: false},
+    {isActive: false, date: "15:00", code: '31001015', type: 1, isDisabled: false},
+    {isActive: false, date: "15:30", code: '31001016', type: 1, isDisabled: false},
+    {isActive: false, date: "16:00", code: '31001017', type: 1, isDisabled: false},
+    {isActive: false, date: "16:30", code: '31001018', type: 1, isDisabled: false},
+    {isActive: false, date: "17:00", code: '31001019', type: 1, isDisabled: false},
+    {isActive: false, date: "17:30", code: '31001020', type: 1, isDisabled: false},
+    {isActive: false, date: "18:00", code: '31001021', type: 1, isDisabled: false},
+    {isActive: false, date: "18:30", code: '31001022', type: 1, isDisabled: false},
+    {isActive: false, date: "19:00", code: '31001023', type: 1, isDisabled: false},
+    {isActive: false, date: "19:30", code: '31001024', type: 1, isDisabled: false},
+    {isActive: false, date: "20:00", code: '31001025', type: 1, isDisabled: false}
   ]
+  //获取相邻日期的数据
+  const getDayByNum = function (Count) {
+    let dd = new Date();
+    dd.setDate(dd.getDate() + Count);//获取Count天后的日期
+    let year = dd.getFullYear()
+    let month = dd.getMonth() + 1; //获取当前月份
+    let day = dd.getDate();      //获取当前月份的日期
+    let week = dd.getDay();       //获取星期几
+    let isActive = false;
+    let isToday = false;
+    let isDisabled = false
+    month = month < 10 ? '0' + month : month;
+    day = day < 10 ? '0' + day : day;
+    // var week;
+    switch (week) {
+      case 0 :
+        week = '日';
+        break;
+      case 1 :
+        week = '一';
+        break;
+      case 2 :
+        week = '二';
+        break;
+      case 3 :
+        week = '三';
+        break;
+      case 4 :
+        week = '四';
+        break;
+      case 5 :
+        week = '五';
+        break;
+      case 6 :
+        week = '六';
+        break;
+    }
+    return {
+      year, //年
+      month, //月
+      day, //日
+      week, //星期
+      isActive, //是否 高亮
+      isToday, //是否 今天
+      isDisabled //是否 禁用
+    }
+  }
+  //获取 日历显示的14天日期数据
+  const getCalendarDay = function () {
+    let list = [];
+    let count = -new Date().getDay()
+    //时间
+    for (let i = count; i < count + 14; i++) {
+      let day = getDayByNum(i)
+      if (i == 0) {
+        day.isToday = true
+      }
+      if (i == 1) {
+        day.isActive = true
+      }
+      if (i >= 1 && i <= 7) {
+        day.isDisabled = false
+      } else {
+        day.isDisabled = true
+      }
+      list.push(day)
+    }
+    return list
+  }
+
   export default {
     name: "WxTimeInterval",
     data() {
       return {
+        hourType: 0,
+        hourListHidden: false,
         //一周日期 星期 列表
-        weeksList: [],
+        calendarDays: [],
         //上午:true or 下午：false
         mornAfter: true,
-        hourList: morningArr.concat()
+        hourList: hourListArr.concat()
+      }
+    },
+    props: {
+      dealerCode: {
+        type: String
       }
     },
     computed: {
       nowTime() {
-        let year, month, day, time = '';
-        const weekday = this.weeksList.find((item) => {
+        let year, month, day, week, time = '';
+        const calendar = this.calendarDays.find((item) => {
           return item.isActive
         });
         const time_t = this.hourList.find((item) => {
           return item.isActive
         });
-        if (weekday) {
-          year = weekday.year
-          month = weekday.month
-          day = weekday.day
+        if (calendar) {
+          year = calendar.year
+          month = calendar.month
+          day = calendar.day
+          week = calendar.week
         }
-        time = time_t ? time_t.date : ''
+        if (time_t) {
+          time = time_t.date
+        }
         return {
-          format: `${year}-${month}-${day} ${time}`,
+          year, month, day, week, time,
+          format: `${year}年${month}月${day}日星期${week} ${time}`,
           value: `${year}年${month}月${day}日 ${time}`,
           label: `${year}年${month}月`,
-          isfull: time ? true : false
+          date: new Date(`${year}/${month}/${day} ${time}`),
+          isfull: time ? true : false,
         }
       }
     },
     mounted() {
-      this.weeksList = this.getWeeksList()
+      console.log('tp mounted')
+      window.tp = this
+      this.calendarDays = getCalendarDay()
     },
-    methods: {
-      okBtnHandleClick() {
-        console.log(this.nowTime.format)
-        this.$emit('timeIntervalChange', this.nowTime.format)
-      },
-      hourListItemHandleClick(i) {
-        this.hourList.map((item, index) => {
-          if (i == index) {
-            item.isActive = true
-          } else {
-            item.isActive = false
-          }
-        })
-      },
-      //weekListItemHandleClick
-      weekListItemHandleClick(item, i) {
-        if (item.isDisabled) {
-          return
-        }
-        this.weeksList.map((item, index) => {
-          if (i == index) {
-            item.isActive = true
-          } else {
-            item.isActive = false
+    watch: {
+      dealerCode() {
+        this.calendarDays.forEach((item, i) => {
+          if (item.isActive) {
+            this.calendarDaysItemHandleClick(item, i)
           }
         })
       }
-      ,
-      mornAfterHandleClick(flag) {
-        if (flag) {
-          this.hourList = morningArr.concat()
-        } else {
-          this.hourList = afternoonArr.concat()
-        }
-        this.mornAfter = flag
+    },
+    methods: {
+      //上午 下午 切换
+      mornAfterHandleClick(type) {
+        this.hourType = type
       },
-      getWeeksList() {
-        let list = [];
-        let count = -new Date().getDay()
-        //时间
-        for (let i = count; i < count + 14; i++) {
-          let day = this.GetDateStr(i)
-          if (i == 0) {
-            day.isToday = true
-          }
-          if (i == 1) {
-            day.isActive = true
-          }
-          if (i >= 1 && i <= 7) {
-            day.isDisabled = false
+      calendarDaysItemHandleClick(item, i) {
+        if (item.isDisabled) {
+          return
+        }
+        this.calendarDays.forEach((item, index) => {
+          if (i == index) {
+            item.isActive = true
           } else {
-            day.isDisabled = true
+            item.isActive = false
           }
-          list.push(day)
+        })
+        this.hourList.forEach((item => {
+          item.isActive = false
+        }))
+        this.hourListHidden = true
+        if (!this.dealerCode) {
+          return
         }
-        return list
+        this.testHttp(this.dealerCode, `${item.year}-${item.month}-${item.day}`)
+          .then((arr) => {
+            console.log(arr)
+            arr.forEach((item, i) => {
+              if (Number(item.amount) === 0) {//时间段不可选
+                this.hourList.forEach((item2, j) => {
+                  if (item2.code === item.booking_TIME) {
+                    item2.isDisabled = true
+                  }
+                })
+              }
+            })
+            this.hourListHidden = false
+          })
       },
-      GetDateStr(Count) {
-        let dd = new Date();
-        dd.setDate(dd.getDate() + Count);//获取Count天后的日期
-        let year = dd.getFullYear()
-        let month = dd.getMonth() + 1; //获取当前月份
-        let day = dd.getDate();      //获取当前月份的日期
-        let week = dd.getDay();       //获取星期几
-        let isActive = false;
-        let isToday = false;
-        let isDisabled = false
-        month = month < 10 ? '0' + month : month;
-        day = day < 10 ? '0' + day : day;
-        // var week;
-        switch (week) {
-          case 0 :
-            week = '日';
-            break;
-          case 1 :
-            week = '一';
-            break;
-          case 2 :
-            week = '二';
-            break;
-          case 3 :
-            week = '三';
-            break;
-          case 4 :
-            week = '四';
-            break;
-          case 5 :
-            week = '五';
-            break;
-          case 6 :
-            week = '六';
-            break;
+      hourListItemHandleClick(item, i) {
+        if (item.isDisabled) {
+          return
         }
-        return {year, month, day, week, isActive, isToday, isDisabled}
+        this.hourList.forEach((item, index) => {
+          if (i == index) {
+            item.isActive = true
+          } else {
+            item.isActive = false
+          }
+        })
+      },
+      okBtnHandleClick() {
+        console.log(this.nowTime.format)
+        this.$emit('timeIntervalChange', this.nowTime)
+      },
+      testHttp(dealerCode, AppointmentDate) {
+        console.log('查询时间段参数', {dealerCode, AppointmentDate})
+        return new Promise((resolve, reject) => {
+          this.http.get('WBO1', {dealerCode, AppointmentDate}, res => {
+            console.log('查询时间段', res)
+            if (res.resultCode == '1') {
+              if (res.data) {
+                resolve(res.data)
+              }
+            } else {
+              console.log('查询时间段 error')
+            }
+          })
+        })
+
       }
     },
     components: {WxButton}
@@ -330,35 +399,46 @@
           border-color: #B45F1A;
           transition: all .2s ease;
         }
-
       }
     }
 
     .hour-list {
       position: relative;
-      display: flex;
-      justify-content: space-between;
-      align-content: flex-start;
-      flex-wrap: wrap;
       height: px(140);
       overflow: auto;
       color: #686868;
       font-size: px(12);
       padding: px(10) 0;
 
-      .hour-list-item {
-        align-self: flex-start;
-        width: px(60);
-        height: px(20);
-        margin: px(5) 0;
-        line-height: px(20);
-        border-radius: px(2);
-        background-color: #F7F7F7;
+      &.hour-list-hidden {
+        opacity: 0;
+      }
 
-        &.active {
-          color: #ffffff;
-          background-color: #B45F1A;
-          transition: all .2s ease;
+      .hour-list-item-wrap {
+        float: left;
+        width: 20%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .hour-list-item {
+          align-self: flex-start;
+          width: px(60);
+          height: px(20);
+          margin: px(5) 0;
+          line-height: px(20);
+          border-radius: px(2);
+          background-color: #F7F7F7;
+
+          &.disabled {
+            color: #CACACA;
+          }
+
+          &.active {
+            color: #ffffff;
+            background-color: #B45F1A;
+            transition: all .2s ease;
+          }
         }
       }
     }

@@ -1,13 +1,14 @@
 <template>
   <div>
-    <div class="fun-btn-title">服务类型</div>
+    <div class="fun-btn-title">服务类型<span>*</span></div>
     <div class="fun-btn-wrap">
       <div
         v-for="(item,i) in serviceTypeList"
-        @click="serviceTypehandleClick(i)"
+        @click="serviceTypehandleClick(item,i)"
         class="fun-btn"
         :class="{active: item.isActive}"
-      >{{item.text}}</div>
+      >{{item.text}}
+      </div>
     </div>
   </div>
 </template>
@@ -24,33 +25,50 @@
           {serviceType: 2, text: '保养', isActive: false},
           {serviceType: 3, text: '检查', isActive: false},
           {serviceType: 4, text: '其他', isActive: false}
-        ]
+        ],
+        value2: 0,
       }
     },
-    props: {},
-    computed:{
-      serviceType(){
-        const item = this.serviceTypeList.find((item)=>{
-          return item.isActive
-        })
-        return item?item.serviceType:''
+    props: {
+      value: {
+        type: Number | String
       }
     },
-    watch:{
-      serviceType(value){
-        console.log('维修服务类型改变',value)
-        this.$emit('vehicleServicesChange',value)
-      }
+    mounted() {
+      this.value2 = this.value
     },
-    methods: {
-      serviceTypehandleClick(i){
-        this.serviceTypeList.map((item, index) => {
-          if (i == index) {
+    computed: {},
+    watch: {
+      value(value) {
+        this.serviceTypeList.forEach((item, i) => {
+          if (item.serviceType == value) {
             item.isActive = true
-          } else {
+          }else {
             item.isActive = false
           }
         })
+      },
+      value2(value) {
+        console.log('维修服务类型改变', value)
+        this.$emit('input', value)
+        // this.$emit('vehicleServicesChange', value)
+      }
+    },
+    methods: {
+      serviceTypehandleClick(item, i) {
+        if (item.isActive) {
+          item.isActive = false
+          this.value2 = 0
+        } else {
+          this.serviceTypeList.forEach((item, index) => {
+            if (i == index) {
+              item.isActive = true
+              this.value2 = item.serviceType
+            } else {
+              item.isActive = false
+            }
+          })
+        }
       }
     },
     mounted() {
@@ -68,6 +86,9 @@
     text-align: center;
     color: #3E3E3E;
     font-size: px(16);
+    span{
+      color: red;
+    }
   }
 
   .fun-btn-wrap {

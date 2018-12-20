@@ -6,11 +6,11 @@
                     <span class="show-tab-span">{{subscribe.serviceType==1?'维修服务':subscribe.serviceType==2?'保养服务':subscribe.serviceType==3?'检查服务':'其他服务'}}</span>
                 </div>
                 <div class="show-main-content">
-                    <div>客户称谓：{{subscribe.lastName}}  {{subscribe.sex==0?'先生':'女士'}}<span class="car-status">{{subscribe.status==10661000?'已进厂':subscribe.status==10661003?'已确认':subscribe.status==10661004?'已完成':'已取消'}}</span></div>
-                    <div class="content-label">服务车型：{{subscribe.carModelName}}</div>
-                    <div class="content-label">预约服务时间：{{subscribe.appointmentTime}}</div>
-                    <div class="content-label">
-                        来源：{{subscribe.appointmentSource==0?'微信':'其他'}}
+                    <div class="show-main-content-tab"><div class="show-main-content-tab-title">客户称谓：</div><div class="show-main-content-tab-con">{{subscribe.lastName}}  {{subscribe.sex==0?'先生':subscribe.sex==1?'女士':''}}</div><div class="car-status show-main-content-tab-rig">{{subscribe.status==10661000?'已进厂':subscribe.status==10661003?'已确认':subscribe.status==10661004?'已完成':'已取消'}}</div></div>
+                    <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">服务车型：</div><div class="show-main-content-tab-con">{{subscribe.carModelName}}</div></div>
+                    <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">预约服务时间：</div><div class="show-main-content-tab-con">{{subscribe.appointmentTime}}</div></div>
+                    <div class="content-label show-main-content-tab">
+                        <div class="show-main-content-tab-title">来源：</div><div class="show-main-content-tab-con">{{subscribe.appointmentSource==0?'微信':subscribe.appointmentSource==1?'APP':subscribe.appointmentSource==2?'DCS':'DMS'}}</div>
                         <!-- <img class="content-img" :src="require('../imgs/daibuche.png')"/> -->
                     </div>
                 </div>
@@ -83,6 +83,19 @@
                 font-size: 15px;
                 color: #323232;
                 letter-spacing: -0.48px;
+                .show-main-content-tab {
+                    display:flex;
+                    justify-content: space-between;
+                    .show-main-content-tab-title {
+                        width:110px;
+                    }
+                    .show-main-content-tab-con {
+                        flex-grow: 3;
+                    }
+                    .show-main-content-tab-rig {
+                        align-self: center;
+                    }
+                }
                 .car-status {
                     float:right;
                     margin-right:5px;

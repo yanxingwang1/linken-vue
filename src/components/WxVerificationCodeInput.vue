@@ -1,5 +1,5 @@
 <template>
-  <div class="wx-input-wrap">
+  <div class="wx-input-wrap" :class="{'port-b':port=='b','port-c':port=='c'}">
     <div class="wx-label" v-if="label">
       {{label}}
       <span class="reqired" v-if="required">*</span></div>
@@ -51,13 +51,17 @@
       required: {
         type: Boolean,
         default: true
+      },
+      port:{
+        type:String,
+        default:'b'
       }
     },
     methods: {
       validationBtnHandleClick() {
         this.getIdfyCode()
         this.btnDisabled = true
-        let t = 5
+        let t = 60
         this.btnText = `${t}s`
         let timer = setInterval(() => {
           t = t - 1
@@ -70,13 +74,18 @@
         }, 1000)
       },
       getIdfyCode(){
-        console.log('发送短信验证码')
-        this.http.get('getIdfyCode',res=>{
+        console.log('发送短信验证码',this.phone)
+        this.http.get('getMessageCode',{
+          phone:this.phone
+        },res=>{
           if (res.resultCode == 1) {
             const data = res.data
-            // this.$emit('verificationCodeChange')
+            if(data){
+              $.toast(res.data.errorMsg)
+            }
           } else {
             console.log('getIdfyCode error')
+            $.toast(res.errMsg)
           }
         })
       }

@@ -11,27 +11,6 @@
       </wx-button>
       <input id="testinput" style="width: 100%;height: 40px;margin: 20px 0;border: solid 1px;" type="text">
     </div>
-    <!--<div class="wx-dialog-mask">-->
-    <!--<div class="wx-dialog-wrap">-->
-    <!--<div class="wx-dialog-content">-->
-    <!--<div class="wx-dialog-title">提示</div>-->
-    <!--<div class="wx-dialog-body">-->
-    <!--您在该经销商有预约售后未完成-->
-    <!--</div>-->
-    <!--<div class="wx-dialog-footer">-->
-    <!--<div class="wx-dialog-btn">确定</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <div class="jq-alert" id="jq-alert">
-      <div class="alert"><h2 class="title">提示</h2>
-        <div class="content">自定义弹窗内容，居左对齐显示，告知需要确认的信息等</div>
-        <div class="fd-btn"><a href="javascript:void(0);" data-role="cancel" class="cancel">取消</a><a
-          href="javascript:void(0);" class="confirm" id="yes_btn">知道了</a></div>
-      </div>
-    </div>
-
 
   </div>
 </template>
@@ -87,25 +66,8 @@
       MessageBox,
     },
     mounted() {
-      // console.log(this.$route.query.mobile);
-      // this.$route.query.userid
-      // return this.$nextTick(() => this.init());
-      // this.getVehicle()
-      // console.log(this.$vux)
-      // this.$vux.confirm.prompt('禁用原因', {
-      //   title: '禁用原因',
-      //   hideOnBlur:true,
-      //   onCancel () {
-      //     console.log('取消')
-      //   },
-      //   onConfirm (value) {
-      //     console.log('确定')
-      //   }
-      // })
-      $('#testinput').numberKeyBorad()
-      // setTimeout(()=>{
-      //   $('.wx-number-keyboard-wrap').addClass('active')
-      // },1000)
+      window.demo = this
+      $('#testinput').licensePlateKeyboard()
     }
   }
 </script>
@@ -118,6 +80,5 @@
   .index {
     padding: 20px;
   }
-
 
 </style>

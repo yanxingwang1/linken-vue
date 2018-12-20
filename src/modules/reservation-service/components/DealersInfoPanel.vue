@@ -26,6 +26,7 @@
       phoneHandleClick(){
         if (this.dealerInfo.serviceHotline){
           console.log('打电话',this.dealerInfo.serviceHotline)
+          window.location.href = `tel:${this.dealerInfo.serviceHotline}`
         }
       }
     },

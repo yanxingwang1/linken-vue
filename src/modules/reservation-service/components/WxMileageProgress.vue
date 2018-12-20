@@ -3,21 +3,26 @@
     <div class="title"
          @click="mileageHandleClick"
     >
-      当前里程数{{currentMaintenanceMileage}}km
+      <div v-if="Number(vechinfo.currentMaintenanceMileage)">
+        当前里程数{{vechinfo.currentMaintenanceMileage}}km
+      </div>
+      <div v-else="">请输入当前里程数</div>
     </div>
     <div class="progress-wrap">
       <div class="progress-content">
         <div class="progress-progress" :style="{width:`${progressValue}%`}"></div>
       </div>
     </div>
-    <div class="mileage-desc">
+    <div class="mileage-desc" :class="{gray: vechinfo.lastMaintenanceMileage===null}">
       <div class="mileage-value-pre">
         <div>上次保养里程数</div>
-        <div>{{lastMaintenanceMileage}}km</div>
+        <div v-if="vechinfo.lastMaintenanceMileage===null">暂无</div>
+        <div v-else>{{parseInt(vechinfo.lastMaintenanceMileage)}}km</div>
       </div>
       <div class="mileage-value-next">
         <div>下次保养里程数</div>
-        <div>{{nextMaintenanceMileage}}km</div>
+        <div v-if="vechinfo.lastMaintenanceMileage===null">暂无</div>
+        <div v-else>{{nextMaintenanceMileage}}km</div>
       </div>
     </div>
   </div>
@@ -27,47 +32,97 @@
   export default {
     name: "WxMileageProgress",
     props: {
-      lastMaintenanceMileage: {
-        type: String,
-        default: '暂无'
-      }
+      vechinfo: {
+        type: Object
+      },
     },
     computed: {
       nextMaintenanceMileage() {
-        return Number(this.lastMaintenanceMileage) + 10000
+        let nextMileage = Number(this.vechinfo.lastMaintenanceMileage) + 10000
+        if (this.vechinfo.lastMaintenanceMileage === null) {
+          nextMileage = Number.POSITIVE_INFINITY
+        }
+        return nextMileage
       },
       progressValue() {
-        return (this.currentMaintenanceMileage - this.lastMaintenanceMileage) / (this.nextMaintenanceMileage - this.lastMaintenanceMileage) * 100
-      }
-    },
-    watch: {
-      progressValue(val) {
-        if (val <= 0) {
+        const currentMileage = Number(this.vechinfo.currentMaintenanceMileage)
+        const lastMileage = Number(this.vechinfo.lastMaintenanceMileage)
+        const nextMileage = Number(this.nextMaintenanceMileage)
+        let value = (currentMileage - lastMileage) / (nextMileage - lastMileage) * 100
+        if (value < 0) {
+          value = 0
+        } else if (value > 100) {
+          value = 100
+        }
+        console.log('computed progress', value)
+        return value
+      },
+      mileageClass() {
+        let progressValue = this.progressValue
+        let className = ''
+        if (progressValue <= 0) {
           //进度条空
-          this.mileageClass = ''
-        } else if (val > 0 && val < 100) {
+          if (Number(this.vechinfo.currentMaintenanceMileage)) {
+            className = 'warning'
+          }
+        } else if (progressValue > 0 && progressValue < 100) {
           //进度条有
-          this.mileageClass = 'warning'
+          className = 'warning'
         } else {
           //进度条满了
-          this.mileageClass = 'danger'
+          className = 'danger'
         }
-        console.log('progressValue', val)
+        return className
       }
     },
     data() {
-      return {
-        currentMaintenanceMileage: 0,
-        mileageClass: ''
-      }
+      return {}
     },
     methods: {
       mileageHandleClick() {
-        var value = prompt("请输入当前里程", "");
-        if (value) {
-          console.log(value)
-          this.currentMaintenanceMileage = value
+        let self = this
+        let hideNumKeyBoard = function () {
+          let $numKeyBoardWrap = $('.wx-number-keyboard-wrap')
+          $numKeyBoardWrap.removeClass('active')
+          setTimeout(() => {
+            $numKeyBoardWrap.remove()
+          }, 300)
         }
+        $.dialog({
+          title: '请输入当前里程数(km)',
+          html: `<input id="mileage-input" type="text" />`,
+          buttons: [
+            {
+              title: '取消',
+              callback: hideNumKeyBoard
+            },
+            {
+              title: '确认',
+              isBold: true,
+              callback() {
+                hideNumKeyBoard()
+                let mileage = document.getElementById('mileage-input').value
+                const lastMileage = Number(self.vechinfo.lastMaintenanceMileage)
+                if (mileage !== '') {
+                  if (Number(mileage) <= lastMileage) {
+                    $.toast('您输入的当前里程数小于上次保养里程数，请重新输入')
+                    return
+                  }
+                  self.vechinfo.currentMaintenanceMileage = mileage
+                } else {
+                  $.toast('当前里程不能为空')
+                }
+              }
+            }
+          ],
+          maskOnClick(){
+            hideNumKeyBoard()
+          }
+        })
+        $('#mileage-input').numberKeyBorad({
+          isMask: false
+        })
+        $('#mileage-input').trigger('click')
       }
     }
   }
@@ -85,9 +140,9 @@
     .title {
       text-align: center;
       color: #BBBBBB;
-      height: px(20);
+      height: px(30);
       line-height: px(20);
-      margin-bottom: px(5);
+      margin-bottom: px(0);
     }
 
     .progress-wrap {
@@ -118,10 +173,8 @@
       font-size: px(12);
       margin-top: px(5);
 
-      .mileage-value-pre {
-      }
-
-      .mileage-value-next {
+      &.gray {
+        color: #BBBBBB;
       }
     }
 

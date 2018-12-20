@@ -6,7 +6,7 @@
         </div>
         <div class="bound-car-form">
             <div class="name">
-                <span >姓<span class="red">*</span></span><input type="text" v-model="userData.lastName" placeholder="姓" ><span  style="text-align: center;">名</span><input type="text" placeholder="名" v-model="userData.firstName">
+                <span >姓<span class="red">*</span></span><input type="text" v-model="userData.lastName" placeholder="姓" @blur="onblurBottom()"><span  style="text-align: center;">名</span><input type="text" placeholder="名" v-model="userData.firstName" @blur="onblurBottom()">
             </div>
             <div class="sex">
                 <span>称呼<span class="red">*</span></span>
@@ -23,11 +23,11 @@
             </div>
             <div class="phone">
                 <wn-input v-if="newCustomer" label="手机号码" placeholder='请输入您的手机号码' :maxlength='11' test="phone" @change="inputchange"></wn-input>
-                <div style="margin-top: 20px;" v-else>手机号码<span class="red">*</span><span class="phone-number">{{userData.phone}}</span></div>
+                <div style="margin-top: 20px;color:#3E3E3E;" v-else>手机号码<span class="red">*</span><span class="phone-number">{{userData.phone}}</span></div>
             </div>
             <div v-if="newCustomer" class="name vercode" v-show="newCustomer">
                 <div class="label"><span >短信验证<span class="red">*</span></span></div>
-                <input type="text" :class="codeunpass?'':'error'"  placeholder='请输入验证码' v-model="userData.authCode" >
+                <input type="text" :class="codeunpass?'':'error'"  placeholder='请输入验证码' v-model="userData.authCode" @blur="onblurBottom()">
                 <span  :class="!this.canClick?'disabled code':'code'" @click="getCode">{{content}}</span>
             </div>
             <div v-if="newCustomer" class="must-choose">
@@ -47,13 +47,13 @@
             </div>
             <div class="vin-input" style="display:flex;">
                 <div class="vin-inner">您的车架<br/>号(VIN)<span class="red">*</span></div>
-                <input type="text" :class="vinpass?'':'error'" @blur="onblur()"  placeholder='请输入您的VIN码' v-model="userData.vin" />
+                <input type="email" :class="vinpass?'':'error'" @blur="onblur()" maxlength="17"  placeholder='请输入您的VIN码' v-model="userData.vin" />
             </div>
             <div class="vin-input">
                 <div class="vin-code-type">
                     *车架号(VIN)，由字母及数字组成的17位车辆识别号，可以查询行驶证获得。
                 </div>
-                <div :class="{'submit':true,'can-submit':canSubmit}" @click="submitData()">
+                <div :class="{'submit':true,'can-submit':canSubmit&&registerAgree&&hasRead}" @click="submitData()">
                     提交
                 </div>
             </div>
@@ -69,17 +69,20 @@
 <script>
   import {
   } from 'vux'
+  import {Indicator} from 'mint-ui'
   import privacy from './components/privacy'
   import { Toast,Popup } from "mint-ui";
   import util from '../../common/DMC.util'
   import wnInput from './components/wninput'
+  import { setTimeout } from 'timers';
   export default {
     name: "index",
     components: {
         wnInput,
         Toast,
         Popup,
-        privacy
+        privacy,
+        Indicator
     },
     created() {
         end_time = new Date().getTime();
@@ -132,7 +135,7 @@
                         }
                     },
             deep: true,
-        }
+        },
     },
     methods: {
         init() {
@@ -147,10 +150,12 @@
                         this.newCustomer = false;
                         this.userData = res.data.userInfo;
                         this.userData.sex = this.userData.sex + '';
-                    }else if(res.data.code=='3'){
-                        // this.newCustomer = true;
-                        location.href = location.origin+'/modules/reservationService.html#/index';
                     }
+                    // this.newCustomer = true;
+                    // else if(res.data.code=='3'){
+                    //     // this.newCustomer = true;
+                    //     location.href = location.origin+'/modules/reservationService.html#/index';
+                    // }
                 }
             });
         },
@@ -214,13 +219,9 @@
             }else if(val == '2'){
                 this.hasRead = !this.hasRead;
             }
-            if(this.registerAgree&&this.hasRead){
-                this.canSubmit = true;
-            }else {
-                this.canSubmit = false;
-            }
         },
         onblur(){
+            $("body").scrollTop(0);
             if(this.userData.vin){
                 if(this.userData.vin.length!=17||!/^[0-9a-zA-Z]+$/.test(this.userData.vin)){
                     this.vinpass = false;
@@ -231,14 +232,33 @@
                 this.vinpass = true;
             }
         },
+        onblurBottom(){
+            $("body").scrollTop(0);
+        },
         submitData(){
-            if(this.canSubmit){
+            var _this = this;
+            Indicator.open({
+                text: '提交中',
+                spinnerType: 'triple-bounce'
+            });
+            if(this.canSubmit&&this.registerAgree&&this.hasRead){
                 this.http.post('saveTieCar',this.userData,res=>{
+                    Indicator.close();
                     if(res.resultCode=='1') {
                         if(this.newCustomer){
-                            location.href = location.origin+'/modules/reservationService.html#/index';
+                            Toast({
+                                message: '车辆绑定成功',
+                            });
+                            setTimeout(function(){
+                                location.href = location.origin+'/modules/reservationService.html#/index';
+                            },1500);
                         }else {
-                            location.href = location.origin+'/modules/reservationService.html#/index?lastName='+this.userData.lastName+'&sex='+this.userData.sex;
+                            Toast({
+                                message: '车辆绑定成功',
+                            });
+                            setTimeout(function(){
+                                location.href = location.origin+'/modules/reservationService.html#/index?from=boundCar&lastName='+_this.userData.lastName+'&sex='+_this.userData.sex;
+                            },1500);
                         }
                     }else {
                         Toast({
@@ -314,6 +334,10 @@
                 span{
                     display:inline-block;
                     width:26%;
+                    color: #3E3E3E;
+                    .red {
+                        color:red;
+                    }
                 }
                 input{
                     max-width:24%;
@@ -325,11 +349,12 @@
                 >span:nth-child(1){
                     width:26%;
                     padding:0;
+                    color: #3E3E3E;
                 }
                 >span{
                     display:inline-block;
                     padding:5px 10px;
-                    
+                    color: #3E3E3E;
                     img{
                     width:20px;
                     vertical-align: top;
@@ -368,7 +393,7 @@
                     display:inline-block;
                     width:25%;
                     font-size: 16px;
-                    color: #000000;
+                    color: #3E3E3E;
                     text-align:left;
                     font-weight: normal;
                     padding:0;

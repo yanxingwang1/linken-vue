@@ -4,20 +4,20 @@
     <div style="position: fixed;top: 0;left: 0;width: 100%;background: white;">
       <div style="width:100%;height:48px;background:#f8f8f8;padding:10px 0">
         <!-- <group title="1234"> -->
-          <x-input ref="inputChange" v-model="queryParam.name" style="width:37%;transition: all 0.5s;float:left;background:white;margin-left:3%;height:28px;box-shadow: 0 0 3px 0 rgba(0,0,0,0.10);border-radius: 3px;" placeholder="搜索" :show-clear="false" @on-click-clear-icon="clearIcon()" @on-focus="changeLength()" @on-blur="onBlur()">
+          <x-input id="inputChangeInput" ref="inputChange" v-model="queryParam.name" style="width:37%;transition: all 0.5s;float:left;background:white;margin-left:3%;height:28px;box-shadow: 0 0 3px 0 rgba(0,0,0,0.10);border-radius: 3px;" placeholder="搜索" :show-clear="true" @on-click-clear-icon="clearIcon()" @on-focus="changeLength()" @on-blur="onBlur()">
             <img slot="label" style="display:block;" src="../../assets/img/search.png" width="15" height="15">
           </x-input>
-          <n3-select v-show="!focusInput" v-model="queryParam.serviceType" :cancelled="false" style="float:right;width:27%;margin-right:2%" @change='queryList()'>
+          <n3-select ref="selectFirst" v-model="queryParam.serviceType" :cancelled="false" style="float:right;width:27%;margin-right:2%;transition: all 0.5s;" @change='queryList()'>
             <n3-option value="">全部预约</n3-option>
-            <n3-option value="1">维修服务</n3-option>
-            <n3-option value="2">保养服务</n3-option>
-            <n3-option value="3">检查服务</n3-option>
-            <n3-option value="4">其他服务</n3-option>
+            <n3-option value="1">维修</n3-option>
+            <n3-option value="2">保养</n3-option>
+            <n3-option value="3">检查</n3-option>
+            <n3-option value="4">其他</n3-option>
           </n3-select>
-          <n3-select v-show="!focusInput" v-model="queryParam.status" :cancelled="false" style="float:right;width:27%;margin-right:2%" @change='queryList()'>
+          <n3-select ref="selectSecond" v-model="queryParam.status" :cancelled="false" style="float:right;width:27%;margin-right:2%;transition: all 0.5s;" @change='queryList()'>
             <n3-option value="">全部状态</n3-option>
             <n3-option v-if="type=='director'" value="10661003">已确认</n3-option>
-            <n3-option value="10661000">已进场</n3-option>
+            <n3-option value="10661000">已进厂</n3-option>
             <n3-option value="10661004">已完成</n3-option>
             <n3-option v-if="type=='director'" value="10661006">已取消</n3-option>
           </n3-select>
@@ -49,7 +49,7 @@
   import util from '../../common/DMC.util'
   import ListCell from './components/ListCell'
   import MescrollVue from 'mescroll.js/mescroll.vue'
-import { setTimeout } from 'timers';
+  import { setTimeout } from 'timers';
   export default {
     name: "index",
     components: {
@@ -83,7 +83,7 @@ import { setTimeout } from 'timers';
             // icon: require('./imgs/dd@3x.png'),//"../imgs/dd@3x.png", //图标,默认null,支持网络图
             tip: '您还没有预约订单' //提示
           },
-          htmlNodata: '<p class="upwarp-nodata">——END——</p>'
+          htmlNodata: '<p class="upwarp-nodata">— —END— —</p>'
         },
         subscribeList:[],
         queryParam:{
@@ -95,7 +95,6 @@ import { setTimeout } from 'timers';
         },
         topStatus:'',
         showLoading:false,
-        focusInput:false,
         type:''
       }
     },
@@ -113,16 +112,21 @@ import { setTimeout } from 'timers';
       },
       
       scrollUpAction(page,mescroll) {
-        
+        if(this.queryParam.name||this.queryParam.status||this.queryParam.serviceType){
+          this.mescrollUp.empty.tip = '您还没有相关预约订单';
+        }else {
+          this.mescrollUp.empty.tip = '您还没有预约订单';
+        }
         // 服务工程师
         if(this.type=='service'){
           this.http.get('getAftersaleList',this.queryParam,res=>{
-            if(res.resultCode==1){
+            if(res.data){
               this.subscribeList = res.data;
               mescroll.endByPage(res.data.length,1)
               // mescroll.endSuccess(this.subscribeList.length);
             }else {
-
+              this.subscribeList = [];
+              mescroll.endByPage(0,1)
             }
             for(var i = 0;i<this.subscribeList.length;i++){
               if(!this.subscribeList[i].id){
@@ -140,7 +144,9 @@ import { setTimeout } from 'timers';
             if(res.data){
               this.subscribeList = res.data;
               mescroll.endByPage(res.data.length,1)
-              // mescroll.endSuccess(this.subscribeList.length);
+            }else {
+              this.subscribeList = [];
+              mescroll.endByPage(0,1)
             }
             for(var i = 0;i<this.subscribeList.length;i++){
               if(!this.subscribeList[i].id){
@@ -159,28 +165,20 @@ import { setTimeout } from 'timers';
         }
       },
       clearIcon(){
-        var _this = this;
-        // this.$refs.inputChange.$el.className = 'vux-x-input weui-cell';
-        setTimeout(function(){
-          _this.onBlur();
-        }
-        ,100);
       },
       onBlur(){
-        var _this = this;
         this.$refs.inputChange.$el.className = 'vux-x-input weui-cell';
-        setTimeout(function(){
-          _this.focusInput = false;
-        }
-        ,500);
+        this.$refs.selectFirst.$el.className = 'n3-btn-group n3-select-group';
+        this.$refs.selectSecond.$el.className = 'n3-btn-group n3-select-group';
         this.scrollUpAction({num:0,size:10},this.mescroll);
       },
       queryList(){
         this.scrollUpAction({num:0,size:10},this.mescroll);
       },
       changeLength(){
-        this.focusInput = true;
         this.$refs.inputChange.$el.className = 'vux-x-input weui-cell add-width';
+        this.$refs.selectFirst.$el.className = 'n3-btn-group n3-select-group small-select-width';
+        this.$refs.selectSecond.$el.className = 'n3-btn-group n3-select-group small-select-width';
       }
     },
     beforeMount() {
@@ -189,8 +187,8 @@ import { setTimeout } from 'timers';
   
 
     mounted() {
-      this.queryParam.phone = this.$route.query.mobile;
-      this.queryParam.wxUserId = this.$route.query.userid;
+      this.queryParam.phone = this.$route.query.wxPhone;
+      this.queryParam.wxUserId = this.$route.query.wxUserId;
       this.type = this.$route.query.type;
 
 
@@ -226,6 +224,10 @@ import { setTimeout } from 'timers';
     }
     .add-width {
       width:95%!important;
+    }
+    .small-select-width {
+      width:0!important;
+      margin-right: 0!important;
     }
   }
 </style>

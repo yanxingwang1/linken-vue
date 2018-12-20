@@ -2,23 +2,23 @@
   <div class="detail-index">
     <div class="title-background">
       <div class="detail-header">
-        <div>{{detailInfo.title}}</div>
+        <div class="detail-content-height">{{detailInfo.title}}</div>
         <a :href="'tel:' + detailInfo.detailDto.appointmentPhone">
           <div class="phone">{{detailInfo.detailDto.appointmentPhone}}</div>
         </a>
       </div>
       <div class="detail-main">
-        微信
+        {{detailInfo.detailDto.appointmentSource==0?'微信':detailInfo.detailDto.appointmentSource==1?'APP':detailInfo.detailDto.appointmentSource==2?'DCS':'DMS'}}
       </div>
     </div>
-    <div class="footer-step">
+    <div :class="{'footer-step':true,'footer-step-padding':commentList.length==0}">
       <div class="steps">
         <div :class="{'step':true,'active':step==1}"  @click="change('1')">
           <img v-show="step!=1" src="./imgs/qr-on.png" alt="">
           <img v-show="step==1" src="./imgs/qr-able.png" alt="">
           <span>已确认</span>
         </div>
-        <div :class="{'arowright':true,'arrow-right-active':step==2||step==4}"></div>
+        <div :class="{'arowright':true,'arrow-right-active':step>1}"></div>
         <div v-show="showJingchang" :class="{'step':true,'active':step==2,'unable':!jingchangAble}"  @click="change('2')">
           <img v-show="step!=2&&jingchangAble" src="./imgs/jc-on.png" alt="">
           <img v-show="step==2&&jingchangAble" src="./imgs/jc-able.png" alt="">
@@ -54,8 +54,8 @@
         <div class="info">
           <show-tip title="车型名称：" :detail="detailInfo.detailDto.carModelName"></show-tip>
           <show-tip title="车牌号：" :detail="detailInfo.detailDto.plateNumber"></show-tip>
-          <show-tip title="当前里程数：" :detail="detailInfo.detailDto.currMileage+'km'"></show-tip>
-          <show-tip title="代步车：" :detail="detailInfo.detailDto.scootor==0?'申请':'未申请'"></show-tip>
+          <show-tip title="当前里程数：" :detail="detailInfo.detailDto.currMileage?(detailInfo.detailDto.currMileage+'km'):''"></show-tip>
+          <show-tip v-show="detailInfo.detailDto.serviceType==1" title="代步车：" :detail="detailInfo.detailDto.scootor==0?'申请':'不申请'"></show-tip>
         </div>
         <div class="div-border"></div>
         <div class="info repare">
@@ -63,7 +63,7 @@
           <show-tip v-show="step==2||step==3" title="工单号：" :detail="detailInfo.detailDto.roNo"></show-tip>
           <show-tip v-show="step==2||step==3" title="工单类型：" :detail="detailInfo.detailDto.roType"></show-tip>
           <show-tip title="服务类型：" :detail="detailInfo.detailDto.serviceType==1?'维修':detailInfo.detailDto.serviceType==2?'保养':detailInfo.detailDto.serviceType==3?'检查':'其他'"></show-tip>
-          <show-tip v-show="step==1||step==4" title="服务预约时间：" :detail="detailInfo.detailDto.appointmentTime"></show-tip>
+          <show-tip v-show="step==1||step==4" title="预约服务时间：" :detail="detailInfo.detailDto.appointmentDate"></show-tip>
           <show-tip v-show="step==4" title="取消服务时间：" :detail="detailInfo.detailDto.cancleTime"></show-tip>
           <show-tip v-show="step==2||step==3" title="服务工程师：" :detail="detailInfo.detailDto.serviceEnginnerName"></show-tip>
           <show-tip v-show="step==2" title="预计交车时间：" :detail="detailInfo.detailDto.expDeliverTime"></show-tip>
@@ -136,7 +136,9 @@
       init() {
         this.http.get('saleDetail',{id:this.orderId},res=>{
           this.detailInfo = res.data;
-          this.commentList = res.data.ass;
+          if(res.data.ass){
+            this.commentList = res.data.ass;
+          }
           //已进场 可点击已确认，已进场按钮，已完成不可点击
           if(res.data.status==10661000){
             this.jingchangAble = true;
@@ -197,6 +199,9 @@
         font-size: 16px;
         color: #323232;
         padding:20px 15px 11px 15px;
+        .detail-content-height {
+          height:px(22);
+        }
         .phone {
           font-family: PingFangSC-Regular;
           font-size: 15px;
@@ -286,6 +291,9 @@
           margin: 0.75rem 0.75rem 0;
         }
       }
+    }
+    .footer-step-padding {
+      padding-bottom:20px;
     }
     .service-comment {
       .border-height {
