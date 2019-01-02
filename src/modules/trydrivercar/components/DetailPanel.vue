@@ -22,7 +22,7 @@
         </div>
         <div class="detail-cell">
           <div class="t">里程数<span>：</span></div>
-          <div class="c">{{vehicleInfo.mileage==null?'':vehicleInfo.mileage+ ' km'}}</div>
+          <div class="c">{{vehicleInfo.mileage==null?'':vehicleInfo.mileage+ ' KM'}}</div>
         </div>
       </div>
     </div>

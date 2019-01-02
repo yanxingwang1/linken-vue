@@ -1,8 +1,6 @@
 <template>
     <div class="wx-input-wrap" :class="{disabled:disabled,'port-b':port=='b','port-c':port=='c'}">
-      <div class="wx-label" v-if="label">
-        {{label}}
-        <span class="reqired" v-if="required">*</span></div>
+      <div class="wx-label" v-if="label">{{label}}<span class="reqired" v-if="required">*</span></div>
       <div class="wx-content" :style="{ width: label?'':'100%'}">
         <textarea
           v-if="type==='textarea'"
@@ -11,7 +9,10 @@
           :disabled="disabled"
           :placeholder="placeholder"
           :value="value"
+          :maxlength="maxlength"
           @input="$emit('input', $event.target.value)"
+          @blur="inputBlur"
+          @focus="inputFocus"
         ></textarea>
         <input
           v-else
@@ -20,7 +21,10 @@
           :type="type"
           :placeholder="placeholder"
           :value="value"
+          :maxlength="maxlength"
           @input="$emit('input', $event.target.value)"
+          @blur="inputBlur"
+          @focus="inputFocus"
         >
       </div>
     </div>
@@ -31,6 +35,7 @@
     name: 'WxInput',
     data(){
       return {
+        scrollTop:0,
         classNames:{
 
         }
@@ -63,9 +68,19 @@
       port:{
         type:String,
         default:'b'
+      },
+      maxlength:{
+        type:Number
       }
     },
-    methods:{},
+    methods:{
+      inputFocus(){
+
+      },
+      inputBlur(){
+
+      }
+    },
     mounted(){
 
     }

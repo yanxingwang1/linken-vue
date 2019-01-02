@@ -17,7 +17,7 @@
         </div>
         <div class="item item-2">
           <div class="item-label">里程数<span>：</span></div>
-          <div class="item-content">{{vehicle.mileage==null?'':vehicle.mileage+ ' km'}}</div>
+          <div class="item-content">{{vehicle.mileage==null?'':vehicle.mileage+ ' KM'}}</div>
         </div>
       </div>
     </div>

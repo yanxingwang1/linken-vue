@@ -100,9 +100,13 @@
         let $btn = $(`<span class="wx-popup-button ${btn.isBold ? 'wx-popup-button-bold' : ''}">${btn.title ? btn.title : ''}</span>`)
         $btn.on('click', function () {
           if (btn.callback) {
-            btn.callback()
+            const fnRes = btn.callback()
+            if (fnRes !== false) {
+              hideDialog()
+            }
+          } else {
+            hideDialog()
           }
-          hideDialog()
         })
 
         $buttons.append($btn)
@@ -124,7 +128,35 @@
           $popup.remove()
         }, 400)
       }
-    }
+    },
+    /**
+     * 校验手机号码
+     * @param mobile
+     */
+    checkMobile: function (mobile) {
+      let _mobile = String(mobile);
+      if (_mobile.length === 11 && _mobile.substr(0, 1) === '1' && $.checkNumber(_mobile)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    /**
+     * 验证字符串 是否 全是 数字
+     * @param {Object}
+     */
+    checkNumber: function (num) {
+      let arr = String(num).split('');
+      let flag = true;
+      $.each(arr, function (i, n) {
+        if (!(n === '0' || n === '1' || n === '2' || n === '3' || n === '4' || n === '5' || n === '6' || n === '7' || n === '8' || n === '9')) {
+          flag = false;
+          return false;
+        }
+      });
+      return flag;
+    },
+    showKeyboard: showKeyboard
   })
   //n3SelectScroll
   $.fn.n3SelectScroll = function () {
@@ -187,7 +219,7 @@
     }, _params)
     var $input = this
     $input.attr('readonly', true).on('click', () => {
-      if ($('.wx-number-keyboard-wrap').length){
+      if ($('.wx-number-keyboard-wrap').length) {
         return
       }
       let $numKeyBoardMask = $(`<div class="wx-number-keyboard-mask"></div>`)
@@ -263,7 +295,9 @@
       isChecked: true,
       onBlur: (value) => {
         console.log('licensePlateKeyboard onBlur', value)
-      }
+      },
+      onFocus: () => {
+      },
     }, _params)
     var $input = this
     $input.attr('readonly', true).on('click', () => {
@@ -378,6 +412,7 @@
         $keyboardWrap.addClass('wx-active')
         const className = $input.val().length === 0 ? 'license-provice' : 'license-letter'
         $keyboardWrap.addClass(className)
+        params.onFocus()
       }, 0)
 
       //收起车牌号键盘
@@ -390,5 +425,114 @@
       }
     })
     return $input
+  }
+  function showKeyboard(_params) {
+    const params = Object.assign({
+      type:'license-provice',
+      onBlur() {
+        console.log('onBlur')
+      },
+      onFocus(){
+        console.log('onFocus')
+      },
+      onClick(value){},
+    }, _params)
+    const provices1 = ["京", "津", "沪", "渝", "翼", "豫", "云", "辽", "黑", "湘"]
+    const provices2 = ["皖", "鲁", "新", "苏", "浙", "赣", "鄂", "桂", "甘"]
+    const provices3 = ["晋", "蒙", "陕", "吉", "闵", "贵", "粤"]
+    const provices4 = ["青", "藏", "川", "宁", "琼"]
+    const numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+    const letters1 = ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"]
+    const letters2 = ["A", "S", "D", "F", "G", "H", "J", "K", "L"]
+    const letters3 = ["Z", "X", "C", "V", "B", "N", "M"]
+    let $body = $('body')
+    let $mask = $(`<div class="wx-license-plate-keyboard-mask"></div>`)
+    let $del = $(`<div class="key del" data="del"></div>`)
+    let $keyboardWrap = $(`<div class="wx-license-plate-keyboard-wrap"></div>`)
+    let $keyWrap_provices1 = $(`<div class="key-wrap provice"></div>`)
+    let $keyWrap_provices2 = $(`<div class="key-wrap provice"></div>`)
+    let $keyWrap_provices3 = $(`<div class="key-wrap provice"></div>`)
+    let $keyWrap_provices4 = $(`<div class="key-wrap provice"></div>`)
+    let $keyWrap_numbers = $(`<div class="key-wrap letter"></div>`)
+    let $keyWrap_letters1 = $(`<div class="key-wrap letter"></div>`)
+    let $keyWrap_letters2 = $(`<div class="key-wrap letter"></div>`)
+    let $keyWrap_letters3 = $(`<div class="key-wrap letter"></div>`)
+    provices1.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_provices1.append($key)
+    })
+    provices2.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_provices2.append($key)
+    })
+    provices3.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_provices3.append($key)
+    })
+    provices4.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_provices4.append($key)
+    })
+    numbers.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_numbers.append($key)
+    })
+    letters1.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_letters1.append($key)
+    })
+    letters2.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_letters2.append($key)
+    })
+    letters3.forEach((item, i) => {
+      let $key = $(`<div class="key" data="${item}">${item}</div>`)
+      $keyWrap_letters3.append($key)
+    })
+    $keyboardWrap.append(
+      $keyWrap_provices1,
+      $keyWrap_provices2,
+      $keyWrap_provices3,
+      $keyWrap_provices4,
+      $keyWrap_numbers,
+      $keyWrap_letters1,
+      $keyWrap_letters2,
+      $keyWrap_letters3,
+      $del
+    )
+    //绑定事件
+    $mask.on('touchmove', e => {
+      e.preventDefault()
+    }).on('click', e => {
+      const flag = params.onBlur()
+      if (flag !== false){
+        hideLicenseKeyboard()
+      }
+    })
+    $keyboardWrap.on('touchmove', e => {
+      e.preventDefault()
+    })
+    $keyboardWrap.addClass(params.type)
+    // $keyboardWrap.removeClass('license-letter').addClass('license-provice')
+    $keyboardWrap.find('.key').on('click', (e) => {
+      let $key = $(e.target)
+      let keyvalue = $key.attr('data')
+      console.log('键盘:',keyvalue)
+      params.onClick(keyvalue)
+    })
+    $body.append($mask, $keyboardWrap)
+    setTimeout(() => {
+      $keyboardWrap.addClass('wx-active')
+      params.onFocus()
+    }, 0)
+
+    //收起车牌号键盘
+    function hideLicenseKeyboard() {
+      $keyboardWrap.removeClass('wx-active')
+      setTimeout(() => {
+        $keyboardWrap.remove()
+        $mask.remove()
+      }, 300)
+    }
   }
 }(jQuery))

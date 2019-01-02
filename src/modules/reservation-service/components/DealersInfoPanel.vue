@@ -1,15 +1,14 @@
 <template>
-  <div class="dealers-info-panel">
-    <img src="./../imgs/lincoln-icon@3x.png" alt="" width="10px">
-    <div class="dealers-title">
-      {{dealerInfo.dealerName||'选择经销商'}}
-      <span>*</span>
+  <div class="dealers-info-panel" :class="{'dealers-info-ready':dealerInfo.dealerCode}">
+    <div class="dealers-info-l">
+      <div class="dealers-title">{{dealerInfo.dealerName||'选择经销商'}}<span>*</span>
+      </div>
+      <div class="dealers-address" v-show="dealerInfo.address">
+        {{dealerInfo.address}}
+      </div>
     </div>
-    <div class="dealers-address" v-if="dealerInfo.address">
-      {{dealerInfo.address}}
-    </div>
-    <div class="dealers-phone" @click.stop="phoneHandleClick" :class="{disabled:!dealerInfo.dealerName}">
-      联系经销商
+    <div class="dealers-info-r">
+      <div class="dealers-phone" @click.stop="phoneHandleClick"></div>
     </div>
   </div>
 </template>
@@ -22,10 +21,10 @@
         type: Object
       }
     },
-    methods:{
-      phoneHandleClick(){
-        if (this.dealerInfo.serviceHotline){
-          console.log('打电话',this.dealerInfo.serviceHotline)
+    methods: {
+      phoneHandleClick() {
+        if (this.dealerInfo.serviceHotline) {
+          console.log('打电话', this.dealerInfo.serviceHotline)
           window.location.href = `tel:${this.dealerInfo.serviceHotline}`
         }
       }
@@ -39,44 +38,62 @@
   }
 
   .dealers-info-panel {
-    padding: px(15) 0;
+    padding: px(25) 0;
     margin-bottom: px(10);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     border-top: 1px solid #E2E2E2;
     border-bottom: 1px solid #E2E2E2;
 
-    .dealers-title {
-      font-size: px(18);
-      font-weight: 600;
-      line-height: px(30);
+    .dealers-info-l {
+      width: 100%;
 
-      span {
-        color: red;
+      .dealers-title {
+        font-size: px(18);
+        font-weight: 600;
+        min-height: px(40);
+        line-height: px(40);
+        background: url("./../imgs/lincoln-icon@3x.png") px(10)/px(10) no-repeat;
+        padding-left: px(35);
+
+        span {
+          color: red;
+        }
+      }
+
+      .dealers-address {
+        color: #3E3E3E;
+        font-size: px(12);
+        min-height: px(30);
+        line-height: px(30);
       }
     }
 
-    .dealers-address {
-      color: #3E3E3E;
-      font-size: px(12);
-      line-height: px(30);
+    .dealers-info-r {
+      position: relative;
+      width: px(50);
+      height: px(40);
+      flex: 0 0 auto;
+      margin-right: px(10);
+      background: url("./../imgs/arrow-r2@3x.png") right/px(10) no-repeat;
+
+      .dealers-phone {
+        display: none;
+      }
     }
 
-    .dealers-phone {
-      box-sizing: content-box;
-      padding-right: px(11);
-      width: px(130);
-      height: px(28);
-      line-height: px(28);
-      text-align: center;
-      color: #3E3E3E;
-      border: .5px solid #3E3E3E;
-      margin: px(10) 0;
-      background: url("./../imgs/phone@3x.png") px(106)/px(11) no-repeat;
+    &.dealers-info-ready {
+      .dealers-info-r {
+        background: initial;
 
-      &.disabled {
-        opacity: .4;
+        .dealers-phone {
+          display: block;
+          border-left: 1px solid #E2E2E2;
+          width: 100%;
+          height: px(40);
+          background: url("./../imgs/phone-o@3x.png") 70%/px(20) no-repeat;
+        }
       }
     }
   }

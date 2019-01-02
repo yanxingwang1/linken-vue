@@ -52,9 +52,11 @@
       </div>
       <div class="step-detail" >
         <div class="info">
-          <show-tip title="车型名称：" :detail="detailInfo.detailDto.carModelName"></show-tip>
+          <show-tip title="车型名称：" :detail="detailInfo.detailDto.carModelName==null||detailInfo.detailDto.carModelName==' '||detailInfo.detailDto.carModelName==''?detailInfo.detailDto.vin:detailInfo.detailDto.carModelName"></show-tip>
           <show-tip title="车牌号：" :detail="detailInfo.detailDto.plateNumber"></show-tip>
-          <show-tip title="当前里程数：" :detail="detailInfo.detailDto.currMileage?(detailInfo.detailDto.currMileage+'km'):''"></show-tip>
+          <show-tip v-show="step==1||step==4" title="当前里程数：" :detail="detailInfo.detailDto.currMileage?(detailInfo.detailDto.currMileage+' KM'):''"></show-tip>
+          <show-tip v-show="step==2" title="进厂里程数：" :detail="detailInfo.detailDto.enterFactoryMileage?(detailInfo.detailDto.enterFactoryMileage+' KM'):''"></show-tip>
+          <show-tip v-show="step==3" title="出厂里程数：" :detail="detailInfo.detailDto.outFactoryMileage?(detailInfo.detailDto.outFactoryMileage+' KM'):''"></show-tip>
           <show-tip v-show="detailInfo.detailDto.serviceType==1" title="代步车：" :detail="detailInfo.detailDto.scootor==0?'申请':'不申请'"></show-tip>
         </div>
         <div class="div-border"></div>
@@ -67,16 +69,16 @@
           <show-tip v-show="step==4" title="取消服务时间：" :detail="detailInfo.detailDto.cancleTime"></show-tip>
           <show-tip v-show="step==2||step==3" title="服务工程师：" :detail="detailInfo.detailDto.serviceEnginnerName"></show-tip>
           <show-tip v-show="step==2" title="预计交车时间：" :detail="detailInfo.detailDto.expDeliverTime"></show-tip>
-          <show-tip v-show="step==3" title="实际交车时间：" :detail="detailInfo.detailDto.serviceFinshTime"></show-tip>
+          <show-tip v-show="step==3" title="实际交车时间：" :detail="detailInfo.detailDto.endDeliverTime"></show-tip>
           <show-tip title="备注：" :detail="detailInfo.detailDto.remark"></show-tip>
         </div>
         <div class="div-border" v-show='step!=1&&step!=4'></div>
         <div class="info" v-show='step!=1&&step!=4'>
           <incoming-state title="等待维修" :date="detailInfo.detailDto.repairWaitTime" :border="true" :status="detailInfo.detailDto.step==1?'2':detailInfo.detailDto.step>1?'3':'1'"></incoming-state>
-          <incoming-state title="正在维修" :date="detailInfo.detailDto.repairingTime" :border="true" :status="detailInfo.detailDto.step==2?'2':detailInfo.detailDto.step>2?'3':'1'"></incoming-state>
-          <incoming-state title="正在质检" :date="detailInfo.detailDto.qualityTime" :border="true" :status="detailInfo.detailDto.step==3?'2':detailInfo.detailDto.step>3?'3':'1'"></incoming-state>
-          <incoming-state title="正在洗车" :date="detailInfo.detailDto.washTime" :border="true" :status="detailInfo.detailDto.step==4?'2':detailInfo.detailDto.step>4?'3':'1'"></incoming-state>
-          <incoming-state title="交车准备" :date="detailInfo.detailDto.interchangeTime" :border="false" :status="detailInfo.detailDto.step==5?'3':'1'"></incoming-state>
+          <incoming-state title="正在维修" :date="detailInfo.detailDto.repairingTime" :border="true" :status="detailInfo.detailDto.step==2?'2':detailInfo.detailDto.step>2?((detailInfo.detailDto.qualityTime&&detailInfo.detailDto.qualityTime!=' ')||detailInfo.detailDto.ifEws==0?'3':'5'):'1'"></incoming-state>
+          <incoming-state v-show="detailInfo.detailDto.ifEws==1" title="正在质检" :date="detailInfo.detailDto.qualityTime&&detailInfo.detailDto.qualityTime!=' '?detailInfo.detailDto.qualityTime:detailInfo.detailDto.step>2?'未选择该服务':''" :border="true" :status="detailInfo.detailDto.step==3?'2':detailInfo.detailDto.step>3?(detailInfo.detailDto.qualityTime&&detailInfo.detailDto.qualityTime!=' '?(detailInfo.detailDto.washTime&&detailInfo.detailDto.washTime!=' '?'3':'5'):'4'):'1'"></incoming-state>
+          <incoming-state v-show="detailInfo.detailDto.ifEws==1" title="正在洗车" :date="detailInfo.detailDto.washTime&&detailInfo.detailDto.washTime!=' '?detailInfo.detailDto.washTime:detailInfo.detailDto.step>3?'未选择该服务':''" :border="true" :status="detailInfo.detailDto.step==4?'2':detailInfo.detailDto.step>4?(detailInfo.detailDto.washTime&&detailInfo.detailDto.washTime!=' '?'3':'4'):'1'"></incoming-state>
+          <incoming-state title="交车准备" :date="detailInfo.detailDto.interchangeTime" :border="false" :status="detailInfo.detailDto.step==5?(detailInfo.status==10661004?'3':'2'):'1'"></incoming-state>
         </div>
       </div>
     </div>
@@ -136,6 +138,11 @@
       init() {
         this.http.get('saleDetail',{id:this.orderId},res=>{
           this.detailInfo = res.data;
+          // this.detailInfo.detailDto.ifEws = 1;
+          // this.detailInfo.detailDto.step = 5; 
+          // this.detailInfo.detailDto.qualityTime = '2018年12月11日 17:03';
+          // this.detailInfo.detailDto.washTime = '2018年12月11日 17:03';
+
           if(res.data.ass){
             this.commentList = res.data.ass;
           }
@@ -296,6 +303,7 @@
       padding-bottom:20px;
     }
     .service-comment {
+      padding-bottom:30px;
       .border-height {
         padding-top:10px;
         border-bottom:10px solid #F5F5F5;

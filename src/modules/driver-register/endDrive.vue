@@ -72,9 +72,9 @@ export default {
                         }else if(this.driveInfo.planSeq == '3'){
                             this.driveInfo.planSeqName = '路线三：';
                         }
-                        this.driveInfo.startMileagekm = this.driveInfo.startMileage + ' km';
+                        this.driveInfo.startMileagekm = this.driveInfo.startMileage + ' KM';
                         if(this.driveInfo.endMileage){
-                            this.driveInfo.endMileagekm = this.driveInfo.endMileage + ' km';
+                            this.driveInfo.endMileagekm = this.driveInfo.endMileage + ' KM';
                         }
                     }
                 }else{
@@ -145,7 +145,7 @@ export default {
                 prompt:'请确认结束试驾',
                 yestext:'确认',
                 notext:'取消',
-                placeholder:'请记录结束里程数(km)',
+                placeholder:'请记录结束里程数',
                 yesfn:function () {
                     if(Number($('.jq-alert input[type=text]').val())< Number(_this.driveInfo.startMileage)||Number($('.jq-alert input[type=text]').val())== Number(_this.driveInfo.startMileage) ){
                         Toast({
@@ -164,7 +164,7 @@ export default {
                             if(res.data){
                                 _this.driveInfo.endTime=_this.formatDate(res.data.endTime);
                                 _this.driveInfo.endMileage=res.data.endMileage;
-                                _this.driveInfo.endMileagekm = res.data.endMileage + ' km';
+                                _this.driveInfo.endMileagekm = res.data.endMileage + ' KM';
                                 setTimeout(()=>{
                                     // alert("生成二维码跳转")
                                     _this.$router.push("/qrCode?qrCodeUrl="+encodeURIComponent(res.data.qrCodeUrl));
@@ -178,7 +178,8 @@ export default {
                     })
                 },
                 nofn:function () {
-                    jqtoast('你点击了取消');
+                    // $("body").scrollTop(0);
+                    $(document).scrollTop(9999);
                 }
             })
             $('.jq-alert  input[type=text]').attr('pattern','[0-9]*')

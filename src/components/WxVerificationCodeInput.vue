@@ -6,7 +6,7 @@
     <div class="wx-content wx-validation" :style="{ width: label?'':'100%'}">
       <input
         class="wx-input"
-        type="text"
+        type="tel"
         :placeholder="placeholder"
         :value="value"
         @input="$emit('input', $event.target.value)"
@@ -59,6 +59,10 @@
     },
     methods: {
       validationBtnHandleClick() {
+        if (!$.checkMobile(this.phone)){
+          $.toast('请输入正确的手机号码')
+          return
+        }
         this.getIdfyCode()
         this.btnDisabled = true
         let t = 60

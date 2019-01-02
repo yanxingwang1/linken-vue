@@ -19,8 +19,9 @@
                v-for="(item,i) in calendarDays"
                @click="calendarDaysItemHandleClick(item,i)"
           >
+            <!-- today: item.isToday, -->
             <div
-              :class="{ today: item.isToday, active: item.isActive, disabled: item.isDisabled}"
+              :class="{active: item.isActive, disabled: item.isDisabled}"
             >{{`${item.day}`}}
             </div>
           </div>
@@ -160,7 +161,7 @@
         calendarDays: [],
         //上午:true or 下午：false
         mornAfter: true,
-        hourList: hourListArr.concat()
+        hourList: hourListArr.concat([])
       }
     },
     props: {
@@ -236,6 +237,7 @@
         this.testHttp(this.dealerCode, `${item.year}-${item.month}-${item.day}`)
           .then((arr) => {
             console.log(arr)
+            this.hourList.forEach(item => {item.isDisabled = false})
             arr.forEach((item, i) => {
               if (Number(item.amount) === 0) {//时间段不可选
                 this.hourList.forEach((item2, j) => {
@@ -404,7 +406,7 @@
 
     .hour-list {
       position: relative;
-      height: px(140);
+      height: px(180);
       overflow: auto;
       color: #686868;
       font-size: px(12);
@@ -425,7 +427,7 @@
           align-self: flex-start;
           width: px(60);
           height: px(20);
-          margin: px(5) 0;
+          margin: px(8) 0;
           line-height: px(20);
           border-radius: px(2);
           background-color: #F7F7F7;
@@ -444,9 +446,9 @@
     }
 
     .btn-wrap {
-      height: px(106);
+      height: px(66);
       display: flex;
-      align-items: center;
+      align-items: flex-start;
     }
 
   }

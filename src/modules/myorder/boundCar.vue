@@ -22,7 +22,7 @@
                 </span>
             </div>
             <div class="phone">
-                <wn-input v-if="newCustomer" label="手机号码" placeholder='请输入您的手机号码' :maxlength='11' test="phone" @change="inputchange"></wn-input>
+                <wn-input v-if="newCustomer" type="tel" label="手机号码" placeholder='请输入您的手机号码' :maxlength='11' test="phone" @change="inputchange"></wn-input>
                 <div style="margin-top: 20px;color:#3E3E3E;" v-else>手机号码<span class="red">*</span><span class="phone-number">{{userData.phone}}</span></div>
             </div>
             <div v-if="newCustomer" class="name vercode" v-show="newCustomer">
@@ -222,6 +222,7 @@
         },
         onblur(){
             $("body").scrollTop(0);
+            // $(document).scrollTop(9999)
             if(this.userData.vin){
                 if(this.userData.vin.length!=17||!/^[0-9a-zA-Z]+$/.test(this.userData.vin)){
                     this.vinpass = false;
@@ -237,11 +238,11 @@
         },
         submitData(){
             var _this = this;
-            Indicator.open({
-                text: '提交中',
-                spinnerType: 'triple-bounce'
-            });
             if(this.canSubmit&&this.registerAgree&&this.hasRead){
+                Indicator.open({
+                    text: '提交中',
+                    spinnerType: 'triple-bounce'
+                });
                 this.http.post('saveTieCar',this.userData,res=>{
                     Indicator.close();
                     if(res.resultCode=='1') {

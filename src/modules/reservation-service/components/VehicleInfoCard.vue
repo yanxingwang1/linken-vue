@@ -8,12 +8,14 @@
           <div>{{vechinfo.vin}}</div>
         </div>
       </div>
-      <div class="photo">
+      <div class="photo" :class="{'has-photo': vechinfo.picUrl}">
         <img :src="vechinfo.picUrl||require('./../imgs/vehicle-no@2x.png')">
       </div>
     </div>
     <div class="wx-form">
       <wx-licen-select
+        :required="true"
+        class="lk-vechinfo-plate-number"
         port="c"
         v-model="vechinfo.plateNumber"
         @inputPlateBlur="inputPlateBlur"
@@ -52,6 +54,9 @@
           license: value
         })
       }
+    },
+    mounted(){
+      $('.lk-vechinfo-plate-number .wx-label').css('font-size','0.8rem')
     }
   }
 </script>
@@ -88,10 +93,16 @@
       }
 
       .photo {
+        width: px(140);
+        height: px(78);
+        overflow: hidden;
         img {
           width: px(140);
           height: px(78);
           object-fit: cover;
+        }
+        &.has-photo img{
+          transform: scale(1.3) translateX(px(13));
         }
       }
     }
@@ -99,7 +110,6 @@
     .wx-form {
       padding: px(20);
       background-color: #ffffff;
-
       .mileage-label {
         font-size: px(16);
         line-height: px(40);

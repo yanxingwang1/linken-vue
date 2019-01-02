@@ -41,7 +41,8 @@
     },
     computed: {
       inputValue(){
-        return this.value?new Date(Number(this.value)).Format('yyyy年MM月dd日 HH:mm'):''
+        return this.value?moment(new Date(Number(this.value))).format('YYYY年MM月DD日  星期dd  HH:mm'):''
+        // return this.value?new Date(Number(this.value)).Format('yyyy年MM月dd日  HH:mm'):''
       }
     },
     data() {

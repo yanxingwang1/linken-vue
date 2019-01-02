@@ -3,7 +3,7 @@
         <div class="label">
             <span class="label1">{{label}}<span class="red">*</span></span>
            
-        </div><input type="text" :placeholder="placeholder" @blur="onblur" :maxlength="maxlength" :class="unpass?'error1':''" v-model="value"  >
+        </div><input :type="type" :placeholder="placeholder" @blur="onblur" :maxlength="maxlength" :class="unpass?'error1':''" v-model="value"  >
         <!-- <div  v-show="unpass" class="error" >抱歉，你填写的{{label}}错误</div> -->
     </div>
 
@@ -24,6 +24,10 @@ import { Toast } from "mint-ui";
             label:String,
             test:String,
             placeholder:[String,Number],
+            type:{
+                type:String,
+                default:'text'
+            },
             onBlur:Function,
             width:{
                 type:Number,

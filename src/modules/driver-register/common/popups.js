@@ -31,7 +31,7 @@ function jqalert(param) {
   if (prompt) {
     htm += '<div class="content"><div class="prompt">';
     htm += '<p class="prompt-content">' + prompt + '</p>';
-    htm += '<input type="text" placeholder="'+placeholder+'" class="prompt-text"></div>';
+    htm += '<input type="text" placeholder="'+placeholder+'" class="prompt-text">   KM</div>';
     htm += '</div>';
   } else {
     htm += '<div class="content">' + content + '</div>';
@@ -74,6 +74,7 @@ function jqalert(param) {
   });
   if (click_bg === true) {
     $(document).delegate('#jq-alert', 'click', function () {
+      $(document).scrollTop(9999);
       setTimeout(function () {
         al.remove();
       }, 300);

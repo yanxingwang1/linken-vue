@@ -703,7 +703,7 @@ export default {
             var _this=this;
 
             if(this.firstclick){//开始试驾状态
-                // MessageBox.prompt('请确认开始试驾','提示',{inputType:'number',inputPlaceholder:'请记录开始里程数(km)',confirmButtonText:'确认'}).then(({ value, action }) => {
+                // MessageBox.prompt('请确认开始试驾','提示',{inputType:'number',inputPlaceholder:'请记录开始里程数(KM)',confirmButtonText:'确认'}).then(({ value, action }) => {
                 //     if(parseFloat(value).toString() == "NaN") {
                 //
                 //         Toast({
@@ -727,7 +727,7 @@ export default {
                 //             // _this.starttime=_this.formatDate(res.data.startTime);
                 //             _this.starttime=res.data.startTime
                 //
-                //             _this.startMileage=res.data.startMileage+' km';
+                //             _this.startMileage=res.data.startMileage+' KM';
                 //             //   状态切换为结束试驾
                 //                 _this.firstclick=false;
                 //
@@ -751,7 +751,7 @@ export default {
                 prompt:'请确认开始试驾',
                 yestext:'确认',
                 notext:'取消',
-                placeholder:'请记录开始里程数(km)',
+                placeholder:'请记录开始里程数',
                 yesfn:function () {
 
                             _this.parmasprop['startMileage']=$('.jq-alert input[type=text]').val()
@@ -761,7 +761,7 @@ export default {
                                     if(res.data){
                                     // _this.starttime=_this.formatDate(res.data.startTime);
                                     _this.starttime=res.data.startTime
-                                    _this.startMileage=res.data.startMileage+' km';
+                                    _this.startMileage=res.data.startMileage+' KM';
                                     //   状态切换为结束试驾
                                         _this.firstclick=false;
                         
@@ -793,7 +793,7 @@ export default {
 
 
             }else{//结束试驾
-                // MessageBox.prompt('请确认结束试驾','提示',{inputType:'number',inputPlaceholder:'请记录结束里程数(km)',confirmButtonText:'确认'}).then(({ value, action }) => {
+                // MessageBox.prompt('请确认结束试驾','提示',{inputType:'number',inputPlaceholder:'请记录结束里程数(KM)',confirmButtonText:'确认'}).then(({ value, action }) => {
                 //     if(parseFloat(value).toString() == "NaN") {
                 //         Toast({
                 //             message: '请输入数字',
@@ -815,7 +815,7 @@ export default {
                 //             if(res.data){
                 //             _this.endtime=_this.formatDate(res.data.endTime);
                 //             //  _this.endtime=res.data.endTime;
-                //             _this.endMileage=res.data.endMileage+' km';
+                //             _this.endMileage=res.data.endMileage+' KM';
                 //             // debugger
                 //                 setTimeout(()=>{
                 //                     // alert("生成二维码跳转")
@@ -836,7 +836,7 @@ export default {
                 prompt:'请确认结束试驾',
                 yestext:'确认',
                 notext:'取消',
-                placeholder:'请记录结束里程数(km)',
+                placeholder:'请记录结束里程数',
                 yesfn:function () {
                         if(Number($('.jq-alert input[type=text]').val())< Number(_this.parmasprop['startMileage'])||Number($('.jq-alert input[type=text]').val())== Number(_this.parmasprop['startMileage']) ){
                                 Toast({
@@ -850,7 +850,7 @@ export default {
                                 if(res.data){
                                 _this.endtime=_this.formatDate(res.data.endTime);
                                 //  _this.endtime=res.data.endTime;
-                                _this.endMileage=res.data.endMileage+' km';
+                                _this.endMileage=res.data.endMileage+' KM';
                                     setTimeout(()=>{
                                         _this.$router.push("/qrCode?qrCodeUrl="+encodeURIComponent(res.data.qrCodeUrl));
                                     },1500)
@@ -868,7 +868,7 @@ export default {
                 
                 },
                 nofn:function () {
-                  jqtoast('你点击了取消');
+                //   jqtoast('你点击了取消');
                 }
               })
                $('.jq-alert  input[type=text]').attr('pattern','[0-9]*')

@@ -50,7 +50,8 @@
         </div>
       </div>
       <div class="wx-form">
-        <wx-input label="联系电话" v-model="appointmentPhone" :required="true" port="c"></wx-input>
+        <wx-input label="联系电话" type="tel" v-model="appointmentPhone" :maxlength="11" :required="true"
+                  port="c"></wx-input>
         <wx-verification-code-input
           v-if="appointmentPhone != userPhone"
           v-model="verificationCode"
@@ -58,7 +59,7 @@
           label="短信验证"
           port="c"
         ></wx-verification-code-input>
-        <wx-input type="textarea" v-model="remark" placeholder="备注信息" port="c"></wx-input>
+        <wx-input type="textarea" v-model="remark" :maxlength="50" placeholder="备注信息" port="c"></wx-input>
       </div>
       <div class="btn-wrap">
         <wx-button :disabled="checkRequiredParams()" @click.native="baocunyuyuedan">服务预约</wx-button>
@@ -136,6 +137,7 @@
         dealerName: '',  //经销商名称
         remark: '',  //备注
         /**保存参数 E */
+        addVin: '',//新绑车的VIN 绑车成功后显示
       }
     },
     computed: {
@@ -187,6 +189,10 @@
       window.self = this
       //查询用户绑车信息
       this.getBaseInfo()
+      //键盘bug
+      $('.reservation-info-wrap>.wx-form .wx-input').on('blur', () => {
+        $(document).scrollTop(9999)
+      })
     },
     methods: {
       swipeHandelChange(index) {
@@ -203,6 +209,9 @@
             serviceHotline: salesHotline,
             dealerName: storeName,
           }
+          this.$nextTick(() => {
+            $(document).scrollTop(9999)
+          })//返回上次下滑高度)
           // this.swipeShow = true
         } else {
           //创建预约单
@@ -224,9 +233,22 @@
             const id = this.$route.query.id
             this.afterSaledetail(id)
           }
+          if (sessionStorage.getItem('shouhouyuyue')) {
+            this.reloadCache()
+          }
           // else {
           // this.swipeShow = true
           // }
+        }
+        if (this.addVin) {
+          let vechinfo = this.vechinfos.find((item) => {
+            return item.vin === this.addVin
+          })
+          const index = this.vechinfos.indexOf(vechinfo)
+          this.$nextTick(() => {
+            this.$refs.mySwiper.slideTo(index + 1, 0)
+          })
+          this.addVin = ''
         }
       },
       //本地化存储信息
@@ -254,7 +276,8 @@
         sessionStorage.setItem('shouhouyuyue', JSON.stringify(data))
       },
       reloadCache() {
-        const data = JSON.parse(sessionStorage.getItem('shouhouyuyue'))
+        const cacheStr = sessionStorage.getItem('shouhouyuyue')
+        const data = JSON.parse(cacheStr)
         $.each(data, (k, v) => {
           this[k] = v
         })
@@ -292,8 +315,12 @@
       addVehicleBtnHandleClick() {
         let self = this
         $.dialog({
-          title: '请输入VIN码添加车辆',
-          html: `<input id="vin-input" placeholder="请输入17位VIN码" type="email" maxlength="17"/>`,
+          title: '添加车辆',
+          html: `
+          <div style="margin-top: 15px;">
+            <input id="vin-input" placeholder="请输入17位VIN码" type="email" maxlength="17"/>
+          </div>
+          `,
           buttons: [
             {title: '取消'},
             {
@@ -301,11 +328,12 @@
               isBold: true,
               callback() {
                 let vin = $('#vin-input').val()
-                if (vin.length !== 17) {
-                  $.alert('该VIN码位数输入有误，请重新输入')
-                  return
-                } else {
+                const checkVin = /^[0-9a-zA-Z]+$/.test(vin)
+                if (checkVin && vin.length === 17) {
                   self.saveTieCar(vin)
+                } else {
+                  $.toast('该VIN码位数输入有误，请重新输入')
+                  return false
                 }
               }
             }
@@ -338,7 +366,8 @@
             const data = res.data
             if (data == 'ok') {
               $.toast('车辆绑定成功')
-              this.getBaseInfo()
+              this.addVin = vin
+              this.getBaseInfo() //之后要显示到新绑车页面
             } else {
               console.log('saveTieCar error')
             }
@@ -361,8 +390,13 @@
             const data = res.data
             if (data) {
               //更新车牌成功
-              this.saveCache()
-              this.getBaseInfo()
+              //this.saveCache()
+              sessionStorage.removeItem('shouhouyuyue')
+              setTimeout(()=>{
+                 this.getBaseInfo()
+              },1000)
+            
+             
             }
           } else {
             console.log('updateTieCar error')
@@ -391,8 +425,8 @@
         })
       },
       checkRequiredParams() {
-        //里程数 维修类型 经销商信息 预约时间 电话
-        return !(Number(this.currMileage) && this.serviceType && this.dealersInfo.dealerCode && this.testTime && this.appointmentPhone)
+        //车牌 里程数 维修类型 经销商信息 预约时间 电话
+        return !((this.plateNumber && this.plateNumber.length >= 7) && Number(this.currMileage) && this.serviceType && this.dealersInfo.dealerCode && this.testTime && this.appointmentPhone)
       },
       baocunyuyuedan() {
         let self = this
@@ -413,7 +447,7 @@
           serviceType: this.serviceType,    //服务类型（1维修服务、2保养服务、3检查服务、4其他服务）
           sex: this.sex,  //'性别（0:男；1：女）
           vin: this.vin,  //vin
-          scootor: this.serviceType == 1 ? (this.scootor ? 0 : 1) : '',//是否代步车
+          scootor: this.serviceType == 1 ? (this.scootor ? 0 : 1) : 1,//是否代步车
           id: this.serviceId || '',
           //以下字段传空
           outFactoryMileage: '',  //出厂里程数
@@ -454,7 +488,7 @@
           <div class="server-confirm-panel">
             <div>
               <div>车辆：</div>
-              <div>${params.plateNumber}</div>
+              <div>${params.plateNumber ? (params.plateNumber.length > 1 ? params.plateNumber : '') : ''}</div>
             </div>
             <div>
               <div>服务类型：</div>
@@ -478,7 +512,7 @@
             </div>
             <div>
               <div>留言：</div>
-              <div>${params.remark ? params.remark : ''}</div>
+              <div>${params.remark || ''}</div>
             </div>
           </div>
           `,
@@ -486,6 +520,12 @@
             title: '确认提交',
             callback() {
               console.log('点击确认')
+              if (self.appointmentPhone !== self.userPhone) {
+                if (!self.verificationCode) {
+                  $.toast('请输入短信验证码')
+                  return
+                }
+              }
               Indicator.open({
                 text: '提交中',
                 spinnerType: 'triple-bounce'
@@ -512,7 +552,25 @@
               }, 2500)
             }
           } else {
-            $.toast(res.errMsg)
+            if (res.errMsg.indexOf('您在该经销商有售后预约未完成') !== -1) {
+              const id = res.errMsg.split(' ')[1]
+              $.dialog({
+                title: '提示',
+                message: '您在该经销商有售后预约未完成',
+                buttons: [{
+                  title: '查看未完成的预约',
+                  isBold: true,
+                  callback() {
+                    console.log('查看未完成的预约')
+                    document.location.href = location.origin + `/wchat/mydetail1?id=${id}&appointmentType=3&agentlist=reservation`
+                    return false
+                  }
+                }]
+              })
+            } else {
+              $.toast(res.errMsg)
+            }
+
           }
         })
       },

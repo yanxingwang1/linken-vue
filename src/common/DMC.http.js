@@ -17,10 +17,10 @@ class Http {
     this.responseFormat = true;
     this.ENV = { 'local': this.debugger };
     this.api = {};
+ 
+    this.apiConfig = { "domainUrl": "https://lincoln-mp.yonyouauto.com/qy/", 'contentType': 'application/json;charset=utf-8', "header": {} };
 
-    this.apiConfig = { "domainUrl": "https://lincoln-mp-dev.yonyouauto.com/qy/", 'contentType': 'application/json;charset=utf-8', "header": {} };
-
-    // 139.219.11.87:9036
+    //139.219.11.87:9036
     //http://139.219.11.87:9031//本地测试
     // https://lincoln-mp-dev.yonyouauto.com/qy/
     // http://lincoln-mp-test.yonyouauto.com/qy/

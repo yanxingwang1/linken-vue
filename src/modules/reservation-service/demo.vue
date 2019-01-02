@@ -1,7 +1,7 @@
 <template>
   <div class="index">
     <div class="wx-form">
-      <wx-licen-select v-model="license"></wx-licen-select>
+      <!--<wx-licen-select v-model="license"></wx-licen-select>-->
     </div>
 
     <div class="index-ft">
@@ -9,7 +9,7 @@
         @click.native="testHandleClick"
       >测试按钮
       </wx-button>
-      <input id="testinput" style="width: 100%;height: 40px;margin: 20px 0;border: solid 1px;" type="text">
+      <!--<input id="testinput" style="width: 100%;height: 40px;margin: 20px 0;border: solid 1px;" type="text">-->
     </div>
 
   </div>
@@ -46,10 +46,7 @@
     methods: {
       testHandleClick() {
         console.log('testHandleClick')
-        $.alert({
-          title: '提示',
-          content: '哈哈',
-        })
+
       },
       inputTestClick() {
         console.log(1)
