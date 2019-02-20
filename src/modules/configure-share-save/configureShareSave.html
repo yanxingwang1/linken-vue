@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no,user-scalable=no, minimum-scale=1, maximum-scale=1,viewport-fit=cover">
+  <meta name="format-detection" content="telephone=yes"/>
+  <link rel="icon" href="data:;base64,=">
+  <!-- <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script> -->
+  <title>LINCOLN</title>
+  <script>
+    // applicationCache.addEventListener("updateready",function(){
+    //   applicationCache.swapCache();      // 手工更新本地缓存
+    //   location.reload();    //重新加载页面页面
+    // },true);    
+    var start_time = (new Date()).getTime();
+    var end_time = "";
+    console.log('请求页面时间：', start_time, 'ms')
+
+  </script>
+  <style lang="sass" scoped>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+    body {
+       padding-bottom: constant(safe-area-inset-bottom);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="configureShareSave" v-cloak></div>
+</body>
+
+<!-- <script src="https://libs.baidu.com/jquery/1.9.0/jquery.js"></script> -->
+</html>

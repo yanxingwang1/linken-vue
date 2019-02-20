@@ -140,6 +140,7 @@
           }
         })
         $('#mileage-input').numberKeyBorad({
+          maxSize:8,
           isMask: false
         })
         $('#mileage-input').trigger('click')

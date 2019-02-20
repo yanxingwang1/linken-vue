@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <search></search> -->
-    <div style="position: fixed;top: 0;left: 0;width: 100%;background: white;">
+    <div style="position: fixed;top: 0;left: 0;width: 100%;background: white;z-index: 999;">
       <div style="width:100%;height:48px;background:#f8f8f8;padding:10px 0;">
         <!-- <group title="1234"> -->
           <x-input v-model="queryParam.name" style="width:64%;float:left;background:white;margin-left:4%;height: 28px;box-shadow: 0 0 3px 0 rgba(0,0,0,0.10);border-radius: 3px;" @on-blur="queryList()" placeholder="搜索">

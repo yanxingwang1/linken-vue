@@ -85,6 +85,7 @@
     watch: {
       value(value) {
         console.log('props value', value)
+        this.licenseValue = value
       },
       licenseValue(value) {
         console.log('licenseValue', value)

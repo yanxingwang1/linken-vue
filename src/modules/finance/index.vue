@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <search></search> -->
-    <div style="position: fixed;top: 0;left: 0;width: 100%;background: white;">
+    <div style="position: fixed;top: 0;left: 0;width: 100%;background: white;z-index: 999;">
       <div style="height:43.5px;line-height:43.5px;font-size:16px;">
         <div class="tag-choose-style" @click="changeStatus(1)">
           <span :class="{'choose-select-style':chooseStatus==1}">已支付</span>

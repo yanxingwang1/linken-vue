@@ -1,6 +1,7 @@
 
 import $ from 'jquery';
 import Helper from './helper';
+import {wechatConfigOpenId} from '../config/variable'
 
 /**
  * 微信相关接口方法调用
@@ -48,14 +49,12 @@ class WxJSHandler {
                 str = str.substring(0, str.length - 1);
                 signature = Helper.hexCode(str);
                 wx.config({
-                    debug: true,
-                    // appId: 'wxb85ed633e428bafc', // Required, the only identification of Official account.//测试
-                    appId: 'wx235b2abcc8c160dc', //UAT
-                    // appId: 'wx77d29b0a35fdcb33',//生产
+                    debug: false,
+                    appId: wechatConfigOpenId.appId, 
                     timestamp: timestamp, // Required, generate a signed timestamp
                     nonceStr: nonceStr, // Required, generate a signed nonceStr
                     signature: signature,// Required, signature. See Appendix 1
-                    jsApiList: ['checkJsApi','chooseImage','uploadImage','previewImage','closeWindow','onHistoryBack'] // Required, required JA interface list, all JS interface list, see Appendix 2
+                    jsApiList: ['checkJsApi','chooseImage','uploadImage','previewImage','closeWindow','onHistoryBack','hideMenuItems'] // Required, required JA interface list, all JS interface list, see Appendix 2
                 });
                  wx.ready(function() {
                         if (typeof callback === 'function') {
@@ -114,22 +113,38 @@ class WxJSHandler {
             });
         });
     }
-        // 关闭当前页面
-        closeWindow1(){
-            return new Promise(function(resolve, reject) {
-                wx.closeWindow();
-                resolve();
-            })
-        }
+    // 关闭当前页面
+    closeWindow1(){
+        return new Promise(function(resolve, reject) {
+            wx.closeWindow();
+            resolve();
+        })
+    }
 
-        onHistoryBack(url) {
-            // debugger
-            return new Promise((resolve, reject) => {
-                wx.onHistoryBack(function(){
-                    return confirm('确定要放弃当前页面，请填写完整姓名离开？')
-                });
+    onHistoryBack(url) {
+        // debugger
+        return new Promise((resolve, reject) => {
+            wx.onHistoryBack(function(){
+                return confirm('确定要放弃当前页面，请填写完整姓名离开？')
             });
-        }
+        });
+    }
+    // 关闭分享按钮
+    hideOptionMenuShare(){
+        return new Promise(function(resolve, reject) {
+
+            wx.hideMenuItems({
+                menuList: [
+                    "menuItem:share:appMessage",
+                    "menuItem:share:timeline",
+                    "menuItem:share:qq",
+                    "menuItem:share:QZone"
+                ]
+            });
+
+            resolve();
+        })
+    }
  
    
 

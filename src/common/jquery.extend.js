@@ -253,7 +253,7 @@
         let keyvalue = $key.attr('data')
         let inputValue = $input.val()
         if (keyvalue !== 'del') {
-          if (params.maxSize && inputValue.length > params.maxSize) {
+          if (params.maxSize && inputValue.length >= params.maxSize) {
             console.log(inputValue.length, params.maxSize)
           } else {
             $input.val(`${inputValue}${keyvalue}`)

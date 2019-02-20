@@ -1,9 +1,15 @@
-// 用户直接进入通过授权获取openid查看是否关注
-//nginx需要配置反向代理
+// 用户直接进入通过授权获取openid
 import $ from 'jquery';
 import util from './DMC.util.js'
+import axiox from 'axios';
 import {wechatConfigOpenId} from '../config/variable'
-
+// 使用
+// jssdk.wxReady().then(value=>{
+//     jssdk.wxReady(value).then((res)=>{
+//         this.openid=res.openid;
+//         this.subscribe=res.subscribe;
+//     })
+//   })
 
 /**
  * 微信相关接口方法调用
@@ -12,20 +18,22 @@ class WxJSHandler {
     constructor() {
         // this.init();
     }
-    async code(salesCaseID) {
+    init() {
 
        return new Promise((resolve, reject) => {
         let  
         //公众号的唯一标识
         AppId=wechatConfigOpenId.appId,
         //授权后重定向的回调链接地址(填当前页)
-        GetCodes= wechatConfigOpenId.getCodes,
+         GetCodes="http://lincoln-mp-test.yonyouauto.com/modules/configureShareSave.html",
+        // GetCodes= "https://lincoln-mp-dev.yonyouauto.com/modules/configureShareSave.html",
+        // GetCodes: "https%3a%2f%2flincoln-mp-dev.yonyouauto.com%2fmodules%2fconfigureShareSave.html",
         //返回类型，请填写code
         Response_type= "code",
         //应用授权作用域，snsapi_base （不弹出授权页面，直接跳转，只能获取用户openid）
         Scope= "snsapi_base",
         //重定向后会带上state参数，开发者可以填写a-zA-Z0-9的参数值，最多128字节
-        State= salesCaseID,
+        State= "test",
         //必须带此参数
         Wechat_Redirect= "#wechat_redirect",
         BaseUrl= "https://open.weixin.qq.com/connect/oauth2/authorize?",
@@ -50,39 +58,41 @@ class WxJSHandler {
 
     }
     
-    async openid(code){
-        
+
+    wxReady() {
         return new Promise((resolve, reject) => {
-        let AppId=wechatConfigOpenId.appId,
-        Secret=wechatConfigOpenId.secret;
-        var url2=`/weixin/sns/oauth2/access_token?appid=${AppId}&secret=${Secret}&code=${code}&grant_type=authorization_code`
-            $.ajax({
-                    url:url2,
-                    type: 'get',
-                    // dataType: 'jsonp',  // 请求方式为jsonp
-                    // jsonp: "callback",
-                    // jsonpCallback: 'successCallback',    // 自定义回调函数名 
-                    success: function (response) {
-                        var response=JSON.parse(response)
-                        if(response.openid){
-                            resolve(response.openid)
-                        
-                        }else{
-                            resolve(response.errmsg)
+            this.init().then(code=>{
+               let AppId= wechatConfigOpenId.appId,
+                Secret= wechatConfigOpenId.secret;
+                var url2=`/weixin/sns/oauth2/access_token?appid=${AppId}&secret=${Secret}&code=${code}&grant_type=authorization_code`
+                $.ajax({
+                        url:url2,
+                        type: 'get',
+                        // dataType: 'jsonp',  // 请求方式为jsonp
+                        // jsonp: "callback",
+                        // jsonpCallback: 'successCallback',    // 自定义回调函数名 
+                        success: function (response) {
+                            var response=JSON.parse(response)
+                            if(response.openid){
+                                resolve(response)
+                               
+                            }else{
+                                resolve(response.errmsg)
+                            }
+                           
+                        },
+                        error:function(error){
+                                console.log("res==error",error)
                         }
-                    
-                    },
-                    error:function(error){
-                            console.log("res==error",error)
-                    }
+                 })
+              
+
             })
         })
-    }
-
-   
+    } 
     async access_token(){
         return new Promise((resolve, reject) => {
-            var url2= wechatConfigOpenId.accessToken;
+            var url2=`http://lincoln-mp-test.yonyouauto.com/qy/Token`
             $.ajax({
                 url:url2,
                 type: 'get',
@@ -95,9 +105,10 @@ class WxJSHandler {
             })
         })
     }
-    async isfoll(openid) {
+    async isfoll(res) {
         let access_token = await this.access_token();
         return new Promise((resolve, reject) => {
+            let openid=res.openid;
             var url2=`/weixin/cgi-bin/user/info?access_token=${access_token}&openid=${openid}&lang=zh_CN`
             $.ajax({
                     url:url2,
@@ -117,6 +128,11 @@ class WxJSHandler {
              })
 
         })
+    }
+
+    successCallback(data) {
+        debugger
+        console.log(data);
     }
 }
 

@@ -27,6 +27,14 @@ class Util {
     return null;
   }
 
+  getQueryWeChatValue(name) {
+    let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+    let subString = location.href.split('#/index?')[1] || '';
+    let r = subString.match(reg);
+    if (r != null) return decodeURI(r[2]);
+    return null;
+  }
+
   getMutiQueryValue(_arr = []) {
     let resultObj = {};
     _arr.forEach((item, index) => {

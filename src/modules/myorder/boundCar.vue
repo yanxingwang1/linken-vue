@@ -69,9 +69,8 @@
 <script>
   import {
   } from 'vux'
-  import {Indicator} from 'mint-ui'
   import privacy from './components/privacy'
-  import { Toast,Popup } from "mint-ui";
+  import { Toast,Popup,Indicator } from "mint-ui";
   import util from '../../common/DMC.util'
   import wnInput from './components/wninput'
   import { setTimeout } from 'timers';

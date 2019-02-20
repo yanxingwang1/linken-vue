@@ -219,6 +219,9 @@
   @function px($px) {
     @return ($px/20)+rem;
   }
+  .mint-cell{
+    overflow:auto;
+  }
 
   .right {
     float: right !important;

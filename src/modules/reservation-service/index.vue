@@ -20,8 +20,10 @@
         </div>
       </div>
     </div>
-    <div class="add-vehicle-btn"
-         @click="addVehicleBtnHandleClick"
+    <div
+      v-show="!(fromPage==='mydetail')"
+      class="add-vehicle-btn"
+      @click="addVehicleBtnHandleClick"
     >
       + 添加新车辆
     </div>
@@ -104,6 +106,7 @@
     data() {
       return {
         pageShow: false,
+        fromPage:'',
         // swipeShow: false,
         swipeIndex: 0,
         testTime: '',
@@ -229,6 +232,7 @@
           this.vechinfos = data.vechinfos.concat([])
           // this.swipeIndex = 0
           if (this.$route.query.from == 'mydetail') {
+            this.fromPage = 'mydetail'
             //查询预约单
             const id = this.$route.query.id
             this.afterSaledetail(id)
@@ -254,6 +258,7 @@
       //本地化存储信息
       saveCache() {
         const data = {
+          fromPage:this.fromPage,
           swipeIndex: this.swipeIndex,
           // testTime: this.testTime,
           vechinfos: this.vechinfos,
@@ -395,8 +400,8 @@
               setTimeout(()=>{
                  this.getBaseInfo()
               },1000)
-            
-             
+
+
             }
           } else {
             console.log('updateTieCar error')
@@ -600,13 +605,17 @@
             const detailDto = data.detailDto
             /* 预约的车辆 */
             const vin = detailDto.vin
+            // const vin = 'LW201812121234561'
             let vechinfo_tmp = this.vechinfos.find((item) => {
               return item.vin === vin
             })
             if (vechinfo_tmp) {
               vechinfo_tmp.currentMaintenanceMileage = detailDto.currMileage
               const swipeIndex = this.vechinfos.indexOf(vechinfo_tmp)
-              this.$refs.mySwiper.slideTo(swipeIndex)
+              vechinfo_tmp.plateNumber = detailDto.plateNumber
+              this.vechinfos = [vechinfo_tmp]
+              this.swipeIndex = 0
+              // this.$refs.mySwiper.slideTo(swipeIndex)
               // this.swipeShow = true
             }
             /* 回显 之前保存的信息 */
