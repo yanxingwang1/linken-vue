@@ -18,31 +18,31 @@ export const wechatConfig = {
 }
 
 // test
-//微信获取openid接口
-export const wechatConfigOpenId = {
-  appId:'wx4d85c20a03879912',
-  secret:'322be62c3979df32a77552fa82bb11d5',
-  getCodes: location.origin +"/modules/configureShareSave.html",
-  accessToken:location.origin + '/qy/Token',
-};
-//接口地址配置
-export const domainUrlConfig = "http://lincoln-mp-test.yonyouauto.com/qy/";
-//座驾定制跳转
-//uat
-export const middleUrlConfig='https://qa.wechat.lincoln.imagination-dev.cn/';
-
-//uat
-//微信获取openid接口
+// //微信获取openid接口
 // export const wechatConfigOpenId = {
-//   appId:'wx235b2abcc8c160dc',
-//   secret:'b9cf93fcc593ab143d7b65a3f3eb73a1',
+//   appId:'wx4d85c20a03879912',
+//   secret:'322be62c3979df32a77552fa82bb11d5',
 //   getCodes: location.origin +"/modules/configureShareSave.html",
 //   accessToken:location.origin + '/qy/Token',
 // };
 // //接口地址配置
-// export const domainUrlConfig = "https://lincoln-mp-dev.yonyouauto.com/qy/";
+// export const domainUrlConfig = "http://lincoln-mp-test.yonyouauto.com/qy/";
 // //座驾定制跳转
+// //uat
 // export const middleUrlConfig='https://qa.wechat.lincoln.imagination-dev.cn/';
+
+//uat
+//微信获取openid接口
+export const wechatConfigOpenId = {
+  appId:'wx235b2abcc8c160dc',
+  secret:'b9cf93fcc593ab143d7b65a3f3eb73a1',
+  getCodes: location.origin +"/modules/configureShareSave.html",
+  accessToken:location.origin + '/qy/Token',
+};
+//接口地址配置
+export const domainUrlConfig = "https://lincoln-mp-dev.yonyouauto.com/qy/";
+//座驾定制跳转
+export const middleUrlConfig='https://qa.wechat.lincoln.imagination-dev.cn/';
 
 //生产
 // //微信获取openid接口

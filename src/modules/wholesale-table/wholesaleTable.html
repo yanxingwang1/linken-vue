@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no,user-scalable=no, minimum-scale=1, maximum-scale=1,viewport-fit=cover">
+  <link rel="icon" href="data:;base64,=">
+  <!--<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>-->
+  <title>批零售上报统计表</title>
+  <script>
+    // applicationCache.addEventListener("updateready",function(){
+    //   applicationCache.swapCache();      // 手工更新本地缓存
+    //   location.reload();    //重新加载页面页面
+    // },true);
+    var start_time = (new Date()).getTime()
+    var end_time = ''
+    console.log('请求页面时间：', start_time, 'ms')
+
+  </script>
+  <style lang="sass" scoped>
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    body {
+      padding-bottom: constant(safe-area-inset-bottom);
+    }
+  </style>
+</head>
+
+<body>
+<div id="wholesaleTable" v-cloak></div>
+</body>
+<style type="text/css">
+  /*mscroll*/
+  .mescroll-empty {
+    padding-top: 6rem;
+  }
+
+  .mescroll-empty .empty-icon {
+    width: 4rem;
+    height: 5rem;
+  }
+
+  .mescroll-empty .empty-tip {
+    font-size: 14px;
+    margin-top: 20px;
+    color: #BBBBBB;
+  }
+</style>
+</html>
