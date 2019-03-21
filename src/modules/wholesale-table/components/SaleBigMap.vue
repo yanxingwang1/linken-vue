@@ -191,7 +191,7 @@ export default {
     // type对应第几级 index表示第几区
     folded(type, index, i1, i3) {
       if (type == "1") {
-        // debugger;
+        debugger;
         if (this.data[index].show == false) {
           // 所有关闭
           this.data.forEach(child => {
@@ -209,7 +209,7 @@ export default {
           });
         } else {
           //由展开变关闭
-          // debugger;
+          debugger;
           this.data[index].show = false;
           this.data[index].child.forEach(element => {
             element.show = false;
@@ -224,7 +224,7 @@ export default {
           this.data[index].child[i1].child.forEach(item => {
             item.show = true;
           });
-          // debugger;
+          debugger;
         } else {
           //闭合
           this.data[index].child[i1].show = false;
@@ -240,7 +240,7 @@ export default {
         three.forEach(item => {
           item.show = true;
         });
-        // debugger;
+        debugger;
       }
     }
   }

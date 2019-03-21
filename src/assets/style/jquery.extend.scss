@@ -349,3 +349,101 @@
   }
 
 }
+
+
+//日历 时间
+.wx-calendar-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .2);
+  z-index: 10006;
+}
+
+.wx-calendar-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  transform: translateY(100%);
+  transition: transform .3s ease;
+  background-color: #FFFFFF;
+  z-index: 10007;
+}
+
+.wx-calendar-wrap.wx-active {
+  transform: translateY(0);
+  transition: transform .3s ease;
+}
+
+.wx-calendar-wrap .wx-calendar-header {
+  position: relative;
+  padding: 0 20px;
+  height: 35px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #333;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.wx-calendar-wrap .wx-calendar-header .wx-calendar-title {
+  width: 100%;
+  text-align: center;
+}
+
+.wx-calendar-wrap .wx-calendar-header .wx-calendar-clear-btn {
+  position: absolute;
+  right: 15px;
+  font-size: 14px;
+  color: #B45F1A;
+}
+
+.mbsc-cal-header {
+  margin: 5px 0;
+}
+
+.wx-calendar-wrap .wx-calendar-header > div {
+}
+
+.wx-calendar-wrap .wx-calendar-footer {
+  padding: 15px 3%;
+}
+
+.wx-calendar-wrap .wx-calendar-footer .wx-calendar-btn {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  text-align: center;
+  background-color: #B45F1A;
+  font-size: 16px;
+  color: #FFFFFF;
+}
+
+/*#btn {
+    padding:20px;
+}*/
+.preytime {
+  width: 26%;
+  height: 40px;
+  line-height: 40px;
+  float: left;
+
+}
+
+.preyshow {
+  width: 74%;
+  border: 1px solid #B45F1A;
+  height: 40px;
+  line-height: 40px;
+  float: right;
+  padding-left: 5px;
+}
+
+

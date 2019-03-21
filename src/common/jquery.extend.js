@@ -156,7 +156,123 @@
       });
       return flag;
     },
-    showKeyboard: showKeyboard
+    showKeyboard: showKeyboard,
+    //日历选择 依赖 moment.js 和 mobiscroll 3.2.3
+    calendar: function (_params) {
+      let $body = $('body')
+      let $calendarMask = $('<div class="wx-calendar-mask"></div>')
+      let $calendarWrap = $(`
+          <div class="wx-calendar-wrap">
+              <div class="wx-calendar-header">
+                  <div class="wx-calendar-title">日期选择</div>
+                  <div class="wx-calendar-clear-btn">清除</div>
+              </div>
+              <div class="wx-calendar">
+                  <input id="wx-calendar-date-input" readonly="" style="display: none">
+              </div>
+              <div class="wx-calendar-footer">
+                  <div class="wx-calendar-btn">确认</div>
+              </div>
+          </div>
+      `)
+      let $clearBtn = $calendarWrap.find('.wx-calendar-clear-btn')
+      let $wxtitle = $calendarWrap.find('.wx-calendar-title')
+      let $okBtn = $calendarWrap.find('.wx-calendar-btn')
+      const params = Object.assign({
+        theme: 'ios',
+        lang: 'zh',
+        display: 'inline',
+        mode: '',
+        controls: ['calendar', 'time'],
+        showScrollArrows: true,
+        onDayChange: function (event, inst) {
+          // var setday = moment(event.date).format('YYYY年MM月DD日  星期dd')
+          // $wxtitle.text(setday)
+        },
+        onMonthChange: function (event, inst) {
+          console.log('onMonthChange',event)
+        }
+      }, _params)
+      let hideCalendar = function () {
+        $calendarWrap.removeClass('wx-active')
+        setTimeout(() => {
+          $calendarWrap.remove()
+          $calendarMask.remove()
+        }, 300)
+      }
+      $calendarMask.on('click', hideCalendar).on('touchmove', (e) => e.preventDefault())
+      $calendarWrap.on('touchmove', (e) => e.preventDefault())
+      $body.append($calendarMask, $calendarWrap)
+      let instance = mobiscroll.calendar('#wx-calendar-date-input', params)
+      $clearBtn.on('click', () => {
+        params.callback('')
+        hideCalendar()
+      })
+      $okBtn.on('click', () => {
+        const isHide = params.callback(instance.getVal(true))
+        if (isHide !== false) {
+          hideCalendar()
+        }
+      })
+      setTimeout(() => {
+        $calendarWrap.addClass('wx-active')
+      }, 200)
+    },
+    //时间选择
+    date: function (_params){
+      let $body = $('body')
+      let $calendarMask = $('<div class="wx-calendar-mask"></div>')
+      let $calendarWrap = $(`
+          <div class="wx-calendar-wrap">
+              <div class="wx-calendar-header">
+                  <div class="wx-calendar-title">日期选择</div>
+                  <div class="wx-calendar-clear-btn">清除</div>
+              </div>
+              <div class="wx-calendar">
+                  <input id="wx-calendar-date-input" readonly="" style="display: none">
+              </div>
+              <div class="wx-calendar-footer">
+                  <div class="wx-calendar-btn">确认</div>
+              </div>
+          </div>
+      `)
+      let $clearBtn = $calendarWrap.find('.wx-calendar-clear-btn')
+      let $wxtitle = $calendarWrap.find('.wx-calendar-title')
+      let $okBtn = $calendarWrap.find('.wx-calendar-btn')
+      const params = Object.assign({
+        lang: 'zh',
+        theme: 'ios',
+        dateWheels: 'yy mm - MM',
+        dateFormat: 'mm/yy',
+        display: 'inline',
+        minWidth: 100
+      }, _params)
+      let hideCalendar = function () {
+        $calendarWrap.removeClass('wx-active')
+        setTimeout(() => {
+          $calendarWrap.remove()
+          $calendarMask.remove()
+        }, 300)
+      }
+      $calendarMask.on('click', hideCalendar).on('touchmove', (e) => e.preventDefault())
+      $calendarWrap.on('touchmove', (e) => e.preventDefault())
+      $body.append($calendarMask, $calendarWrap)
+
+      let instance = mobiscroll.date('#wx-calendar-date-input', params)
+      $clearBtn.on('click', () => {
+        params.callback('')
+        hideCalendar()
+      })
+      $okBtn.on('click', () => {
+        const isHide = params.callback(instance.getVal(true))
+        if (isHide !== false) {
+          hideCalendar()
+        }
+      })
+      setTimeout(() => {
+        $calendarWrap.addClass('wx-active')
+      }, 200)
+    }
   })
   //n3SelectScroll
   $.fn.n3SelectScroll = function () {
