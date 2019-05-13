@@ -113,5 +113,10 @@ $disabled-color: #C9C9C9;
     margin-bottom: 0;
   }
 }
-
-
+.fetch-and-deliver-rate-button {
+  .mint-button{
+    label.mint-button-text{
+      font-weight: 400;
+    }
+  }
+}

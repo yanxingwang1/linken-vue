@@ -64,11 +64,13 @@ class Util {
     !device ? result = !isIOS && !isAndroid : !1;
     return result;
   }
+
   //进行经纬度转换为距离的计算
 
   rad(d) {
     return d * Math.PI / 180.0; //经纬度转换成三角函数中度分表形式。
   }
+
   //计算距离，参数分别为第一点的纬度，经度；第二点的纬度，经度
   getDistance(lat1, lng1, lat2, lng2) {
 
@@ -100,9 +102,9 @@ class Util {
         swipeY = true;
         if (expansion) { //判断是否展开，如果展开则收起
           // debugger
-          setTimeout(()=>{
+          setTimeout(() => {
             expansion.className = "list siledelate";
-          },200)
+          }, 200)
         }
       });
       container[i].addEventListener('touchmove', function (event) {
@@ -132,6 +134,86 @@ class Util {
       });
     }
   }
+
+  /**
+   * 计算地址 之间 的 驾车距离
+   * @param address1 String
+   * @param address2 String
+   * @returns {Promise<any>}
+   */
+  computedDrivingDistance(address1, address2) {
+    return new Promise((resolve, reject) => {
+      Promise.all([getLinLat(address1), getLinLat(address2)]).then((result) => {
+     
+        const [p1, p2] = result
+        AMap.plugin('AMap.Driving', () => {
+          var driving = new AMap.Driving({
+            policy: AMap.DrivingPolicy.LEAST_TIME
+          })
+          driving.search(p1, p2, function (status, result) {
+            if (status === 'complete' && result.info === 'OK') {
+              const [line] = result.routes
+              if (line) {
+                resolve((line.distance * 0.001).toFixed(2))
+              }
+              reject('no line')
+            }
+            reject('driving status error')
+          })
+        })
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+
+    function getLinLat(address) {
+      return new Promise((resolve, reject) => {
+        if (!address) {
+          reject('地址不全')
+        }
+        AMap.plugin('AMap.Geocoder', () => {
+          var geocoder = new AMap.Geocoder()
+          geocoder.getLocation(address, (status, result) => {
+            if (status === 'complete' && result.info === 'OK') {
+              // console.log(result)
+              const [geocode] = result.geocodes
+              if (geocode) {
+                const {lng, lat} = geocode.location
+                // console.log(lng, lat)
+                resolve([lng, lat])
+              }
+              reject('no geocoder')
+            }
+            reject('getLocation status error')
+          })
+        })
+      })
+    }
+  }
+// 根据地址计算经纬度
+   getLinLat(address) {
+      return new Promise((resolve, reject) => {
+        if (!address) {
+          reject('地址不全')
+        }
+        AMap.plugin('AMap.Geocoder', () => {
+          var geocoder = new AMap.Geocoder()
+          geocoder.getLocation(address, (status, result) => {
+            if (status === 'complete' && result.info === 'OK') {
+              // console.log(result)
+              const [geocode] = result.geocodes
+              if (geocode) {
+                const {lng, lat} = geocode.location
+                // console.log(lng, lat)
+                resolve([lng, lat])
+              }
+              reject('no geocoder')
+            }
+            reject('getLocation status error')
+          })
+        })
+      })
+    }
 }
 
 

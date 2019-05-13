@@ -13,12 +13,15 @@ import router from './wholesaleTable.router';
 import './../../assets/style/common-style.scss';
 import './../../assets/style/jquery.extend.scss'
 import './../../common/jquery.extend'
+import MintUI from "mint-ui";
+import 'mint-ui/lib/style.css'
 // Vue.use(ElementUI, { size: 'small', zIndex: 3000 });
 
 Vue.prototype.http = http;
 
 Vue.config.productionTip = false;
 
+Vue.use(MintUI)
 new Vue({
 	el: '#wholesaleTable',
 	router: router,

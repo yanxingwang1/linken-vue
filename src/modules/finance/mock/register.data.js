@@ -204,3 +204,43 @@ export const orderList = {
     "elapsedMilliseconds": 0,
     "success": true
   }
+
+  export const subscribeListMock =[
+    '2019年4月8日',
+    {
+        id:1,
+        deliverCar:'1',
+        carModelName:'MKZ',
+        carBoard:'沪A88888',
+        status:'10661000',
+        phone:'13877889884',
+        serviceType:1,
+        lastName:'林',
+        sex:0,
+        appointmentTime:'2019年3月11日 10:33',
+    },
+    {
+        id:2,
+        deliverCar:'',
+        carModelName:'MKZ',
+        carBoard:'沪A88888',
+        status:'10661004',
+        phone:'13877889884',
+        serviceType:2,
+        lastName:'林',
+        sex:1,
+        appointmentTime:'2019年3月11日 10:34',
+    },
+    '2019年4月9日',
+    {
+        id:3,
+        carModelName:'MKC',
+        carBoard:'沪A88888',
+        status:'10661003',
+        phone:'13877889884',
+        serviceType:3,
+        lastName:'林',
+        sex:1,
+        appointmentTime:'2019年3月11日 10:35',
+    },
+]

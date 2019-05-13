@@ -3,54 +3,57 @@
     <!--车辆信息-->
     <div class="vehicle-info-wrap">
       <div class="vehicle-info">
-        <div class="title">
-          尊敬的
-          {{
-          ($route.query.from==='boundCar'?$route.query.lastName:lastName) +
-          (Number($route.query.from==='boundCar'?$route.query.sex:sex) ?'女士': '先生')
-          }}，{{ filteTimePeriod() }}！
-        </div>
-        <div class="qwer">
-          <vehicles-swipe
-            ref="mySwiper"
-            @slideChange="swipeHandelChange"
-            @inputPlateBlur="updateTieCarAction"
-            :vechinfos="vechinfos"
-          ></vehicles-swipe>
-        </div>
+        <welcome-panel :last-name="lastName" :sex="sex"></welcome-panel>
+        <vehicles-swipe
+          ref="mySwiper"
+          @slideChange="swipeHandelChange"
+          @inputPlateBlur="updateTieCarAction"
+          :vechinfos="vechinfos"
+        ></vehicles-swipe>
       </div>
     </div>
     <div
       v-show="!(fromPage==='mydetail')"
       class="add-vehicle-btn"
-      @click="addVehicleBtnHandleClick"
-    >
+      @click="addVehicleBtnHandleClick">
       + 添加新车辆
     </div>
     <!--预约信息-->
     <div class="reservation-info-wrap">
       <service-type v-model="serviceType"></service-type>
-      <div class="dealers-info-wrap">
-        <dealer-info-panel
-          @click.native="goAgentlistPage"
-          :dealerInfo="dealersInfo"
-        ></dealer-info-panel>
-        <div class="wx-form">
-          <time-picker
-            :dealerCode="dealersInfo.dealerCode"
-            v-model="testTime"
-            :disabled="!dealersInfo.dealerCode"></time-picker>
-        </div>
-        <div class="dbc" v-show="serviceType==1">
-          <div class="cell">
-            <div>是否申请代步车</div>
-            <div>
-              <mt-switch v-model="scootor"></mt-switch>
-            </div>
-          </div>
-          <div class="tips">提示：代步车实际提供情况，以经销商线下反馈为准</div>
-        </div>
+      <dealer-info-panel
+        @click.native="goAgentlistPage"
+        :dealerInfo="dealersInfo">
+      </dealer-info-panel>
+      <div class="wx-form" style="padding: 0;">
+        <booking-time-picker-view
+          :dealerCode="dealersInfo.dealerCode"
+          v-model="testTime"
+          :disabled="!dealersInfo.dealerCode">
+        </booking-time-picker-view>
       </div>
+      <!--代步车-->
+      <switch-cell
+        title="是否申请代步车"
+        tips="提示：代步车实际提供情况，以经销商线下反馈为准。"
+        :label="true"
+        v-show="serviceType==1"
+        v-model="scootor">
+      </switch-cell>
+      <!--取车-->
+      <take-and-send-switch
+        v-model="isTake"
+        :data="takeVehicleData"
+        :switch-disabled="isTakeDisabled">
+      </take-and-send-switch>
+      <!--送车-->
+      <switch-cell
+        title="开启送车服务意向"
+        tips="具体送车服务以林肯中心确认为准"
+        :label="true"
+        v-model="isPud"
+      >
+      </switch-cell>
       <div class="wx-form">
         <wx-input label="联系电话" type="tel" v-model="appointmentPhone" :maxlength="11" :required="true"
                   port="c"></wx-input>
@@ -59,55 +62,59 @@
           v-model="verificationCode"
           :phone="appointmentPhone"
           label="短信验证"
-          port="c"
-        ></wx-verification-code-input>
+          port="c">
+        </wx-verification-code-input>
         <wx-input type="textarea" v-model="remark" :maxlength="50" placeholder="备注信息" port="c"></wx-input>
       </div>
       <div class="btn-wrap">
-        <wx-button :disabled="checkRequiredParams()" @click.native="baocunyuyuedan">服务预约</wx-button>
+        <wx-button :disabled="submitdisabled" @click.native="baocunyuyuedan">服务预约</wx-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import util from '../../common/DMC.util'
   import {Switch, Indicator} from 'mint-ui'
+  import WelcomePanel from './components/WelcomePanel'
   import WxInput from './../../components/WxInput'
   import WxButton from './../../components/WxButton'
   import WxVerificationCodeInput from '../../components/WxVerificationCodeInput'
   import VehicleInfoCard from './components/VehicleInfoCard'
   import ServiceType from './components/ServiceType'
   import DealerInfoPanel from './components/DealersInfoPanel'
-  import TimePicker from './components/TimePicker'
+  import BookingTimePickerView from './components/DateTimePickerComp/BookingTimePickerView'
   import Dict from './script/dict'
   import VehiclesSwipe from './components/VehiclesSwipe'
+  import SwitchCell from './components/SwitchCell'
+  import TakeAndSendSwitch from './components/TakeAndSendSwitch'
+
+  const ServerConfirmPanel = require('./script/ServerConfirmPanel')
 
   export default {
     name: 'index',
     components: {
+      WelcomePanel,
       WxButton,
       WxInput,
       WxVerificationCodeInput,
       MtSwitch: Switch,
       ServiceType,
       DealerInfoPanel,
-      TimePicker,
+      BookingTimePickerView,
       VehicleInfoCard,
       Indicator,
-      VehiclesSwipe
+      VehiclesSwipe,
+      SwitchCell,
+      TakeAndSendSwitch
     },
     created() {
-      end_time = new Date().getTime()
-      console.log('index加载时间：', end_time - start_time, 'ms')
-    },
-    beforeDestroy() {
-      clearInterval(this.timer)
+      console.log('index加载时间：', new Date().getTime() - start_time, 'ms')
     },
     data() {
       return {
         pageShow: false,
-        fromPage:'',
-        // swipeShow: false,
+        fromPage: '',
         swipeIndex: 0,
         testTime: '',
         /* 用户车辆信息 */
@@ -135,12 +142,26 @@
         appointmentDate: '',//预约时间 时间戳
         appointmentTime: '',  //预约时间  字典
         scootor: false,//是否代步车
+        isTake: false,//取车服务 预留字段
+        isPud: false,//送车服务 预留字段
+        takeVehicleData: {
+          taketime: '',
+          isAgree: false,
+          startName: '我的位置',//
+          startAddress: '我的位置',
+          endName: '经销商地址',
+          endAddress: '',
+          latitude: "",
+          longitude: "",
+          from: 'reservationService',
+        },
         appointmentPhone: '',   //验证码手机号
         dealerCode: '',  //经销商代码
         dealerName: '',  //经销商名称
         remark: '',  //备注
         /**保存参数 E */
         addVin: '',//新绑车的VIN 绑车成功后显示
+        //
       }
     },
     computed: {
@@ -158,7 +179,25 @@
       },
       carModelCode() {
         return this.vechinfos.length ? this.vechinfos[this.swipeIndex].modelCode : ''
-      }
+      },
+      //开启上门取车服务 的开关
+      isTakeDisabled() {
+        return this.testTime ? false : true
+      },
+      submitdisabled() {
+        //车牌 里程数 维修类型 经销商信息 预约时间 电话
+        var flag = false
+        if (!(this.plateNumber && this.plateNumber.length >= 7)) flag = true
+        if (!Number(this.currMileage)) flag = true
+        if (!this.dealersInfo.dealerCode) flag = true
+        if (!this.testTime) flag = true
+        if (!this.appointmentPhone) flag = true
+        if (this.isTake) {
+          if (!this.takeVehicleData.taketime) return true
+          if (!this.takeVehicleData.isAgree) return true
+        }
+        return flag
+      },
     },
     watch: {
       //车辆服务类型改变
@@ -173,6 +212,7 @@
             const bookingTypeCode = this.dealersInfo.bookingTypeCode
             if (!(bookingTypeCode && bookingTypeCode.indexOf(value) !== -1)) {
               this.dealersInfo = {}
+              this.clearDealersInfoAfter()
             }
           } else {
             //未选择
@@ -182,28 +222,78 @@
         } else {
           //取消服务类型 清除经销商
           this.dealersInfo = {}
+          //清除 经销商 以下选择的数据  预约时间 代步车  取车
+          this.clearDealersInfoAfter()
         }
       },
+      dealersInfo: {
+        deep: true,
+        handler(newVal, oldVal) {
+          if (newVal.dealerName !== oldVal.dealerName) {
+            this.takeVehicleData.endName = newVal.dealerName
+            if (newVal.address && this.takeVehicleData.startAddress) {
+              util.computedDrivingDistance(this.dealersInfo.address, this.takeVehicleData.startAddress).then(res => {
+                this.takeVehicleData.endAddress = `预估距离：${res} 千米`
+              })
+            }
+
+          }
+        }
+      },
+      takeVehicleData: {
+        deep: true,
+        handler(newVal, oldVal) {
+          if (newVal.startAddress && this.dealersInfo.address) {
+            util.computedDrivingDistance(this.takeVehicleData.startAddress, this.dealersInfo.address).then(res => {
+              this.takeVehicleData.endAddress = `预估距离：${res} 千米`
+            })
+          }
+        }
+      },
+      isTake(newVal){
+        if (newVal){
+
+        }
+      }
     },
     beforeMount() {
       $(document).attr('title', '售后服务预约')
     },
     mounted() {
-      window.self = this
+      window.app = this
       //查询用户绑车信息
       this.getBaseInfo()
       //键盘bug
       $('.reservation-info-wrap>.wx-form .wx-input').on('blur', () => {
-        $(document).scrollTop(9999)
+        $(document).scrollTop(620)
       })
     },
     methods: {
+      //精确定位
+      aMapGeolocation() {
+        AMap.plugin('AMap.Geolocation', () => {
+          var geolocation = new AMap.Geolocation({
+            enableHighAccuracy: true,
+          })
+          geolocation.getCurrentPosition((status, data) => {
+            if (status === 'complete') {
+              // data是具体的定位信息
+              console.log('具体的定位信息', data)
+              // $.toast(JSON.stringify(data))
+              this.takeVehicleData.startAddress = data.formattedAddress
+            } else {
+              console.log('定位出错', data)
+              $.toast('无法获取当前位置')
+            }
+          })
+        })
+      },
       swipeHandelChange(index) {
         this.swipeIndex = index
       },
       initData(data) {
         if (this.$route.query.from == 'agentlist') {
-          console.log('来自 经销商列表')
+          console.log('来自 经销商列表 读缓存 或者 来自选择我的位置页面')
           this.reloadCache()
           const {dealerCode, detailAddress, salesHotline, storeName, bookingTypeCode} = this.$route.query
           this.dealersInfo = {
@@ -215,7 +305,6 @@
           this.$nextTick(() => {
             $(document).scrollTop(9999)
           })//返回上次下滑高度)
-          // this.swipeShow = true
         } else {
           //创建预约单
           //用户信息
@@ -240,10 +329,8 @@
           if (sessionStorage.getItem('shouhouyuyue')) {
             this.reloadCache()
           }
-          // else {
-          // this.swipeShow = true
-          // }
         }
+        //是新添加的车辆
         if (this.addVin) {
           let vechinfo = this.vechinfos.find((item) => {
             return item.vin === this.addVin
@@ -254,13 +341,13 @@
           })
           this.addVin = ''
         }
+        this.selectAddressPageCallback()
       },
       //本地化存储信息
       saveCache() {
         const data = {
-          fromPage:this.fromPage,
+          fromPage: this.fromPage,
           swipeIndex: this.swipeIndex,
-          // testTime: this.testTime,
           vechinfos: this.vechinfos,
           dealersInfo: this.dealersInfo,
           userPhone: this.userPhone,
@@ -271,11 +358,17 @@
           sex: this.sex,  //'性别（0:男；1：女）
           //预约信息
           serviceType: this.serviceType,    //服务类型（1维修服务、2保养服务、3检查服务、4其他服务）
+          testTime: this.testTime, //预约时间
           scootor: this.scootor,//是否代步车
           appointmentPhone: this.appointmentPhone,   //验证码手机号
           dealerCode: this.dealerCode,  //经销商代码
           dealerName: this.dealerName,  //经销商名称
           remark: this.remark,  //备注
+          //上门取车
+          isTake: this.isTake,
+          takeVehicleData: this.takeVehicleData,
+          //送车服务
+          isPud: this.isPud,
           /**保存参数 E */
         }
         sessionStorage.setItem('shouhouyuyue', JSON.stringify(data))
@@ -288,22 +381,10 @@
         })
         this.$refs.mySwiper.slideTo(this.swipeIndex, 0)
       },
-      filteTimePeriod() {
-        const hour = new Date().getHours()
-        let str = ''
-        if (hour >= 5 && hour < 11) {
-          str = '早上好'
-        } else if (hour >= 11 && hour < 13) {
-          str = '中午好'
-        } else if (hour >= 13 && hour < 19) {
-          str = '下午好'
-        } else {
-          str = '晚上好'
-        }
-        return str
-      },
       //进入选择经销商页面
       goAgentlistPage() {
+        //清除部分数据 预约时间  是否代步车  取车 地址
+        this.clearDealersInfoAfter()
         this.saveCache()
         console.log('进入选择经销商页面')
         //dev: location.origin+'/wchat/agentlist'
@@ -314,6 +395,40 @@
           window.location.href = location.origin + url
         } else {
           $.toast('请先选择服务类型')
+        }
+      },
+      //清除部分数据 预约时间  是否代步车  取车 地址
+      clearDealersInfoAfter() {
+        this.testTime = ''
+        this.scootor = false
+        this.isTake = false
+        this.takeVehicleData = {
+          taketime: '',
+          isAgree: false,
+          startName: '我的位置',//
+          startAddress: '我的位置',
+          endName: '经销商地址',
+          endAddress: '距离',
+          latitude: "",
+          longitude: "",
+          from: 'reservationService',
+        }
+        sessionStorage.setItem('reservationServiceSelectAddress', '')
+      },
+      //进入选择地址页面
+      goSelectAddressPage() {
+        this.saveCache()
+      },
+      selectAddressPageCallback() {
+        // this.reloadCache()
+        const item = 'reservationServiceSelectAddress'
+        const address = sessionStorage.getItem(item)
+        if (address) {
+          // $.toast('地址' + address)
+          this.takeVehicleData.startAddress = address
+        } else {
+          this.aMapGeolocation()
+          // $.toast('选择地址失败')
         }
       },
       //添加车辆按钮点击
@@ -347,38 +462,25 @@
       },
       //查询用户车辆
       getBaseInfo() {
-        this.http.get('getBaseInfo', res => {
-          console.log('查询用户绑车信息 getBaseInfo', res)
-          if (res.resultCode == 1) {
-            const data = res.data
-            if (data.code == 3) {
-              this.pageShow = true
-              this.initData(data)
-            } else {
-              window.location.href = location.origin + "/modules/myorder.html#/boundCar"
-              console.log('getBaseInfo error')
-            }
+        this.httpGetBaseInfo().then(data => {
+          if (data.code == 3) {
+            this.pageShow = true
+            this.initData(data)
           } else {
+            window.location.href = location.origin + "/modules/myorder.html#/boundCar"
             console.log('getBaseInfo error')
           }
         })
       },
       //添加车辆
       saveTieCar(vin) {
-        this.http.post('saveTieCar', {vin}, res => {
-          console.log('添加用户车辆信息 saveTieCar', res)
-          if (res.resultCode == 1) {
-            const data = res.data
-            if (data == 'ok') {
-              $.toast('车辆绑定成功')
-              this.addVin = vin
-              this.getBaseInfo() //之后要显示到新绑车页面
-            } else {
-              console.log('saveTieCar error')
-            }
+        this.httpSaveTieCar({vin}).then(data => {
+          if (data == 'ok') {
+            $.toast('车辆绑定成功')
+            this.addVin = vin
+            this.getBaseInfo() //之后要显示到新绑车页面
           } else {
             console.log('saveTieCar error')
-            $.toast(res.errMsg)
           }
         })
       },
@@ -389,56 +491,33 @@
           mobile: this.userPhone,
           // mobile:'13988888888'
         }
-        this.http.get('updateTieCar', params, res => {
+        this.httpUpdateTieCarAction(params).then(data => {
           console.log('updateTieCar', res)
-          if (res.resultCode == 1) {
-            const data = res.data
-            if (data) {
-              //更新车牌成功
-              //this.saveCache()
-              sessionStorage.removeItem('shouhouyuyue')
-              setTimeout(()=>{
-                 this.getBaseInfo()
-              },1000)
-
-
-            }
-          } else {
-            console.log('updateTieCar error')
-          }
+          //更新车牌成功
+          //this.saveCache()
+          sessionStorage.removeItem('shouhouyuyue')
+          setTimeout(() => {
+            this.getBaseInfo()
+          }, 1000)
         })
       },
       //查询常用经销商 根据服务类型
       queryAftersaleDealer(vehicleServices) {
-        this.http.get('queryAftersaleDealer', {vehicleServices}, res => {
-          console.log('查询常用经销商 queryAftersaleDealer', res)
-          if (res.resultCode == 1) {
-            const data = res.data
-            if (data) {
-              const {dealerCode, dealerName, serviceHotline} = data
-              console.log(dealerCode, dealerName, serviceHotline)
-              if (vehicleServices) {
-                //选择服务类型查出来的
-                this.dealersInfo = data
-              }
-            } else {
-              console.log('queryAftersaleDealer error')
-            }
-          } else {
-            console.log('queryAftersaleDealer error')
+        this.httpQueryAftersaleDealer({vehicleServices}).then(data => {
+          const {dealerCode, dealerName, serviceHotline} = data
+          console.log('查询常用经销商', {dealerCode, dealerName, serviceHotline})
+          if (vehicleServices) {
+            //选择服务类型查出来的
+            this.dealersInfo = data
           }
         })
-      },
-      checkRequiredParams() {
-        //车牌 里程数 维修类型 经销商信息 预约时间 电话
-        return !((this.plateNumber && this.plateNumber.length >= 7) && Number(this.currMileage) && this.serviceType && this.dealersInfo.dealerCode && this.testTime && this.appointmentPhone)
       },
       baocunyuyuedan() {
         let self = this
         let params = {
           verificationCode: this.verificationCode,
-          appointmentDate: Number(this.testTime),//预约时间 时间戳
-          appointmentTime: Dict.findKey(Dict.timeDict, new Date(Number(this.testTime)).Format('HH:mm')),  //预约时间  字典
+          appointmentDate: moment(this.testTime).toDate().getTime(),//预约时间 时间戳
+          appointmentTime: Dict.findKey(Dict.timeDict, moment(this.testTime).format('HH:mm')),  //预约时间  字典
           appointmentPhone: this.appointmentPhone,   //手机号
           carModelCode: this.carModelCode,  //车型代码'
           carModelName: this.carModelName,  //车型名称
@@ -453,6 +532,7 @@
           sex: this.sex,  //'性别（0:男；1：女）
           vin: this.vin,  //vin
           scootor: this.serviceType == 1 ? (this.scootor ? 0 : 1) : 1,//是否代步车
+          isPud: this.isPud ? '12781001' : '12781002',//是否∂送车
           id: this.serviceId || '',
           //以下字段传空
           outFactoryMileage: '',  //出厂里程数
@@ -489,38 +569,7 @@
         $.dialog({
           type: 'wx-alert',
           title: '售后服务预约',
-          html: `
-          <div class="server-confirm-panel">
-            <div>
-              <div>车辆：</div>
-              <div>${params.plateNumber ? (params.plateNumber.length > 1 ? params.plateNumber : '') : ''}</div>
-            </div>
-            <div>
-              <div>服务类型：</div>
-              <div>${['', '维修', '保养', '检查', '其他'][params.serviceType]}</div>
-            </div>
-            <div>
-              <div>经销商：</div>
-              <div>${params.dealerName}</div>
-            </div>
-            <div>
-              <div>预约时间：</div>
-              <div>${new Date(Number(params.appointmentDate)).Format('yyyy年MM月dd日')} ${Dict.timeDict[params.appointmentTime]}</div>
-            </div>
-            <div>
-              <div>联系电话：</div>
-              <div>${params.appointmentPhone}</div>
-            </div>
-            <div>
-              <div>${params.serviceType == 1 ? '代步车' : ''}</div>
-              <div>${params.serviceType == 1 ? (params.scootor == 0 ? '是' : '否') : ''}</div>
-            </div>
-            <div>
-              <div>留言：</div>
-              <div>${params.remark || ''}</div>
-            </div>
-          </div>
-          `,
+          html: ServerConfirmPanel.initPanel(params),
           buttons: [{
             title: '确认提交',
             callback() {
@@ -575,8 +624,8 @@
             } else {
               $.toast(res.errMsg)
             }
-
           }
+          0
         })
       },
       updateAftersaleAction(params) {
@@ -595,54 +644,126 @@
           }
         })
       },
+      //查询售后预约单
       afterSaledetail(id) {
         console.log('查询售后预约单')
         this.serviceId = id
-        this.http.get('afterSaledetail', {id}, res => {
+        this.httpAfterSaledetail({id}).then((res) => {
           console.log(res)
-          if (res.resultCode == 1) {
-            const data = res.data
-            const detailDto = data.detailDto
-            /* 预约的车辆 */
-            const vin = detailDto.vin
-            // const vin = 'LW201812121234561'
-            let vechinfo_tmp = this.vechinfos.find((item) => {
-              return item.vin === vin
-            })
-            if (vechinfo_tmp) {
-              vechinfo_tmp.currentMaintenanceMileage = detailDto.currMileage
-              const swipeIndex = this.vechinfos.indexOf(vechinfo_tmp)
-              vechinfo_tmp.plateNumber = detailDto.plateNumber
-              this.vechinfos = [vechinfo_tmp]
-              this.swipeIndex = 0
-              // this.$refs.mySwiper.slideTo(swipeIndex)
-              // this.swipeShow = true
-            }
-            /* 回显 之前保存的信息 */
-            //服务类型
-            this.serviceType = detailDto.serviceType
-            //是否代步车
-            this.scootor = detailDto.scootor == 0 ? true : false
-            //经销商
-            this.dealerCode = data.dealerCode  //经销商代码
-            this.dealerName = data.dealerName  //经销商名称
-            var dealersInfo = {
-              dealerCode: data.dealerCode,
-              address: data.address,
-              serviceHotline: data.serviceHotline,
-              dealerName: data.dealerName,
-              bookingTypeCode: data.bookingTypeCode
-            }
-            this.dealersInfo = dealersInfo
-            //预约时间
-            this.testTime = String(detailDto.appointmentDateTimeStamp)
-            //预约电话
-            this.appointmentPhone = detailDto.appointmentPhone
-            //备注
-            this.remark = detailDto.remark
-          } else {
-            $.toast('查询售后预约单失败')
+          const data = res.data
+          const detailDto = data.detailDto
+          /* 预约的车辆 */
+          const vin = detailDto.vin
+          // const vin = 'LW201812121234561'
+          let vechinfo_tmp = this.vechinfos.find((item) => {
+            return item.vin === vin
+          })
+          if (vechinfo_tmp) {
+            vechinfo_tmp.currentMaintenanceMileage = detailDto.currMileage
+            const swipeIndex = this.vechinfos.indexOf(vechinfo_tmp)
+            vechinfo_tmp.plateNumber = detailDto.plateNumber
+            this.vechinfos = [vechinfo_tmp]
+            this.swipeIndex = 0
           }
+          /* 回显 之前保存的信息 */
+          //服务类型
+          this.serviceType = detailDto.serviceType
+          //是否代步车
+          this.scootor = detailDto.scootor == 0 ? true : false
+          //经销商
+          this.dealerCode = data.dealerCode  //经销商代码
+          this.dealerName = data.dealerName  //经销商名称
+          var dealersInfo = {
+            dealerCode: data.dealerCode,
+            address: data.address,
+            serviceHotline: data.serviceHotline,
+            dealerName: data.dealerName,
+            bookingTypeCode: data.bookingTypeCode
+          }
+          this.dealersInfo = dealersInfo
+          //预约时间
+          this.testTime = moment(Number(detailDto.appointmentDateTimeStamp))
+          //预约电话
+          this.appointmentPhone = detailDto.appointmentPhone
+          //备注
+          this.remark = detailDto.remark
+        })
+      },
+      /*** http相关 **///,,,,,,
+      httpGetBaseInfo() {
+        return new Promise((resolve, reject) => {
+          if (window.location.host == 'localhost:8000' || window.location.host == '192.168.1.100:8000') {
+            console.log('test http')
+            var res = require('./script/getBaseInfo')
+            resolve(res.data)
+            return
+          }
+          this.http.get('getBaseInfo', res => {
+            console.log('查询用户绑车信息 getBaseInfo', res)
+            if (res.resultCode == 1) {
+              resolve(res.data)
+            } else {
+              console.log('getBaseInfo error')
+            }
+          })
+        })
+      },
+      httpSaveTieCar({vin}) {
+        return new Promise((resolve, reject) => {
+          this.http.post('saveTieCar', {vin}, res => {
+            console.log('添加用户车辆信息 saveTieCar', res)
+            if (res.resultCode == 1) {
+              const data = res.data
+              if (data == 'ok') {
+                resolve(data)
+              } else {
+                console.log('saveTieCar error')
+              }
+            } else {
+              $.toast(res.errMsg)
+            }
+          })
+        })
+      },
+      httpUpdateTieCarAction(params) {
+        return new Promise((resolve, reject) => {
+          this.http.get('updateTieCar', params, res => {
+            if (res.resultCode == 1) {
+              const data = res.data
+              if (data) {
+                resolve(data)
+              }
+            } else {
+              console.log('updateTieCar error')
+            }
+          })
+        })
+      },
+      httpQueryAftersaleDealer({vehicleServices}) {
+        return new Promise((resolve, reject) => {
+          this.http.get('queryAftersaleDealer', {vehicleServices}, res => {
+            if (res.resultCode == 1) {
+              const data = res.data
+              if (data) {
+                resolve(data)
+              } else {
+                console.log('queryAftersaleDealer error')
+              }
+            } else {
+              console.log('queryAftersaleDealer error')
+            }
+          })
+        })
+      },
+      httpAfterSaledetail({id}) {
+        return new Promise((resolve, reject) => {
+          this.http.get('afterSaledetail', {id}, res => {
+            if (res.resultCode == 1) {
+              resolve(res)
+            } else {
+              $.toast('查询售后预约单失败')
+            }
+          })
         })
       }
     }
@@ -654,36 +775,12 @@
     @return ($px/20)+rem;
   }
 
-  .mint-swipe {
-    height: px(368);
-  }
-
   .index {
     .vehicle-info-wrap {
-      position: relative;
-
       .vehicle-info {
-        position: relative;
-        /*height: px(190);*/
         color: #323232;
         background-color: #EBEBEB;
         padding: 0;
-
-        .title {
-          font-weight: 500;
-          font-size: px(14);
-          height: px(50);
-          line-height: px(50);
-          padding: 0 px(20);
-        }
-
-        .qwer {
-          position: relative;
-          overflow: hidden;
-          width: 100%;
-          text-align: center;
-          padding: 0 px(20);
-        }
       }
     }
 
@@ -695,37 +792,10 @@
     }
 
     .reservation-info-wrap {
-      position: relative;
       padding: px(20);
 
-      .dealers-info-wrap {
-        .wx-form {
-          padding: 0 !important;
-        }
-
-        .dbc {
-          padding-bottom: px(10);
-
-          .cell {
-            display: flex;
-            line-height: px(60);
-            justify-content: space-between;
-            align-items: center;
-          }
-
-          .tips {
-            font-size: px(12);
-            color: #BBBBBB;
-          }
-        }
-      }
-
-      .wx-form {
-        padding: 0 0 px(10) 0;
-      }
-
       .btn-wrap {
-        padding: px(10) 0;
+        padding: px(15) 0 px(10) 0;
       }
     }
   }

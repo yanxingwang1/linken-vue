@@ -5,7 +5,7 @@
        
           <div class="name clearfix">
             <span class="left">{{item.lastName }}{{item.sex=='0'?'   先生':'   女士'}}</span>
-            <span :class="item.driveType=='1'?'right shop':'right home'">{{item.driveType=='1'?'预约入店试驾':'预约上门试驾'}}</span>
+            <span :class="item.driveType=='1'?'right registershop':'right registerhome'">{{item.driveType=='1'?'预约入店试驾':'预约上门试驾'}}</span>
           </div>
           <div class="phone">
             <span>联系电话：{{item.appointmentPhone}}</span>
@@ -67,13 +67,13 @@ export default {
             font-family: PingFangSC-Medium;
             font-size:18px;
          }
-         .shop{
+         .registershop{
            background: #B45F1A;
            padding:2px 5px;
            color:#fff;
                font-size: 12px;
          }
-         .home{
+         .registerhome{
            background: #1A68B4;
            padding:2px 5px;
            color:#fff;

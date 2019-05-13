@@ -16,12 +16,17 @@ import N3Components from 'N3-components'
 import 'N3-components/dist/index.min.css'
 import DialogImg from '../../components/dialogImg'
 import DialogBack from '../../components/dialogBack'
+import './../../assets/style/form.scss'
+import './../../assets/style/jquery.extend.scss'
+import './../../common/jquery.extend'
 
 
 Vue.prototype.http = http;
 
 
 Vue.config.productionTip = false
+
+Vue.prototype.$Bus = new Vue();
 
 Vue.use(MintUI)
 Vue.use(VueLazyload)

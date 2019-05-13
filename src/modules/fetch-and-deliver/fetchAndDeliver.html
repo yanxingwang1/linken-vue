@@ -3,23 +3,26 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no,user-scalable=no, minimum-scale=1, maximum-scale=1,viewport-fit=cover">
-  <meta name="format-detection" content="telephone=yes"/>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no,user-scalable=no, minimum-scale=1, maximum-scale=1,viewport-fit=cover">
+  <meta name="format-detection" content="telephone=yes" />
   <link rel="icon" href="data:;base64,=">
-  <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+  <link rel="stylesheet"
+    href="https://lincoln-mp-dev.yonyouauto.com/fs01/ase/v2/mobiscroll/css/mobiscroll.javascript.min.css">
   <title>LINCOLN</title>
   <script>
     // applicationCache.addEventListener("updateready",function(){
     //   applicationCache.swapCache();      // 手工更新本地缓存
     //   location.reload();    //重新加载页面页面
-    // },true);    
+    // },true);
     var start_time = (new Date()).getTime();
     var end_time = "";
     console.log('请求页面时间：', start_time, 'ms')
 
   </script>
   <style lang="sass" scoped>
-    html, body {
+    html,
+    body {
       width: 100%;
       height: 100%;
     }
@@ -28,15 +31,78 @@
       margin: 0px;
       padding: 0px;
     }
+
     body {
-       padding-bottom: constant(safe-area-inset-bottom);
+      padding-bottom: constant(safe-area-inset-bottom);
     }
+
+  </style>
+  <style>
+    .mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm,
+    .mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm,
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm {
+      text-align: center;
+    }
+
+    /*.mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm:after,*/
+    /*.mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm:after,*/
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm:after {
+      display: inline-block;
+      content: '时';
+    }
+
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm.mbsc-sc-itm-ph:after {
+      content: '';
+    }
+
+    /*.mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm:after,*/
+    /*.mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm:after,*/
+    .mbsc-ios .mbsc-dt-whl-i .mbsc-sc-itm:after {
+      display: inline-block;
+      content: '分';
+    }
+
+    .mbsc-ios .mbsc-dt-whl-i .mbsc-sc-itm.mbsc-sc-itm-ph:after {
+      content: '';
+    }
+
   </style>
 </head>
 
 <body>
   <div id="fetchAndDeliver" v-cloak></div>
+  <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+  <script src="https://lincoln-mp-dev.yonyouauto.com/fs01/static/moment.min.js"></script>
+  <script src="https://lincoln-mp-dev.yonyouauto.com/fs01/static/moment.zh-cn.js"></script>
+  <script src="https://lincoln-mp-dev.yonyouauto.com/fs01/ase/v2/mobiscroll/js/mobiscroll.javascript.min.js"></script>
+  <script type="text/javascript"
+          src="https://webapi.amap.com/maps?v=1.4.13&key=674d6cf348565037d2a9db3bf5138b95&plugin=AMap.Autocomplete,AMap.PlaceSearch,AMap.Driving"></script>
+  <script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+
+  <script>
+    mobiscroll.settings = {
+      lang: 'zh',
+      theme: 'ios'
+    };
+    window.onpageshow = function (e) {
+      if (e.persisted) {
+        window.location.reload();
+      }
+    }
+
+  </script>
+  <style>
+    .v-modal {
+      opacity: .3;
+    }
+
+    .mint-popup {
+      transition: .3s ease;
+    }
+
+  </style>
 </body>
 
 <!-- <script src="https://libs.baidu.com/jquery/1.9.0/jquery.js"></script> -->
+
 </html>

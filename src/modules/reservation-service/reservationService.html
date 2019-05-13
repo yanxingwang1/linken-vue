@@ -6,20 +6,7 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1, shrink-to-fit=no,user-scalable=no, minimum-scale=1, maximum-scale=1,viewport-fit=cover">
   <link rel="icon" href="data:;base64,=">
-  <script src="https://cdn.bootcss.com/moment.js/2.22.2/moment.min.js"></script>
-  <script src="https://cdn.bootcss.com/moment.js/2.22.2/locale/zh-cn.js"></script>
-  <!-- <title>LINCOLN</title> -->
-  <script>
-    // applicationCache.addEventListener("updateready",function(){
-    //   applicationCache.swapCache();      // 手工更新本地缓存
-    //   location.reload();    //重新加载页面页面
-    // },true);
-    var start_time = (new Date()).getTime()
-    var end_time = ''
-    console.log('请求页面时间：', start_time, 'ms')
-
-  </script>
-  <style lang="sass" scoped>
+  <style>
     html, body {
       width: 100%;
       height: 100%;
@@ -30,38 +17,149 @@
       padding: 0px;
     }
 
-    body {
-      padding-bottom: constant(safe-area-inset-bottom);
+  </style>
+  <link rel="stylesheet"
+        href="https://lincoln-mp-dev.yonyouauto.com/fs01/ase/v2/mobiscroll/css/mobiscroll.javascript.min.css">
+  <!-- <title>LINCOLN</title> -->
+  <script>
+    var start_time = (new Date()).getTime()
+  </script>
+
+  <style>
+    .mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm,
+    .mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm,
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm {
+      text-align: center;
     }
+
+    /*.mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm:after,*/
+    /*.mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm:after,*/
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm:after {
+      display: inline-block;
+      content: '时';
+    }
+
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm.mbsc-sc-itm-ph:after {
+      content: '';
+    }
+
+    /*.mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm:after,*/
+    /*.mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm:after,*/
+    .mbsc-ios .mbsc-dt-whl-i .mbsc-sc-itm:after {
+      display: inline-block;
+      content: '分';
+    }
+
+    .mbsc-ios .mbsc-dt-whl-i .mbsc-sc-itm.mbsc-sc-itm-ph:after {
+      content: '';
+    }
+
+    .mbsc-ios .mbsc-sc-whl-gr-3d .mbsc-sc-itm-3d {
+      font-size: 20px;
+    }
+
+    .mbsc-ios .mbsc-sc-itm {
+      font-size: 20px;
+    }
+
   </style>
 </head>
 
 <body>
 <div id="trydrivercar" v-cloak></div>
+<script src="https://lincoln-mp-dev.yonyouauto.com/fs01/ase/v2/mobiscroll/js/mobiscroll.javascript.min.js"></script>
+<script src="https://lincoln-mp-dev.yonyouauto.com/fs01/static/moment.min.js"></script>
+<script src="https://lincoln-mp-dev.yonyouauto.com/fs01/static/moment.zh-cn.js"></script>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.13&key=674d6cf348565037d2a9db3bf5138b95"></script>
+<script>
+  mobiscroll.settings = {
+    lang: 'zh',
+    theme: 'ios'
+  };
+  window.onpageshow = function (e) {
+    if (e.persisted) {
+      window.location.reload();
+    }
+  }
+</script>
 <style type="text/css">
-  .wx-input-wrap .v-modal{
+  .wx-input-wrap .v-modal {
     opacity: 0 !important;
   }
 </style>
 <style type="text/css">
-  .server-confirm-panel{
+  body {
+    font-family: PingFangSC-Regular;
+  }
+
+  .server-confirm-panel {
     padding-top: 25px;
     border-top: 1px solid #E2E2E2;
   }
-  .server-confirm-panel > div{
+
+  .server-confirm-panel > div {
     display: flex;
     line-height: 28px;
     font-size: 15px;
   }
-  .server-confirm-panel > div > div:nth-of-type(1){
+
+  .server-confirm-panel > div > div:nth-of-type(1) {
     text-align: left;
     width: 75px;
     flex: 0 0 auto;
     color: #808080;
   }
-  .server-confirm-panel > div > div:nth-of-type(2){
+
+  .server-confirm-panel > div > div:nth-of-type(2) {
     text-align: left;
     color: #141414;
+  }
+
+  /* mint-ui switch S */
+  .mint-switch-input:checked + .mint-switch-core {
+    border-color: rgb(179, 94, 31);
+    background-color: rgb(179, 94, 31);
+  }
+
+  .mint-switch-core {
+    display: inline-block;
+    position: relative;
+    width: 38px;
+    height: 18px;
+    border: 1px solid #d9d9d9;
+    border-radius: 16px;
+    box-sizing: border-box;
+    background: #d9d9d9;
+  }
+
+  .mint-switch-core::before {
+    width: 38px !important;
+    height: 18px !important;
+    background-color: #d8d8d8;
+  }
+
+  .mint-switch-core::after {
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  }
+
+  /* mint-ui switch E */
+  .mint-switch .mint-switch-core {
+    width: 38px !important;
+    height: 18px !important;
+  }
+
+  .mint-switch-core::before {
+    width: 38px !important;
+    height: 18px !important;
+    box-shadow: initial !important;
+  }
+
+  .mint-switch-core::after {
+    width: 16px !important;
+    height: 16px !important;
   }
 </style>
 </body>

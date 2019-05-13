@@ -1,11 +1,11 @@
 <template>
   <div class="dealers-info-panel" :class="{'dealers-info-ready':dealerInfo.dealerCode}">
     <div class="dealers-info-l">
-      <div class="dealers-title">{{dealerInfo.dealerName||'选择经销商'}}<span>*</span>
+      <div class="dealers-title">
+        {{dealerInfo.dealerName||'选择经销商'}}
+        <span>*</span>
       </div>
-      <div class="dealers-address" v-show="dealerInfo.address">
-        {{dealerInfo.address}}
-      </div>
+      <div class="dealers-address" v-show="dealerInfo.address">{{dealerInfo.address}}</div>
     </div>
     <div class="dealers-info-r">
       <div class="dealers-phone" @click.stop="phoneHandleClick"></div>
@@ -14,22 +14,22 @@
 </template>
 
 <script>
-  export default {
-    name: "DealersInfoPanel",
-    props: {
-      dealerInfo: {
-        type: Object
+export default {
+  name: "DealersInfoPanel",
+  props: {
+    dealerInfo: {
+      type: Object
+    }
+  },
+  methods: {
+    phoneHandleClick() {
+      if (this.dealerInfo.serviceHotline) {
+        console.log("打电话", this.dealerInfo.serviceHotline);
+        window.location.href = `tel:${this.dealerInfo.serviceHotline}`;
       }
-    },
-    methods: {
-      phoneHandleClick() {
-        if (this.dealerInfo.serviceHotline) {
-          console.log('打电话', this.dealerInfo.serviceHotline)
-          window.location.href = `tel:${this.dealerInfo.serviceHotline}`
-        }
-      }
-    },
+    }
   }
+};
 </script>
 
 <style scoped lang="sass" type="text/scss">

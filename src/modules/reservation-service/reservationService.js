@@ -1,10 +1,11 @@
 // 模块入口文件
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import './../../assets/style/normalize.mobile.min.css'
 import Vue from 'vue'
 import cover from './reservationService.app'
 import http from './reservationService.api'
 import '../../config/rem'
-import '../../config/click'
+// import '../../config/click'
 import router from './reservationService.router'
 
 import MintUI from 'mint-ui'
@@ -15,6 +16,7 @@ import './style/style.scss'
 import './../../assets/style/jquery.extend.scss'
 import './../../common/jquery.extend'
 import VueAwesomeSwiper from 'vue-awesome-swiper'
+// import './../../assets/style/stylewx.scss'
 
 Vue.use(MintUI)
 // Vue.use(N3Components)

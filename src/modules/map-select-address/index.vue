@@ -1,140 +1,195 @@
 <template>
-  <div class="index">
-    <div class="address-wrap">
-      <div @click="showCityPickerView" class="address-txt">
-        <span>{{cityName}}</span>
-      </div>
-      <div class="address-input-wrap">
-        <input ref="searchInput" type="text" id="searchInput" placeholder="请输入地址">
-        <div id="searchResults"></div>
-      </div>
-      <div @click="okBtnHandleClick" class="ok-wrap">
-        确定
-      </div>
-    </div>
-    <div id="amap-container">
-
-    </div>
-
+  <div class="index" @touchmove.prevent>
+    <div id="amap-container"></div>
+    <select-view v-show="show" @change="searchActive" @city-change="cityChange" :city-info="cityInfo"></select-view>
+    <search-list :search-list="searchList" @list-cell-on-click="listCellOnClick"></search-list>
+    <address-panel :address-info="addressInfo" @confirm="confirmBtnHandleClick"></address-panel>
   </div>
 </template>
 
 <script>
-  import util from '../../common/DMC.util'
-  // import {Popup, MessageBox} from 'mint-ui'
-  //http://localhost:8000/modules/trydrivercar
 
-  let aMap, cityPicker, positionPicker, poiPicker, infoWindow
+  import SelectView from './components/SelectView'
+  import SearchList from './components/SearchList'
+  import AddressPanel from './components/AddressPanel'
+  import {Indicator, Toast} from "mint-ui"
+
+  let aMap, autocomplete, positionPicker
 
   export default {
     name: 'map-select-address',
-
-    components: {},
-    created() {
-      end_time = new Date().getTime()
-      console.log('index加载时间：', end_time - start_time, 'ms')
-    },
-    beforeDestroy() {
-      clearInterval(this.timer)
+    components: {
+      AddressPanel,
+      SelectView, SearchList, Indicator, Toast
     },
     data() {
       return {
-        cityName: '',
-        resAddress: ''
+        show: false,
+        searchList: [],//搜索结果列表
+        addressInfo: {},//拖拽选址结果
+        cityInfo: { //城市选择结果
+          adcode: "110000",
+          areaCode: "010", //控制搜索查询范围
+          lat: 39.904989,
+          lng: 116.405285,
+          name: "北京市", //控制搜索查询范围
+          spell: "Beijing",
+        },
       }
     },
     directives: {},
     watch: {},
     methods: {
-      okBtnHandleClick() {
-        const {resAddress} = this
-        alert(`你选择的地点是：${resAddress}`)
+      //确定地址事件
+      confirmBtnHandleClick() {
+        const {addressInfo} = this
+        console.log('确定地址', addressInfo)
+        //保存 到sessionStorage
+        sessionStorage.setItem(`${this.$route.query.from}SelectAddress`, addressInfo.address)
+        this.$router.back(-1)
       },
+      //搜索地址按钮点击
+      searchActive(keyword) {
+        if (!keyword) {
+          Toast('请输入搜索内容');
+          return
+        }
+        Indicator.open({
+          spinnerType: "triple-bounce"
+        });
+        const {areaCode, name} = this.cityInfo
+        autocomplete = new AMap.Autocomplete({
+          city: areaCode || name,
+          citylimit: true
+        });
+        autocomplete.search(keyword, (status, result) => {
+          setTimeout(() => {
+            Indicator.close()
+            if (status === 'complete') {
+              console.log('搜索结果', status, result)
+              result.tips.length = 5
+              this.searchList = result.tips
+
+            } else if (status === 'no_data') {
+              console.log('搜索没有匹配到结果', status, result)
+              Toast('没有搜索到相关地址')
+            } else {
+              console.log('搜索出错', status, result)
+              Toast('服务器开小差了');
+            }
+          }, 300)
+        })
+      },
+      //城市选择发生改变
+      cityChange(cityInfo) {
+        console.log('城市选择发生改变')
+        this.searchList = []
+        this.cityInfo = cityInfo
+        aMap.setCity(cityInfo.adcode)
+      },
+      //搜索结果 列表点击事件
+      listCellOnClick(tip) {
+        this.searchList = []
+        console.log('list-cell-on-click', tip)
+        if (tip.location) {
+          const {lng, lat} = tip.location
+          console.log('经纬度', lng, lat)
+          aMap.setZoomAndCenter(16, [lng, lat])
+        } else {
+          const {adcode} = tip
+          console.log('行政区', adcode)
+          aMap.setCity(adcode)
+        }
+      },
+      //初始化地图
       initAmap() {
+        const {cityInfo} = this
         aMap = new AMap.Map('amap-container', {
           zoom: 10,
           resizeEnable: true
         });
         aMap.on("complete", () => {
-          aMap.getCity(result => {
-            this.cityName = result.province
+          aMap.getCity(({province, city, citycode, district}) => {
+            const {lat, lng} = aMap.getCenter()
+            this.cityInfo = {
+              adcode: '',
+              areaCode: citycode,
+              lat,
+              lng,
+              name: province,
+              spell: "",
+            }
+            this.show = true
+            this.aMapGeolocation()
           })
-          this.initAMapUI()
+          this.initPositionPicker()
+        })
+
+
+      },
+      //精确定位  预留的
+      aMapGeolocation() {
+        AMap.plugin('AMap.Geolocation', () => {
+          var geolocation = new AMap.Geolocation({
+            enableHighAccuracy: true,
+            buttonOffset: new AMap.Pixel(10, 20),
+            zoomToAccuracy: true,
+            buttonPosition: 'RB'
+          })
+          geolocation.getCurrentPosition()
+          AMap.event.addListener(geolocation, 'complete', onComplete)
+          AMap.event.addListener(geolocation, 'error', onError)
+
+          function onComplete(data) {
+            // data是具体的定位信息
+            console.log('具体的定位信息', data)
+            // $.toast('定位成功')
+            //设置中心点
+            const {lat, lng} = data.position
+            const {citycode, adcode, province} = data.addressComponent
+            // aMap.setCenter(data.position)
+            // aMap.setZoom(16)
+            aMap.setZoomAndCenter(16, data.position)
+            this.cityInfo = {
+              adcode: adcode,
+              areaCode: citycode,
+              lat,
+              lng,
+              name: province,
+              spell: "",
+            }
+          }
+
+          function onError(data) {
+            // 定位出错
+            console.log('定位出错', data)
+            // $.toast('定位出错')
+          }
         })
       },
-      //初始化高德 UI
-      initAMapUI() {
-        //设置DomLibrary
-        AMapUI.setDomLibrary(jQuery);
-        //AMapUI
-        AMapUI.loadUI(['misc/MobiCityPicker', 'misc/PositionPicker', 'overlay/SimpleInfoWindow'], (MobiCityPicker, PositionPicker, SimpleInfoWindow) => {
-          //加载PositionPicker
+      //输入提示功能
+      initAutocomplete() {
+        autocomplete = new AMap.Autocomplete();
+      },
+      //拖拽选址
+      initPositionPicker() {
+        AMapUI.loadUI(['misc/PositionPicker'], (PositionPicker) => {
           positionPicker = new PositionPicker({
             mode: 'dragMap',//设定为拖拽地图模式，可选'dragMap'、'dragMarker'，默认为'dragMap'
             map: aMap//依赖地图对象
           });
-          //TODO:事件绑定、结果处理等
+          positionPicker.start();
           positionPicker.on('success', (positionResult) => {
-            console.log('PositionPicker success', positionResult)
-            const {position, address, nearestJunction, nearestRoad, nearestPOI} = positionResult
-            this.resAddress = address
-            infoWindow = new SimpleInfoWindow({
-              infoTitle: '<strong>目标地点</strong>',
-              infoBody: `<div>${address}</div>`,
-              //基点指向marker的头部位置
-              offset: new AMap.Pixel(0, -31)
-            });
-            infoWindow.open(aMap, position);
+            console.log('拖拽选址 当前地址', positionResult)
+            this.addressInfo = positionResult
           });
           positionPicker.on('fail', (positionResult) => {
-            console.log('PositionPicker fail', positionResult)
-          });
-          positionPicker.start();
-
-          //加载MobiCityPicker
-          cityPicker = new MobiCityPicker({
-            //topGroups: ..., // 顶部城市列表
-          });
-          //监听城市选中事件
-          cityPicker.on('citySelected', (cityInfo) => {
-            //隐藏城市列表
-            cityPicker.hide();
-            //选中的城市信息
-            console.log(cityInfo);
-            //地图显示到当前城市
-            aMap.setCity(cityInfo.adcode);
-            this.cityName = cityInfo.name
-            this.$refs.searchInput.value = ''
-          });
-
-
-          //搜索 输入提示
-          var auto = new AMap.Autocomplete({
-            input: "searchInput"
-          });
-
-          var placeSearch = new AMap.PlaceSearch({
-            map: aMap
-          });
-          //构造地点查询类
-          //注册监听，当选中某条记录时会触发
-          AMap.event.addListener(auto, "select", e => {
-            console.log('placeSearch select', e)
-            const {location, adcode, name} = e.poi
-            if (location) {
-              aMap.setCenter(e.poi.location);
-              aMap.setZoom(17)
-            } else {
-              aMap.setCity(adcode)
-            }
+            // 海上或海外无法获得地址信息
+            console.log('拖拽选址 无法获得当前地址')
           });
 
         });
       },
-      //显城市选择组件
-      showCityPickerView() {
-        cityPicker.show()
-      }
     },
     beforeMount() {
       $(document).attr('title', '地图选址')
@@ -142,59 +197,22 @@
     mounted() {
       window.app = this
       this.initAmap()
-
+      //
+      const from = this.$route.query.from
+      console.log('来自', from)
     }
   }
 </script>
 
 <style lang="sass" type="text/scss" rel="stylesheet/scss" scoped>
-  /*.index {*/
-  /*position: absolute;*/
-  /*top: 0;*/
-  /*right: 0;*/
-  /*bottom: 0;*/
-  /*left: 0;*/
-  /*}*/
-  .address-wrap {
-    height: 50px;
-    display: flex;
-
-    .address-txt {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex: 1;
-    }
-
-    .address-input-wrap {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex: 3;
-
-      #searchInput {
-        width: 95%;
-        height: 100%;
-        border: none;
-      }
-
-      #searchResults {
-        display: none;
-      }
-    }
-
-    .ok-wrap {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex: 1;
-    }
+  .index {
+    width: 100%;
+    height: 100%;
   }
 
   #amap-container {
     position: absolute;
-    top: 50px;
+    top: 0;
     right: 0;
     bottom: 0;
     left: 0;

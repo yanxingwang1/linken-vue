@@ -58,6 +58,7 @@
           <show-tip v-show="step==2" title="进厂里程数：" :detail="detailInfo.detailDto.enterFactoryMileage?(detailInfo.detailDto.enterFactoryMileage+' KM'):''"></show-tip>
           <show-tip v-show="step==3" title="出厂里程数：" :detail="detailInfo.detailDto.outFactoryMileage?(detailInfo.detailDto.outFactoryMileage+' KM'):''"></show-tip>
           <show-tip v-show="detailInfo.detailDto.serviceType==1" title="代步车：" :detail="detailInfo.detailDto.scootor==0?'申请':'不申请'"></show-tip>
+          <show-tip v-show="profession=='service'" title="送车服务：" :detail="detailInfo.detailDto.isPud==12781001?'需要':'不需要'"></show-tip>
         </div>
         <div class="div-border"></div>
         <div class="info repare">
@@ -126,7 +127,8 @@
         showJingchang:true,
         showQuxiao:false,
         jingchangAble:false,
-        wanchengAble:false
+        wanchengAble:false,
+        profession:''
       }
     },
     directives: {
@@ -186,6 +188,7 @@
 
     mounted() {
       this.orderId = this.$route.query.orderCode;
+      this.profession = this.$route.query.profession;
       return this.$nextTick(() => this.init());
     }
   };

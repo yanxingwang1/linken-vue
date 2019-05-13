@@ -682,8 +682,13 @@ a:active {text-decoration:none;color: black} /* 鼠标按下去时的状态 */
   letter-spacing: -0.36px;
 }
 .mint-switch-input:checked + .mint-switch-core {
-  border-color: #FC3846;
+ 
   background-color: #FC3846;
+   border-color: transparent;
+}
+.mint-switch-input:checked + .mint-switch-core {
+  background-color: #B45F1A;
+  background-color: #B45F1A;
 }
 
 //H
@@ -866,3 +871,13 @@ a:active {text-decoration:none;color: black} /* 鼠标按下去时的状态 */
   }
 }
 /*试乘试驾反馈表 end =================*/
+/*服务工程师列表 start =================*/
+.delivery-btn-wrap {
+  .mint-button {
+    .mint-button-text {
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+  }
+}
+/*服务工程师列表 end =================*/

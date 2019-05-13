@@ -54,5 +54,48 @@
     margin-top: 20px;
     color: #BBBBBB;
   }
+  /* mint-ui switch S */
+  .mint-switch-input:checked + .mint-switch-core {
+    border-color: rgb(179, 94, 31);
+    background-color: rgb(179, 94, 31);
+  }
+
+  .mint-switch-core {
+    display: inline-block;
+    position: relative;
+    width: 38px;
+    height: 18px;
+    border: 1px solid #d9d9d9;
+    border-radius: 16px;
+    box-sizing: border-box;
+    background: #d9d9d9;
+  }
+
+  .mint-switch-core::before {
+    width: 38px;
+    height: 18px;
+    background-color: #d8d8d8;
+  }
+
+  .mint-switch-core::after {
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
+  }
+  /* mint-ui switch E */
+  .mint-switch .mint-switch-core{
+    width: 38px !important;
+    height: 18px !important;
+  }
+  .mint-switch-core::before{
+    width: 38px !important;
+    height: 18px !important;
+    box-shadow: initial !important;
+  }
+  .mint-switch-core::after{
+    width: 16px !important;
+    height: 16px !important;
+  }
 </style>
 </html>

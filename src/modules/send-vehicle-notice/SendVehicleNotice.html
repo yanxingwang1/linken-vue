@@ -1,0 +1,104 @@
+<!-- 送车通知 -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no,user-scalable=no, minimum-scale=1, maximum-scale=1,viewport-fit=cover">
+  <link rel="icon" href="data:;base64,=">
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+
+  </style>
+  <link rel="stylesheet"
+    href="https://lincoln-mp-dev.yonyouauto.com/fs01/ase/v2/mobiscroll/css/mobiscroll.javascript.min.css">
+  <script>
+    var start_time = (new Date()).getTime()
+    var end_time = ''
+    console.log('请求页面时间：', start_time, 'ms')
+
+  </script>
+
+  <style>
+    .mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm,
+    .mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm,
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm {
+      text-align: center;
+    }
+
+    /*.mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm:after,*/
+    /*.mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm:after,*/
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm:after {
+      display: inline-block;
+      content: '时';
+    }
+
+    .mbsc-ios .mbsc-dt-whl-h .mbsc-sc-itm.mbsc-sc-itm-ph:after {
+      content: '';
+    }
+
+    /*.mbsc-ios .mbsc-dt-whl-d .mbsc-sc-itm:after,*/
+    /*.mbsc-ios .mbsc-dt-whl-date .mbsc-sc-itm:after,*/
+    .mbsc-ios .mbsc-dt-whl-i .mbsc-sc-itm:after {
+      display: inline-block;
+      content: '分';
+    }
+
+    .mbsc-ios .mbsc-dt-whl-i .mbsc-sc-itm.mbsc-sc-itm-ph:after {
+      content: '';
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="trydrivercar" v-cloak></div>
+  <script src="https://lincoln-mp-dev.yonyouauto.com/fs01/ase/v2/mobiscroll/js/mobiscroll.javascript.min.js"></script>
+  <script src="https://lincoln-mp-dev.yonyouauto.com/fs01/static/moment.min.js"></script>
+  <script src="https://lincoln-mp-dev.yonyouauto.com/fs01/static/moment.zh-cn.js"></script>
+  <script type="text/javascript"
+          src="https://webapi.amap.com/maps?v=1.4.13&key=674d6cf348565037d2a9db3bf5138b95&plugin=AMap.Autocomplete,AMap.PlaceSearch,AMap.Driving"></script>
+  <script src="https://webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+
+  <script>
+    mobiscroll.settings = {
+      lang: 'zh',
+      theme: 'ios'
+    };
+    // 解决ios微信刷新无效问题
+    window.onpageshow = function (e) {
+      if (e.persisted) {
+        window.location.reload();
+      }
+    }
+
+  </script>
+  <style>
+    body {
+      font-family: PingFangSC-Regular;
+    }
+
+    label {
+      margin: 0;
+      font-weight: initial;
+    }
+
+    .address-cel-list .address-cell:nth-child(3) .address-cell-item.title .text {
+      color: rgb(180, 95, 26) !important;
+    }
+
+  </style>
+
+</body>
+
+</html>

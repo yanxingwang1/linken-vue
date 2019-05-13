@@ -3,17 +3,17 @@
 import Vue from 'vue'
 import cover from './mapSelectAddress.app'
 import http from './mapSelectAddress.api'
-// import '../../config/rem'
-import '../../config/click'
-import '../../common/DMC.filter'
-import './../../common/jquery.extend'
+import '../../config/rem'
+// import '../../config/click'
+// import '../../common/DMC.filter'
 import router from './mapSelectAddress.router'
 
-// import MintUI from 'mint-ui'
+import MintUI from 'mint-ui'
 import 'mint-ui/lib/style.css'
-// import './../../assets/style/common-style.scss'
+import './../../assets/style/jquery.extend.scss'
+import './../../common/jquery.extend'
 
-// Vue.use(MintUI)
+Vue.use(MintUI)
 Vue.prototype.http = http;
 
 Vue.config.productionTip = false

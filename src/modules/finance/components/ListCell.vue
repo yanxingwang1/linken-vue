@@ -4,6 +4,7 @@
         <div class="show-detail" v-else>
                 <div class="show-tab">
                     <span class="show-tab-span">{{subscribe.serviceType==1?'维修服务':subscribe.serviceType==2?'保养服务':subscribe.serviceType==3?'检查服务':'其他服务'}}</span>
+                    <span v-show="profession=='service'&&subscribe.isPud&&subscribe.isPud==12781001" class="show-tab-span-deliver">送车服务</span>
                 </div>
                 <div class="show-main-content">
                     <div class="show-main-content-tab"><div class="show-main-content-tab-title">客户称谓：</div><div class="show-main-content-tab-con">{{subscribe.lastName}}  {{subscribe.sex==0?'先生':subscribe.sex==1?'女士':''}}</div><div class="car-status show-main-content-tab-rig">{{subscribe.status==10661000?'已进厂':subscribe.status==10661003?'已确认':subscribe.status==10661004?'已完成':'已取消'}}</div></div>
@@ -40,6 +41,9 @@
       },
       index: {
         type: Number
+      },
+      profession: {
+          type: String
       }
     },
     methods: {
@@ -74,6 +78,14 @@
                     padding: 2px;
                     border: 1px solid #0B1665;
                     border-radius: 2px;
+                }
+                .show-tab-span-deliver {
+                    font-size: 12px;
+                    color: #007AE5;
+                    padding: 2px;
+                    border: 1px solid #007AE5;
+                    border-radius: 2px;
+                    margin-left: 10px;
                 }
             }
             .show-main-content {
