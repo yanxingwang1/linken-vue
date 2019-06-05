@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const index = () => import(/* webpackChunkName: "group-home" */  './index')
-const drivingLine = () => import(/* webpackChunkName: "group-home" */  './drivingLine')
+const index = () => import('./index')
+const drivingLine = () => import('./drivingLine')
+const drivingLine2 = () => import('./drivingLine2')
 const wayShow = () => import('./driveWayShow')
 
 Vue.use(Router)
@@ -26,6 +27,12 @@ const mapSelectAddressRouter = new Router({
       path: '/drivingLine',
       name: 'drivingLine',
       component: drivingLine,
+      meta: {keepAlive: true} // 这个是不需要keepalive的
+    },
+    {
+      path: '/drivingLine2',
+      name: 'drivingLine2',
+      component: drivingLine2,
       meta: {keepAlive: true} // 这个是不需要keepalive的
     },
     {

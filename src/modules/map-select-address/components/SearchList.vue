@@ -2,7 +2,7 @@
   <div class="search-list-wrap">
     <div class="list-cell-wrap" v-for="(tip,i) in searchList">
       <div class="list-cell-inner" @click="$emit('list-cell-on-click',tip)">
-        <div class="cell-title">{{tip.name}}</div>
+        <div class="cell-title" v-html="filteName(tip.name)"></div>
         <div class="cell-desc">{{tip.district}}{{tip.address}}</div>
       </div>
     </div>
@@ -13,7 +13,20 @@
   export default {
     name: "SearchList",
     props: {
-      searchList: Array
+      searchList: Array,
+      searchText: String
+    },
+    methods: {
+      filteName(name) {
+        const arr = name.split(this.searchText)
+        console.log(arr)
+        if (arr.length === 2) {
+          return `<span>${arr[0]}</span><span style="color: #B76725;">${this.searchText}</span><span>${arr[1]}</span>`
+        } else {
+          return `<span>${arr[0]}</span>`
+        }
+
+      }
     },
   }
 </script>
@@ -38,14 +51,16 @@
   .list-cell-wrap {
     .list-cell-inner {
       padding: 10px 0;
-      border-bottom: solid 1px black;
+      border-bottom: solid 1px #E2E2E2;
 
       .cell-title {
         font-size: 14px;
       }
 
       .cell-desc {
-        font-size: 12px;
+        padding-top: 2px;
+        font-size: 11px;
+        color: #8A8A8A;
       }
     }
   }

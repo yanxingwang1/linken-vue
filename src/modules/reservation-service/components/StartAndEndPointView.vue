@@ -3,27 +3,41 @@
 <template>
   <div class="address-cel-list" ref="wrap">
     <div class="line" ref="line"></div>
-    <div class="address-cell" @click="chooseStartAddress">
+    <div class="address-cell">
       <div class="address-cell-item title">
         <div class="icon">
-          <img ref="start" src="./../imgs/address1@2x.png" alt>
+          <img ref="start" src="./../imgs/address1@3x.png" alt>
         </div>
         <!--<div class="text">{{data.dealerName}}</div>-->
         <div class="text">{{data.startName}}</div>
       </div>
-      <div class="address-cell-item desc">
+      <div class="address-cell-item desc" @click="chooseStartAddress">
         <div class="icon"></div>
         <!--<div class="text">{{data.detailAddress||data.pickupAddress}}</div>-->
         <div class="text">{{data.startAddress}}</div>
       </div>
+      <div class="address-cell-item desc" v-show="data.showStartHouseNumber">
+        <div class="icon"></div>
+        <div class="text" style="padding: 10px 0;">
+          <input v-model="data.startHouseNumber" type="text" class="house-number-input" placeholder="请输入楼号门牌">
+        </div>
+      </div>
     </div>
     <!-- 有地址选址 -->
-    <div class="address-cell" @click="chooseEndAddress">
-      <div class="address-cell-item title">
+    <div class="address-cell">
+      <div class="address-cell-item title" @click="chooseEndAddress">
         <div class="icon">
-          <img ref="end" src="./../imgs/address2@2x.png" alt>
+          <img ref="end" src="./../imgs/address2@3x.png" alt>
         </div>
-        <div class="text">{{data.endName}}</div>
+        <div class="text">{{data.endName}}
+          <slot></slot>
+        </div>
+      </div>
+      <div class="address-cell-item desc" v-show="data.showHouseNumber">
+        <div class="icon"></div>
+        <div class="text" style="padding: 10px 0;">
+          <input v-model="data.houseNumber" type="text" class="house-number-input" placeholder="请输入楼号门牌">
+        </div>
       </div>
       <div class="address-cell-item desc" v-show="data.endAddress">
         <div class="icon"></div>
@@ -48,11 +62,15 @@
           return {
             startName: "上海绿地林肯中心",
             startAddress: "上海市静安区康宁路956号（近场中路）",
+            showStartHouseNumber: false,
+            startHouseNumber: '',//门牌号
             endName: "我的位置",
             endAddress: '我的位置',
             latitude: "31.306374",
             longitude: "121.434909",
-            from: ''
+            from: '',
+            houseNumber: '',//门牌号
+            showHouseNumber: false
           }
         }
       },
@@ -70,14 +88,17 @@
     },
     watch: {
       data: {
+        immediate: true,
         deep: true,
         handler(newVal) {
-          console.log('line')
-          this.computeStartEndPosition()
+          this.$nextTick(() => {
+            console.log('line')
+            this.computeStartEndPosition()
+          })
         }
       },
-      test(newVal){
-        if (newVal){
+      test(newVal) {
+        if (newVal) {
           this.computeStartEndPosition()
         }
       }
@@ -180,5 +201,16 @@
         }
       }
     }
+  }
+
+  //门牌号
+  .house-number-input {
+    border: solid 1px #A9A9A9;
+    border-radius: 3px;
+    height: px(35);
+    width: 95%;
+    color: #323232;
+    padding: 0 px(10);
+    -webkit-appearance: none;
   }
 </style>

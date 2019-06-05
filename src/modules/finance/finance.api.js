@@ -21,6 +21,10 @@ try {
     {"id":"getAftersaleList","url":"OSB/api/v1/appointment/getAftersaleList","format":false},
     // 售后服务详情
     {"id":"saleDetail","url":"OSB/api/v1/appointment/detail","format":false},
+    // 售后服务报价查询
+    {"id":"getValuationOrder","url":"PUD/api/v1/getValuationOrder","format":false},
+    // 售后服务报价确认
+    {"id":"confirmValuation","url":"OSB/api/v1/dealer/confirmValuation","format":false},
   ];
   
   //默认不开启，开启后读取本地模拟数据

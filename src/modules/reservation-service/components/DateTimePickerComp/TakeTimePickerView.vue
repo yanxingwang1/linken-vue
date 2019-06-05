@@ -13,81 +13,95 @@
       <div class="check-cell">
         <div class="check-icon"></div>
         <div class="check-label">
-          <div @click="popupVisible=true">{{filterTitle()}}</div>
+          <div @click="popupVisible=true">{{filterTitle()}}
+            <slot></slot>
+          </div>
         </div>
       </div>
       <div class="check-cell-sub">{{filterSubTitle()}}</div>
     </div>
 
     <mt-popup v-model="popupVisible" position="bottom">
-      <date-time-picker :default-value="defaultValue" @confirm="pickerConfirm"></date-time-picker>
+      <date-time-picker :popup-visible="popupVisible" :default-value="defaultValue" @confirm="pickerConfirm"></date-time-picker>
     </mt-popup>
   </div>
 </template>
 
 <script>
-import { Popup } from "mint-ui";
-import WxButton from "./../../../../components/WxButton";
-import DateTimePicker from "./DateTimePicker2";
+  import {Popup} from "mint-ui";
+  import WxButton from "./../../../../components/WxButton";
+  import DateTimePicker from "./DateTimePicker2";
 
-export default {
-  components: {
-    Popup,
-    WxButton,
-    DateTimePicker
-  },
-  name: "TakeTimePickerView",
-  data() {
-    return {
-      popupVisible: false
-    };
-  },
-  props: {
-    //简洁模式 显示一行
-    simple: {
-      type: Boolean,
-      default: false
+  export default {
+    components: {
+      Popup,
+      WxButton,
+      DateTimePicker
     },
-    defaultValue: {
-      type: String,
-      default: ""
+    name: "TakeTimePickerView",
+    data() {
+      return {
+        popupVisible: false
+      };
     },
-    title: {
-      type: String,
-      default: "选择时间"
-    },
-    subtitle: {
-      type: String,
-      default: "选择时间"
-    }
-  },
-  computed: {},
-  methods: {
-    filterTitle() {
-      const { defaultValue, simple } = this;
-      if (simple && defaultValue) {
-        // console.log(value)
-        return moment(defaultValue).format("YYYY年MM月DD日 dddd HH:mm");
-      } else {
-        return this.title;
+    props: {
+      //简洁模式 显示一行
+      simple: {
+        type: Boolean,
+        default: false
+      },
+      defaultValue: {
+        type: String,
+        default: ""
+      },
+      title: {
+        type: String,
+        default: "选择时间"
+      },
+      subtitle: {
+        type: String,
+        default: "选择时间"
       }
     },
-    filterSubTitle() {
-      const { defaultValue } = this;
-      if (defaultValue) {
-        return moment(defaultValue).format("YYYY年MM月DD日 dddd HH:mm");
-      } else {
-        return this.subtitle;
+    watch: {
+      defaultValue: {
+        immediate: true,
+        handler(newVal) {
+          console.log(new Date().getTime())
+          console.log('11111', newVal)
+        }
+      }
+
+    },
+
+    computed: {},
+    methods: {
+      filterTitle() {
+        const {defaultValue, simple} = this;
+        if (simple && defaultValue) {
+          // console.log(value)
+          return moment(defaultValue).format("YYYY年MM月DD日 dddd HH:mm");
+        } else {
+          return this.title;
+        }
+      },
+      filterSubTitle() {
+        const {defaultValue} = this;
+        if (defaultValue) {
+          return moment(defaultValue).format("YYYY年MM月DD日 dddd HH:mm");
+        } else {
+          return this.subtitle;
+        }
+      },
+      pickerConfirm(value) {
+        console.log("pickerConfirm", value);
+        this.$emit("change", value);
+        this.popupVisible = false;
       }
     },
-    pickerConfirm(value) {
-      console.log("pickerConfirm", value);
-      this.$emit("change", value);
-      this.popupVisible = false;
+    mounted() {
     }
-  },
-  mounted() {}
-};
+  };
 </script>
 
 <style scoped lang="sass" type="text/scss">

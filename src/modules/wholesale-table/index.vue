@@ -12,14 +12,14 @@
 
     <!-- 订单类型 -->
     <div class="saletype">
-      <div :class="{'active':saletype==1}" @click="touchsale('1')" style="margin-left: -1px">
-        <div>首客</div>
+      <div :class="{'active':saletype==3}" @click="touchsale('3')" style="margin-left: -1px">
+        <div>零售</div>
       </div>
       <div :class="{'active':saletype==2}" @click="touchsale('2')">
-        <div :style="{borderLeft:saletype==3||saletype==4?'1px solid #BABABA':''}">订单</div>
+        <div :style="{borderLeft:saletype==1||saletype==4?'1px solid #BABABA':''}">订单</div>
       </div>
-      <div class="mid" :class="{'active':saletype==3}" @click="touchsale('3')">
-        <div>零售</div>
+      <div class="mid" :class="{'active':saletype==1}" @click="touchsale('1')">
+        <div>首客</div>
       </div>
       <div :class="{'active':saletype==4}" @click="touchsale('4')" style="margin-left: -1px">
         <div>批售</div>
@@ -101,7 +101,7 @@ export default {
       timetype: 1,
       startTime: moment(new Date()).format("YYYY-MM-DD"),
       endTime: moment(new Date()).format("YYYY-MM-DD"),
-      saletype: 1,
+      saletype: 3,
       saletypes: {
         1: "首客",
         2: "订单",
@@ -543,6 +543,7 @@ export default {
       return moment(this.restime).format("YYYY年MM月DD日  HH:mm");
     },
     showHeJi() {
+      return true
       const { treeData } = this;
       let flag = true;
       if (treeData.children) {

@@ -54,7 +54,7 @@ class WxJSHandler {
                     timestamp: timestamp, // Required, generate a signed timestamp
                     nonceStr: nonceStr, // Required, generate a signed nonceStr
                     signature: signature,// Required, signature. See Appendix 1
-                    jsApiList: ['checkJsApi','chooseImage','uploadImage','previewImage','closeWindow','onHistoryBack','hideMenuItems'] // Required, required JA interface list, all JS interface list, see Appendix 2
+                    jsApiList: ['checkJsApi','chooseImage','uploadImage','previewImage','closeWindow','onHistoryBack','hideMenuItems','onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ'] // Required, required JA interface list, all JS interface list, see Appendix 2
                 });
                  wx.ready(function() {
                         if (typeof callback === 'function') {
@@ -138,11 +138,72 @@ class WxJSHandler {
                     "menuItem:share:appMessage",
                     "menuItem:share:timeline",
                     "menuItem:share:qq",
-                    "menuItem:share:QZone"
+                    "menuItem:share:QZone",
+                    "menuItem:copyUrl"
                 ]
             });
 
             resolve();
+        })
+    }
+
+    
+    // 分享
+    OnMenuShareAppMessage1(data){
+        debugger
+        return new Promise(function(resolve, reject) {
+            wx.onMenuShareAppMessage({
+                title: data.title,
+                desc: data.desc,
+                link: data.link,
+                imgUrl: data.imgUrl,
+                success: function () {
+                    resolve();
+                //     // 用户确认分享后执行的回调函数
+                 },
+                //  cancel: function () {
+                //     // 用户取消分享后执行的回调函数
+                //  }
+            });
+
+        })
+    }
+    OnMenuShareTimeline1(data){
+        debugger
+        return new Promise(function(resolve, reject) {
+            wx.onMenuShareTimeline({
+                title: data.title,
+                desc: data.desc,
+                link: data.link,
+                imgUrl: data.imgUrl,
+                success: function () {
+                    resolve();
+                //     // 用户确认分享后执行的回调函数
+                 },
+                //  cancel: function () {
+                //     // 用户取消分享后执行的回调函数
+                //  }
+            });
+
+        })
+    }
+    OnMenuShareQQ1(data){
+        debugger
+        return new Promise(function(resolve, reject) {
+            wx.onMenuShareQQ({
+                title: data.title,
+                desc: data.desc,
+                link: data.link,
+                imgUrl: data.imgUrl,
+                success: function () {
+                    resolve();
+                //     // 用户确认分享后执行的回调函数
+                 },
+                //  cancel: function () {
+                //     // 用户取消分享后执行的回调函数
+                //  }
+            });
+
         })
     }
  

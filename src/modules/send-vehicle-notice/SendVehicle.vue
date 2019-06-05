@@ -2,7 +2,7 @@
   <div class="send-vehicle">
     <!-- 派单中 -->
 
-    <div class="fetch-detail-index" v-if="data.orderStatus==90041002">
+    <div class="fetch-detail-index Canscroll" v-if="data.orderStatus==90041002">
       <div class="fetch-detail-index-status">派单中</div>
       <div class="fetch-detail-index-user">
         <div class="fetch-detail-index-username">尊敬的{{data.lastName}}{{data.sex=='1'?'女士':'先生'}}</div>
@@ -11,13 +11,13 @@
       <show-cancel-title title="联系林肯中心取消订单" :userPhone="data.engineerPhone"></show-cancel-title>
 
       <div class="fetch-detail-index-detail">
-        <show-tip-title title="送车服务"></show-tip-title>
+        <show-tip-title title="送车上门服务"></show-tip-title>
         <show-tip-content title="车辆信息：" :detail="`${data.carModelName} ${data.carNo}`"></show-tip-content>
         <show-tip-content title="车主信息：" :detail="carOwnerInfo"></show-tip-content>
-        <show-tip-content v-show="data.pickerPhone" title="接车人信息：" :detail="helpOwnerInfo"></show-tip-content>
-        <show-tip-content title="预约送出时间：" :detail="bookingTime"></show-tip-content>
-        <show-tip-content title="预约送车地址：" :detail="data.returnAddress"></show-tip-content>
-        <show-shop-title title="林肯中心信息" :userPhone="data.engineerPhone"></show-shop-title>
+        <show-tip-content v-show="data.pickerPhone" title="委托接车人：" :detail="helpOwnerInfo"></show-tip-content>
+        <show-tip-content title="预计送达时间：" :detail="bookingTime"></show-tip-content>
+        <show-tip-content title="预约送车地址：" :detail="returnAddress"></show-tip-content>
+        <show-shop-title title="林肯中心信息" :userPhone="data.serviceHotline"></show-shop-title>
         <show-tip-content title="林肯中心：" :detail="data.dealerName"></show-tip-content>
         <show-tip-content title="林肯中心地址：" :detail="data.pickupAddress"></show-tip-content>
         <show-tip-content title="服务工程师：" :detail="data.engineerName"></show-tip-content>
@@ -27,26 +27,28 @@
       </div>
     </div>
     <!-- 已接单 -->
-    <div class="fetch-detail-index" v-if="data.orderStatus==90041003">
+    <div class="fetch-detail-index Canscroll" v-if="data.orderStatus==90041003">
       <div class="fetch-detail-index-status">已接单</div>
 
       <drive-info
+        :driverImg="orderDetailDrive.pictureSmall"
         :driverName="orderDetailDrive.driverName"
         :jobNumber="orderDetailDrive.driverNo"
         :driverPhone="orderDetailDrive.driverPhone"
+        :driverStar="orderDetailDrive.newLevel"
         driverStatus="0"
         code="0"
       ></drive-info>
       <show-cancel-title title="联系林肯中心取消订单" :userPhone="data.engineerPhone"></show-cancel-title>
 
       <div class="fetch-detail-index-detail">
-        <show-tip-title title="送车服务"></show-tip-title>
+        <show-tip-title title="送车上门服务"></show-tip-title>
         <show-tip-content title="车辆信息：" :detail="`${data.carModelName} ${data.carNo}`"></show-tip-content>
         <show-tip-content title="车主信息：" :detail="carOwnerInfo"></show-tip-content>
-        <show-tip-content v-show="data.pickerPhone" title="接车人信息：" :detail="helpOwnerInfo"></show-tip-content>
-        <show-tip-content title="预约送出时间：" :detail="bookingTime"></show-tip-content>
-        <show-tip-content title="预约送车地址：" :detail="data.returnAddress"></show-tip-content>
-        <show-shop-title title="林肯中心信息" :userPhone="data.userPhone"></show-shop-title>
+        <show-tip-content v-show="data.pickerPhone" title="委托接车人：" :detail="helpOwnerInfo"></show-tip-content>
+        <show-tip-content title="预计送达时间：" :detail="bookingTime"></show-tip-content>
+        <show-tip-content title="预约送车地址：" :detail="returnAddress"></show-tip-content>
+        <show-shop-title title="林肯中心信息" :userPhone="data.serviceHotline"></show-shop-title>
         <show-tip-content title="林肯中心：" :detail="data.dealerName"></show-tip-content>
         <show-tip-content title="林肯中心地址：" :detail="data.pickupAddress"></show-tip-content>
         <show-tip-content title="服务工程师：" :detail="data.engineerName"></show-tip-content>
@@ -59,27 +61,30 @@
     <!-- 订单开启 -->
     <div class="fetch-detail-index" v-if="data.orderStatus==90041004">
       <!-- <div class="fetch-detail-index-status">订单开启</div> -->
+      <!-- :code="code" -->
       <drive-info
+        :driverImg="orderDetailDrive.pictureSmall"
         :driverName="orderDetailDrive.driverName"
         :jobNumber="orderDetailDrive.driverNo"
         :driverPhone="orderDetailDrive.driverPhone"
+        :driverStar="orderDetailDrive.newLevel"
         driverStatus="1"
-        :code="code"
+        code="0"
       ></drive-info>
       <!-- <show-cancel-title title="联系林肯中心取消订单" :userPhone="data.userPhone"></show-cancel-title> -->
       <div class="fetch-detail-index-help">
-        <div class="fetch-detail-index-help1">有问题请拨打服务电话</div>
-        <div class="fetch-detail-index-help2" @click="phoneClick('400-810-3939')">400-810-3939</div>
+        <div class="fetch-detail-index-help1" >有问题请拨打服务电话 <img @click="phoneClick('400-810-3939')" src="./imgs/phone-o@3x.png"></div>
+        <!-- <div class="fetch-detail-index-help2" @click="phoneClick('400-810-3939')">400-810-3939</div> -->
         <div class="fetch-detail-index-help3">代驾客服服务时间 7:00-21:00</div>
       </div>
       <div class="fetch-detail-index-detail">
-        <show-tip-title title="送车服务"></show-tip-title>
+        <show-tip-title title="送车上门服务"></show-tip-title>
         <show-tip-content title="车辆信息：" :detail="`${data.carModelName} ${data.carNo}`"></show-tip-content>
         <show-tip-content title="车主信息：" :detail="carOwnerInfo"></show-tip-content>
-        <show-tip-content v-show="data.pickerPhone" title="接车人信息：" :detail="helpOwnerInfo"></show-tip-content>
-        <show-tip-content title="预约送出时间：" :detail="bookingTime"></show-tip-content>
-        <show-tip-content title="预约送车地址：" :detail="data.returnAddress"></show-tip-content>
-        <show-shop-title title="林肯中心信息" :userPhone="data.userPhone"></show-shop-title>
+        <show-tip-content v-show="data.pickerPhone" title="委托接车人：" :detail="helpOwnerInfo"></show-tip-content>
+        <show-tip-content title="预计送达时间：" :detail="bookingTime"></show-tip-content>
+        <show-tip-content title="预约送车地址：" :detail="returnAddress"></show-tip-content>
+        <show-shop-title title="林肯中心信息" :userPhone="data.serviceHotline"></show-shop-title>
         <show-tip-content title="林肯中心：" :detail="data.dealerName"></show-tip-content>
         <show-tip-content title="林肯中心地址：" :detail="data.pickupAddress"></show-tip-content>
         <show-tip-content title="服务工程师：" :detail="data.engineerName"></show-tip-content>
@@ -89,30 +94,35 @@
         <show-tip-content title="接单时间：" :detail="takingTime"></show-tip-content>
       </div>
     </div>
-    <!-- 代驾中 -->
+    <!-- 送车中 -->
     <div class="fetch-detail-index" v-if="data.orderStatus==90041005">
-      <!-- <div class="fetch-detail-index-status">代驾中</div> -->
+      <!-- <div class="fetch-detail-index-status">送车中</div> -->
+      <!-- :code="code" -->
       <drive-info
+        :driverImg="orderDetailDrive.pictureSmall"
         :driverName="orderDetailDrive.driverName"
         :jobNumber="orderDetailDrive.driverNo"
         :driverPhone="orderDetailDrive.driverPhone"
+        :driverStar="orderDetailDrive.newLevel"
         driverStatus="2"
-        :code="code"
+        code="0"
       ></drive-info>
       <!-- <show-cancel-title title="联系林肯中心取消订单" :userPhone="data.userPhone"></show-cancel-title> -->
       <div class="fetch-detail-index-help">
-        <div class="fetch-detail-index-help1">有问题请拨打服务电话</div>
-        <div class="fetch-detail-index-help2" @click="phoneClick('400-810-3939')">400-810-3939</div>
+        <div class="fetch-detail-index-help1">有问题请拨打服务电话
+          <img  @click="phoneClick('400-810-3939')" src="./imgs/phone-o@3x.png">
+        </div>
+        <!-- <div class="fetch-detail-index-help2" >400-810-3939</div> -->
         <div class="fetch-detail-index-help3">代驾客服服务时间 7:00-21:00</div>
       </div>
       <div class="fetch-detail-index-detail">
-        <show-tip-title title="送车服务"></show-tip-title>
+        <show-tip-title title="送车上门服务"></show-tip-title>
         <show-tip-content title="车辆信息：" :detail="`${data.carModelName} ${data.carNo}`"></show-tip-content>
         <show-tip-content title="车主信息：" :detail="carOwnerInfo"></show-tip-content>
-        <show-tip-content v-show="data.pickerPhone" title="接车人信息：" :detail="helpOwnerInfo"></show-tip-content>
-        <show-tip-content title="预约送出时间：" :detail="bookingTime"></show-tip-content>
-        <show-tip-content title="预约送车地址：" :detail="data.returnAddress"></show-tip-content>
-        <show-shop-title title="林肯中心信息" :userPhone="data.userPhone"></show-shop-title>
+        <show-tip-content v-show="data.pickerPhone" title="委托接车人：" :detail="helpOwnerInfo"></show-tip-content>
+        <show-tip-content title="预计送达时间：" :detail="bookingTime"></show-tip-content>
+        <show-tip-content title="预约送车地址：" :detail="returnAddress"></show-tip-content>
+        <show-shop-title title="林肯中心信息" :userPhone="data.serviceHotline"></show-shop-title>
         <show-tip-content title="林肯中心：" :detail="data.dealerName"></show-tip-content>
         <show-tip-content title="林肯中心地址：" :detail="data.pickupAddress"></show-tip-content>
         <show-tip-content title="服务工程师：" :detail="data.engineerName"></show-tip-content>
@@ -122,30 +132,34 @@
         <show-tip-content title="接单时间：" :detail="takingTime"></show-tip-content>
       </div>
     </div>
-    <!-- 已到达 -->
+    <!-- 已送达 -->
     <div class="fetch-detail-index" v-if="data.orderStatus==90041006">
-      <!-- <div class="fetch-detail-index-status">已到达</div> -->
+      <!-- <div class="fetch-detail-index-status">已送达</div> -->
       <drive-info
+        :driverImg="orderDetailDrive.pictureSmall"
         :driverName="orderDetailDrive.driverName"
         :jobNumber="orderDetailDrive.driverNo"
         :driverPhone="orderDetailDrive.driverPhone"
+        :driverStar="orderDetailDrive.newLevel"
         driverStatus="3"
         :code="code"
       ></drive-info>
       <!-- <show-cancel-title title="联系林肯中心取消订单" :userPhone="data.userPhone"></show-cancel-title> -->
       <div class="fetch-detail-index-help">
-        <div class="fetch-detail-index-help1">有问题请拨打服务电话</div>
-        <div class="fetch-detail-index-help2" @click="phoneClick('400-810-3939')">400-810-3939</div>
+        <div class="fetch-detail-index-help1" >有问题请拨打服务电话
+             <img @click="phoneClick('400-810-3939')" src="./imgs/phone-o@3x.png">
+        </div>
+        <!-- <div class="fetch-detail-index-help2" @click="phoneClick('400-810-3939')">400-810-3939</div> -->
         <div class="fetch-detail-index-help3">代驾客服服务时间 7:00-21:00</div>
       </div>
       <div class="fetch-detail-index-detail">
-        <show-tip-title title="送车服务"></show-tip-title>
+        <show-tip-title title="送车上门服务"></show-tip-title>
         <show-tip-content title="车辆信息：" :detail="`${data.carModelName} ${data.carNo}`"></show-tip-content>
         <show-tip-content title="车主信息：" :detail="carOwnerInfo"></show-tip-content>
-        <show-tip-content v-show="data.pickerPhone" title="接车人信息：" :detail="helpOwnerInfo"></show-tip-content>
-        <show-tip-content title="预约送出时间：" :detail="bookingTime"></show-tip-content>
-        <show-tip-content title="预约送车地址：" :detail="data.returnAddress"></show-tip-content>
-        <show-shop-title title="林肯中心信息" :userPhone="data.userPhone"></show-shop-title>
+        <show-tip-content v-show="data.pickerPhone" title="委托接车人：" :detail="helpOwnerInfo"></show-tip-content>
+        <show-tip-content title="预计送达时间：" :detail="bookingTime"></show-tip-content>
+        <show-tip-content title="预约送车地址：" :detail="returnAddress"></show-tip-content>
+        <show-shop-title title="林肯中心信息" :userPhone="data.serviceHotline"></show-shop-title>
         <show-tip-content title="林肯中心：" :detail="data.dealerName"></show-tip-content>
         <show-tip-content title="林肯中心地址：" :detail="data.pickupAddress"></show-tip-content>
         <show-tip-content title="服务工程师：" :detail="data.engineerName"></show-tip-content>
@@ -157,24 +171,29 @@
     </div>
 
     <!-- 已完成未评价 -->
-    <div class="fetch-detail-index" v-if="data.orderStatus==90041007">
+    <!--<div class="fetch-detail-index" v-if="data.orderStatus==90041007">-->
+      <div class="fetch-detail-index Canscroll"  v-if="data.orderStatus==90041007">
       <div class="fetch-detail-index-status">已完成</div>
       <div class="fetch-detail-index-user">
         <div class="fetch-detail-index-username">尊敬的{{data.lastName}}{{data.sex=='1'?'女士':'先生'}}</div>
-        <div class="fetch-detail-index-userdesc">您的订单已完成，感谢您对{{data.dealerName}}的信任，诚邀您对本次服务进行评价。</div>
+        <div
+          class="fetch-detail-index-userdesc"
+        >您的订单已完成，感谢您对{{data.dealerName}}的信任，{{this.hasRated?'期待您再次光临。':'诚邀您对本次服务进行评价。'}}</div>
       </div>
       <div class="fetch-detail-index-commit">
         <div class="commit" @click="open()">{{this.hasRated?'查看评价':'服务评价'}}</div>
         <div class="fetch-detail-index-centerdiv"></div>
-        <div class="phone" @click="phoneClick(data.engineerPhone)">联系服务工程师</div>
+        <div class="phone" @click="phoneClick(data.engineerPhone)">联系服务工程师
+          <img src="./imgs/phone-o@3x.png" alt="">
+        </div>
       </div>
       <div class="fetch-detail-index-detail">
-        <show-tip-title title="送车服务"></show-tip-title>
+        <show-tip-title title="送车上门服务"></show-tip-title>
         <show-tip-content title="车辆信息：" :detail="`${data.carModelName} ${data.carNo}`"></show-tip-content>
         <show-tip-content title="车主信息：" :detail="carOwnerInfo"></show-tip-content>
-        <show-tip-content v-show="data.pickerPhone" title="接车人信息：" :detail="helpOwnerInfo"></show-tip-content>
-        <show-tip-content title="预约送出时间：" :detail="bookingTime"></show-tip-content>
-        <show-tip-content title="预约送车地址：" :detail="data.returnAddress"></show-tip-content>
+        <show-tip-content v-show="data.pickerPhone" title="委托接车人：" :detail="helpOwnerInfo"></show-tip-content>
+        <show-tip-content title="预计送达时间：" :detail="bookingTime"></show-tip-content>
+        <show-tip-content title="预约送车地址：" :detail="returnAddress"></show-tip-content>
         <show-shop-title title="林肯中心信息" :userPhone="data.serviceHotline"></show-shop-title>
         <show-tip-content title="林肯中心：" :detail="data.dealerName"></show-tip-content>
         <show-tip-content title="林肯中心地址：" :detail="data.pickupAddress"></show-tip-content>
@@ -185,34 +204,36 @@
         <show-tip-content title="接单时间：" :detail="takingTime"></show-tip-content>
         <show-tip-content title="完成时间：" :detail="arrivalTime"></show-tip-content>
         <show-tip-content
-          title="司机信息："
+          title="代驾专员信息："
           :phone="orderDetailDrive.driverPhone"
           :detail="orderDetailDrive.driverName"
         ></show-tip-content>
       </div>
       <div class="fetch-detail-index-getcommit">
         <mt-popup v-model="popupVisible" position="bottom">
-          <fetch-and-deliver-rate :hasRated="hasRated" :rateValue="rateValue"></fetch-and-deliver-rate>
+          <fetch-and-deliver-rate :hasRated="hasRated" :remark="remark" :rateValue="rateValue"></fetch-and-deliver-rate>
         </mt-popup>
       </div>
     </div>
 
     <!-- 已取消 -->
-    <div class="fetch-detail-index" v-if="data.orderStatus==90041008">
+    <div class="fetch-detail-index Canscroll" v-if="data.orderStatus==90041008">
       <div class="fetch-detail-index-status">已取消</div>
       <div class="fetch-detail-index-user">
         <div class="fetch-detail-index-username">尊敬的{{data.lastName}}{{data.sex=='1'?'女士':'先生'}}</div>
-        <div class="fetch-detail-index-userdesc">您的送车服务已取消，林肯中心期待下次为您服务。</div>
+        <div class="fetch-detail-index-userdesc">您的送车上门服务已取消，林肯中心期待下次为您服务。</div>
       </div>
-      <show-cancel-title title="联系服务工程师" :userPhone="data.engineerPhone"></show-cancel-title>
+      <show-cancel-title title="联系服务工程师" :userPhone="data.engineerPhone">
+         <img src="./imgs/phone-o@3x.png" alt="">
+      </show-cancel-title>
 
       <div class="fetch-detail-index-detail">
-        <show-tip-title title="送车服务"></show-tip-title>
+        <show-tip-title title="送车上门服务"></show-tip-title>
         <show-tip-content title="车辆信息：" :detail="`${data.carModelName} ${data.carNo}`"></show-tip-content>
         <show-tip-content title="车主信息：" :detail="carOwnerInfo"></show-tip-content>
-        <show-tip-content v-show="data.pickerPhone" title="接车人信息：" :detail="helpOwnerInfo"></show-tip-content>
-        <show-tip-content title="预约送出时间：" :detail="bookingTime"></show-tip-content>
-        <show-tip-content title="预约送车地址：" :detail="data.returnAddress"></show-tip-content>
+        <show-tip-content v-show="data.pickerPhone" title="委托接车人：" :detail="helpOwnerInfo"></show-tip-content>
+        <show-tip-content title="预计送达时间：" :detail="bookingTime"></show-tip-content>
+        <show-tip-content title="预约送车地址：" :detail="returnAddress"></show-tip-content>
         <show-shop-title title="林肯中心信息" :userPhone="data.serviceHotline"></show-shop-title>
         <show-tip-content title="林肯中心：" :detail="data.dealerName"></show-tip-content>
         <show-tip-content title="林肯中心地址：" :detail="data.pickupAddress"></show-tip-content>
@@ -286,6 +307,12 @@ export default {
   },
   computed: {
     //wang先生 18301998709
+    returnAddress:function(){//送车地址
+      if(this.data.houseNumber==null) {
+        return this.data.returnAddress
+      }
+      return `${this.data.returnAddress+this.data.houseNumber}`
+    },
     carOwnerInfo: function() {
       return `${this.data.lastName +
         (this.data.sex == "1" ? "女士" : "先生") +
@@ -300,10 +327,11 @@ export default {
         this.data.pickerPhone}`;
     },
     bookingTime: function() {
-      return moment(this.data.bookingTime).format("YYYY年MM月DD日 dddd HH:mm");
+      return moment(this.data.arrivalTime).format("YYYY年MM月DD日 dddd HH:mm");
     },
     createDate: function() {
-      return moment(this.data.createDate).format("YYYY年MM月DD日  HH:mm");
+    
+      return moment(this.orderDetailDrive.createTime).format("YYYY年MM月DD日  HH:mm");
     },
     takingTime: function() {
       return moment(this.orderDetailDrive.takingTime).format(
@@ -322,7 +350,7 @@ export default {
     },
     cancelTime: function() {
       var datadms = this.data.cancelTime;
-      var middata = this.orderDetailDrive.drivingTime;
+      var middata = this.orderDetailDrive.orderCancellingTime;
       var time = "";
       if (middata) {
         time = middata;
@@ -334,6 +362,10 @@ export default {
       return moment(time).format("YYYY年MM月DD日  HH:mm");
     },
     hasRated: function() {
+      //监听是否已经评价
+      return this.data.assStatus ? true : false;
+    },
+    remark: function() {
       //监听是否已经评价
       return this.data.remark ? true : false;
     },
@@ -475,7 +507,7 @@ export default {
   &-user {
     border-bottom: 1px solid #e2e2e2;
     margin: 0 15px;
-    height: 110px;
+    height: 120px;
   }
   &-username {
     font-size: 16px;
@@ -490,7 +522,7 @@ export default {
   }
   &-detail {
     padding: 0 15px;
-    margin-bottom: 40px;
+    // margin-bottom: 40px;
   }
   &-help {
     padding: 20px 15px 10px 15px;
@@ -499,9 +531,15 @@ export default {
     flex-direction: column;
         text-align: center;
   }
- 
+
   &-help1 {
     font-size:16px;
+    padding-bottom:10px;
+    img{
+      float:right;
+      width:18px;
+      margin-right:5px;
+    }
   }
   &-help2 {
        font-size:14px;
@@ -519,8 +557,16 @@ export default {
     padding: 0 15px;
     display: flex;
     justify-content: space-around;
-    .commit,.phone{
-          padding: 10px 8px 10px 30px;
+    .commit{
+        padding: 10px 8px 10px 35px;
+    }
+    .phone{
+          padding: 10px 11px 10px 5px;
+          img{
+            float:right;
+            width:18px;
+            margin-left: 10px;
+          }
     }
   }
    &-centerdiv {
@@ -529,5 +575,9 @@ export default {
     border-right: 1px solid #e2e2e2;
      margin: 5px;
   }
+}
+.Canscroll{
+  height: 100vh;
+  overflow:scroll;
 }
 </style>

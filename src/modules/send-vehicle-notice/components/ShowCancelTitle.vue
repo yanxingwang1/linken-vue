@@ -1,6 +1,8 @@
 <template>
   <div>
-    <div class="show-tip-title" @click.stop="phoneClick(userPhone)">{{title}}</div>
+    <div class="show-tip-title" @click.stop="phoneClick(userPhone)">{{title}}
+      <slot></slot>
+    </div>
   </div>
 </template>
 
@@ -40,6 +42,11 @@ export default {
   color: #323232;
   font-family: PingFangSC-Regular;
   font-weight: 400;
+  img{
+    width:18px;
+    float: right;
+    margin-right: 20px;
+  }
  
   padding: 15px 0 13px 0;
  text-align:center;

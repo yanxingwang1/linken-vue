@@ -2,7 +2,8 @@
   <div class="index" @touchmove.prevent>
     <div id="amap-container"></div>
     <select-view v-show="show" @change="searchActive" @city-change="cityChange" :city-info="cityInfo"></select-view>
-    <search-list :search-list="searchList" @list-cell-on-click="listCellOnClick"></search-list>
+    <search-list :search-text="searchText" :search-list="searchList"
+                 @list-cell-on-click="listCellOnClick"></search-list>
     <address-panel :address-info="addressInfo" @confirm="confirmBtnHandleClick"></address-panel>
   </div>
 </template>
@@ -25,6 +26,7 @@
     data() {
       return {
         show: false,
+        searchText: '',
         searchList: [],//搜索结果列表
         addressInfo: {},//拖拽选址结果
         cityInfo: { //城市选择结果
@@ -46,6 +48,8 @@
         console.log('确定地址', addressInfo)
         //保存 到sessionStorage
         sessionStorage.setItem(`${this.$route.query.from}SelectAddress`, addressInfo.address)
+        sessionStorage.setItem(`${this.$route.query.from}SelectAddressLng`, addressInfo.position.lng)
+        sessionStorage.setItem(`${this.$route.query.from}SelectAddressLat`, addressInfo.position.lat)
         this.$router.back(-1)
       },
       //搜索地址按钮点击
@@ -54,9 +58,9 @@
           Toast('请输入搜索内容');
           return
         }
-        Indicator.open({
-          spinnerType: "triple-bounce"
-        });
+        // Indicator.open({
+        //   spinnerType: "triple-bounce"
+        // });
         const {areaCode, name} = this.cityInfo
         autocomplete = new AMap.Autocomplete({
           city: areaCode || name,
@@ -64,20 +68,21 @@
         });
         autocomplete.search(keyword, (status, result) => {
           setTimeout(() => {
-            Indicator.close()
+            // Indicator.close()
             if (status === 'complete') {
               console.log('搜索结果', status, result)
               result.tips.length = 5
+              this.searchText = keyword
               this.searchList = result.tips
-
             } else if (status === 'no_data') {
               console.log('搜索没有匹配到结果', status, result)
+              this.searchList = []
               Toast('没有搜索到相关地址')
             } else {
               console.log('搜索出错', status, result)
               Toast('服务器开小差了');
             }
-          }, 300)
+          }, 100)
         })
       },
       //城市选择发生改变
@@ -109,25 +114,28 @@
           resizeEnable: true
         });
         aMap.on("complete", () => {
-          aMap.getCity(({province, city, citycode, district}) => {
-            const {lat, lng} = aMap.getCenter()
-            this.cityInfo = {
-              adcode: '',
-              areaCode: citycode,
-              lat,
-              lng,
-              name: province,
-              spell: "",
-            }
-            this.show = true
-            this.aMapGeolocation()
-          })
+          console.log('aMap complete')
+          // aMap.getCity(({province, city, citycode, district}) => {
+          //   console.log('aMap.getCity', {province, city, citycode, district})
+          //   const {lat, lng} = aMap.getCenter()
+          //   this.cityInfo = {
+          //     adcode: '',
+          //     areaCode: citycode,
+          //     lat,
+          //     lng,
+          //     name: province,
+          //     spell: "",
+          //   }
+          //   this.show = true
+          //
+          // })
+          this.aMapGeolocation()
           this.initPositionPicker()
         })
 
 
       },
-      //精确定位  预留的
+      //精确定位
       aMapGeolocation() {
         AMap.plugin('AMap.Geolocation', () => {
           var geolocation = new AMap.Geolocation({
@@ -136,35 +144,43 @@
             zoomToAccuracy: true,
             buttonPosition: 'RB'
           })
-          geolocation.getCurrentPosition()
-          AMap.event.addListener(geolocation, 'complete', onComplete)
-          AMap.event.addListener(geolocation, 'error', onError)
-
-          function onComplete(data) {
-            // data是具体的定位信息
-            console.log('具体的定位信息', data)
-            // $.toast('定位成功')
-            //设置中心点
-            const {lat, lng} = data.position
-            const {citycode, adcode, province} = data.addressComponent
-            // aMap.setCenter(data.position)
-            // aMap.setZoom(16)
-            aMap.setZoomAndCenter(16, data.position)
-            this.cityInfo = {
-              adcode: adcode,
-              areaCode: citycode,
-              lat,
-              lng,
-              name: province,
-              spell: "",
+          geolocation.getCurrentPosition((status, data) => {
+            this.show = true
+            if (status === 'complete') {
+              // data是具体的定位信息
+              console.log('具体的定位信息', data)
+              // $.toast('定位成功')
+              //设置中心点
+              const {lat, lng} = data.position
+              const {citycode, adcode, province} = data.addressComponent
+              // aMap.setCenter(data.position)
+              // aMap.setZoom(16)
+              aMap.setZoomAndCenter(16, data.position)
+              this.cityInfo = {
+                adcode: adcode,
+                areaCode: citycode,
+                lat,
+                lng,
+                name: province,
+                spell: "",
+              }
+            } else {
+              console.log('定位出错', data)
+              $.toast('定位失败，请检查您的手机设置')
+              aMap.getCity(({province, city, citycode, district}) => {
+                console.log('aMap.getCity', {province, city, citycode, district})
+                const {lat, lng} = aMap.getCenter()
+                this.cityInfo = {
+                  adcode: '',
+                  areaCode: citycode,
+                  lat,
+                  lng,
+                  name: province,
+                  spell: "",
+                }
+              })
             }
-          }
-
-          function onError(data) {
-            // 定位出错
-            console.log('定位出错', data)
-            // $.toast('定位出错')
-          }
+          })
         })
       },
       //输入提示功能

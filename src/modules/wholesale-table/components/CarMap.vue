@@ -1,7 +1,17 @@
 <template>
   <!-- 销售车型 -->
   <div class="car-type">
-    <div class="carli-f"></div>
+    <div class="carli-f carli-dcl">
+      <div
+        style="width: 100%;height: 100%;display: flex;flex-direction: column;justify-content: center;align-items: center;"
+        :style="{visibility:timetype==3||timetype==4||weekno?'visible':'hidden'}">
+        <div style="font-size: 10px;text-align: center;margin-bottom: 3px;">达成率</div>
+        <div class="pass" @click="tiggle" style="text-align: center;width: 50%;">
+          <img v-if="percent" src="../images/open.png">
+          <img v-else src="../images/close.png">
+        </div>
+      </div>
+    </div>
     <div v-for="(item,index) in cars" :key="index" class="carli">
       <div class="imgli">
         <img :src="item.url" alt>
@@ -10,11 +20,11 @@
     </div>
 
     <div class="carli" :style="{visibility:timetype==3||timetype==4||weekno?'visible':'hidden'}">
-      <div style="font-size: 10px;text-align: center;">达成率</div>
-      <div class="pass" @click="tiggle" style="text-align: center;">
-        <img v-if="percent" src="../images/open.png">
-        <img v-else src="../images/close.png">
-      </div>
+      <!--<div style="font-size: 10px;text-align: center;">达成率</div>-->
+      <!--<div class="pass" @click="tiggle" style="text-align: center;">-->
+        <!--<img v-if="percent" src="../images/open.png">-->
+        <!--<img v-else src="../images/close.png">-->
+      <!--</div>-->
     </div>
   </div>
 </template>

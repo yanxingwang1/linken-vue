@@ -38,6 +38,12 @@ try {
       "url": "OSB/api/v1/dealer/queryAftersaleDealer",
       "format": false
     },
+    //查询经销商 是否支持取送车
+    {
+      "id": "queryDealerIsTake",
+      "url": "OSB/api/v1/dealer/checkDealer",
+      "format": false
+    },
     //
     {
       "id": "getMessageCode",
@@ -67,6 +73,12 @@ try {
     {
       "id": "WBO1",
       "url": "OSB/api/v1/dealer/WBO1",
+      "format": false
+    },
+    // 预估时间 距离
+    {
+      "id": "getEstimatedPrice",
+      "url": "PUD/api/v1/pay/getEstimatedPrice",
       "format": false
     }
 

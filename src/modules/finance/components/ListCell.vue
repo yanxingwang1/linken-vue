@@ -4,12 +4,14 @@
         <div class="show-detail" v-else>
                 <div class="show-tab">
                     <span class="show-tab-span">{{subscribe.serviceType==1?'维修服务':subscribe.serviceType==2?'保养服务':subscribe.serviceType==3?'检查服务':'其他服务'}}</span>
-                    <span v-show="profession=='service'&&subscribe.isPud&&subscribe.isPud==12781001" class="show-tab-span-deliver">送车服务</span>
+                    <span v-show="subscribe.isPud&&subscribe.isPud==12781001" class="show-tab-span-deliver">送车上门</span>
+                    <!-- <div class="show-tab-span-time">创建时间：{{subscribe.appointmentTime}}</div> -->
                 </div>
                 <div class="show-main-content">
                     <div class="show-main-content-tab"><div class="show-main-content-tab-title">客户称谓：</div><div class="show-main-content-tab-con">{{subscribe.lastName}}  {{subscribe.sex==0?'先生':subscribe.sex==1?'女士':''}}</div><div class="car-status show-main-content-tab-rig">{{subscribe.status==10661000?'已进厂':subscribe.status==10661003?'已确认':subscribe.status==10661004?'已完成':'已取消'}}</div></div>
-                    <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">服务车型：</div><div class="show-main-content-tab-con">{{subscribe.carModelName}}</div></div>
+                    <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">车辆信息：</div><div class="show-main-content-tab-con">{{subscribe.carModelName}}</div></div>
                     <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">预约服务时间：</div><div class="show-main-content-tab-con">{{subscribe.appointmentTime}}</div></div>
+                    <!-- <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">预约取车时间：</div><div class="show-main-content-tab-con">{{subscribe.appointmentTime}}</div></div> -->
                     <div class="content-label show-main-content-tab">
                         <div class="show-main-content-tab-title">来源：</div><div class="show-main-content-tab-con">{{subscribe.appointmentSource==0?'微信':subscribe.appointmentSource==1?'APP':subscribe.appointmentSource==2?'DCS':'DMS'}}</div>
                         <!-- <img class="content-img" :src="require('../imgs/daibuche.png')"/> -->
@@ -32,6 +34,13 @@
       }
     },
     computed: {
+        showRed() {
+            if(moment() > moment(this.subscribe.appointmentTime).add(30, "m")) {
+                return true;
+            }else {
+                return false;
+            }
+        }
     },
     watch: {
     },
@@ -70,22 +79,24 @@
             padding:0 3%;
             background:white;
             .show-tab {
+                font-size: 12px;
                 line-height:48px;
                 border-bottom: 1px solid  #E2E2E2;
                 .show-tab-span {
-                    font-size: 12px;
                     color: #0B1665;
                     padding: 2px;
                     border: 1px solid #0B1665;
                     border-radius: 2px;
                 }
                 .show-tab-span-deliver {
-                    font-size: 12px;
                     color: #007AE5;
                     padding: 2px;
                     border: 1px solid #007AE5;
                     border-radius: 2px;
                     margin-left: 10px;
+                }
+                .show-tab-span-time {
+                    float: right;
                 }
             }
             .show-main-content {

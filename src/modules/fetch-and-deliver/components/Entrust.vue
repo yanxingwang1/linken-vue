@@ -10,7 +10,9 @@
           <div v-if="disabled" style="position: absolute;top: 0;right: 0;bottom: 0;left: 0;"></div>
         </div>
       </div>
-      <trust-user class="trust-user" :uptrust="uptrust" v-show="value"></trust-user>
+      <trust-user class="trust-user" :uptrust="uptrust" v-show="value">
+        <slot></slot>
+      </trust-user>
     </div>
   </div>
 </template>

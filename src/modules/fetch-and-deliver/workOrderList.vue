@@ -10,7 +10,7 @@
           </x-input>
           <n3-select v-model="queryParam.prams" :cancelled="false" style="float:right;width:27%;margin-right:2%" @change='queryList()'>
             <n3-option value="">全部工单</n3-option>
-            <n3-option value="12781001">送车服务</n3-option>
+            <n3-option value="12781001">送车上门</n3-option>
           </n3-select>
       </div>
       <div class="fetch-deliver-main">
@@ -123,6 +123,8 @@
       },
       gotoDetail(orderItem){
         if(orderItem){
+          sessionStorage.removeItem("createSendOrderSelectAddress"); //清除缓存的地址
+          sessionStorage.removeItem("createorder");
           // this.$router.push({name :'createSendOrder', query: orderItem}); this.$route.params;
           if(this.$route.query.id){//修改或者从新下单
             // this.$router.push({path :`createSendOrder?id=${this.$route.query.id}`});
@@ -149,6 +151,9 @@
       this.queryParam.wxUserId = wxUserIdMoble.wxUserId;
 
       return this.$nextTick(() => this.init());
+    },
+    activated() {
+      $(document).attr('title','工单列表');
     }
   };
 

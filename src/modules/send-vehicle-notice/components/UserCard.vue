@@ -1,18 +1,18 @@
 <template>
   <div>
-    <div class="address-cell">
+    <div class="address-cells">
       <div class="address-cell-item title">
         <div class="icon">
           <img src="../imgs/time1@2x.png" alt>
         </div>
-        <div class="text">预约送出时间</div>
+        <div class="text">预计送达时间</div>
       </div>
       <div class="address-cell-item desc" style="color:rgba(180,95,26,1)">
         <div class="icon"></div>
         <div class="text">{{sendtime}}</div>
       </div>
     </div>
-    <div class="address-cell">
+    <div class="address-cells">
       <div class="address-cell-item title">
         <div class="icon">
           <img src="../imgs/uncustom.png" alt>
@@ -26,7 +26,7 @@
         >{{data.lastName}}{{data.sex=='1'?'女士':'先生'}}&nbsp;&nbsp;&nbsp;&nbsp;{{data.phone}}</div>
       </div>
     </div>
-    <div class="address-cell" v-show="data.pickerPhone">
+    <div class="address-cells" v-show="data.pickerPhone">
       <div class="address-cell-item title">
         <div class="icon">
           <img src="../imgs/custom.png" alt>
@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     sendtime: function() {
-      return moment(this.data.bookingTime).format(
+      return moment(this.data.arrivalTime).format(
         "YYYY年MM月DD日 星期dd HH:mm"
       );
     }
@@ -61,7 +61,7 @@ export default {
     @return ($px/20)+rem;
   }
 
-    .address-cell {
+    .address-cells {
       margin-top: px(10);
 
       .address-cell-item {

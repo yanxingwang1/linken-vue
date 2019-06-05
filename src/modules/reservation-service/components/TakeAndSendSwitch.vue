@@ -2,13 +2,13 @@
 <template>
   <div>
     <switch-cell
-      title="开启上门取车服务"
-      tips="将您的座驾送往经销商门店"
+      title="上门取车"
       :label="true"
-      v-show="1"
+      v-show="switchShow"
       :value="value"
       @input="$emit('input',!value)"
       :disabled="switchDisabled"
+      :on-click="switchOnClick"
     >
     </switch-cell>
     <div class="qcs-info-panel" v-show="value">
@@ -59,14 +59,18 @@
       switchDisabled: {
         type: Boolean
       },
+      switchShow: Boolean,
+      switchOnClick: Function,
       data: {
         type: Object,
         default() {
           return {
-            taketime:'',
+            taketime: '',
             isAgree: false,
             startName: '我的位置',
             startAddress: '我的位置',
+            showStartHouseNumber: false,
+            startHouseNumber: '',//门牌号
             endName: '经销商地址',
             endAddress: '距离',
             latitude: "",
@@ -77,9 +81,7 @@
       },
     },
     data() {
-      return {
-
-      }
+      return {}
     },
     methods: {
       timePickerChange(value) {

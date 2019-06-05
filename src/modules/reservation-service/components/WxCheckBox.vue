@@ -42,7 +42,7 @@
     }
 
     &.checked .check-icon {
-      background-image: url("./../imgs/check1@2x.png");
+      background-image: url("./../imgs/check1@3x.png");
     }
     .ageen{
      color: #A9A9A9;

@@ -1,10 +1,10 @@
 <template>
   <div class="address-panel-wrap" v-show="addressInfo.address">
     <div class="address-panel-title">
-      <div class="address-text">{{addressInfo.address}}</div>
+      <div class="address-text">{{filteAddressText(addressInfo)}}</div>
       <div class="address-btn" @click="$emit('confirm')">确定</div>
     </div>
-    <div class="address-panel-desc">{{addressInfo.nearestJunction}}</div>
+    <div class="address-panel-desc">{{filteAddressDesc(addressInfo)}}</div>
   </div>
 </template>
 
@@ -13,6 +13,26 @@
     name: "AddressPanel",
     props: {
       addressInfo: Object
+    },
+    methods: {
+      filteAddressText(addressInfo) {
+        const {regeocode} = addressInfo
+        if (!regeocode) {
+          return addressInfo.address
+        }
+        const {pois} = regeocode
+        if (!pois) {
+          return addressInfo.address
+        }
+        const [poi] = pois
+        if (!poi) {
+          return addressInfo.address
+        }
+        return poi.name
+      },
+      filteAddressDesc(addressInfo) {
+        return addressInfo.address
+      }
     }
   }
 </script>
@@ -57,8 +77,10 @@
     }
 
     .address-panel-desc {
+      color: #8A8A8A;
       font-size: 12px;
-      min-height: px(50);
+      min-height: px(40);
+      padding-bottom: px(10);
     }
   }
 </style>

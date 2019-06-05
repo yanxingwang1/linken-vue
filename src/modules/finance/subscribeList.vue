@@ -20,6 +20,21 @@
             <n3-option value="10661000">已进厂</n3-option>
             <n3-option value="10661004">已完成</n3-option>
             <n3-option v-if="type=='director'" value="10661006">已取消</n3-option>
+            <!-- <n3-option value="1">待确认</n3-option>
+            <n3-option value="2">派单中</n3-option>
+            <n3-option value="3">已接单</n3-option>
+            <n3-option value="4">取车订单开启</n3-option>
+            <n3-option value="5">取车中</n3-option>
+            <n3-option value="6">已收车</n3-option>
+            <n3-option value="7">估价待确认</n3-option>
+            <n3-option value="8">等待维修</n3-option>
+            <n3-option value="9">正在服务</n3-option>
+            <n3-option value="10">正在质检</n3-option>
+            <n3-option value="11">正在洗车</n3-option>
+            <n3-option value="12">交车准备</n3-option>
+            <n3-option value="13">已完成</n3-option>
+            <n3-option value="14">已取消</n3-option>
+            <n3-option value="15">已进厂</n3-option> -->
           </n3-select>
       </div>
       <div class="subscribe-main">

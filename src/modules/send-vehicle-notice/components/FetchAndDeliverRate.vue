@@ -3,27 +3,27 @@
     <div class="fetch-and-deliver-rate">
       <div class="fetch-and-deliver-rate-title">您的评价会让我们做的更好</div>
       <question
-        title="评价林肯中心"
+        title="对本次林肯中心的服务评价"
         :disabled="hasRated"
         :rate="rateValue.assStatus"
         @changeSelect="val=>{this.userRate=val}"
       ></question>
       <question
-        title="评价代驾方"
+        title="对本次送车服务评价"
         :disabled="hasRated"
         :rate="rateValue.eAssStatus"
         @changeSelect="val=>{this.driverRate=val}"
       ></question>
-      <div class="fetch-and-deliver-rate-show" v-if="hasRated">
+      <div class="fetch-and-deliver-rate-show" v-if="remark">
         <div class="fetch-and-deliver-rate-show-date">{{rateValue.date}}</div>
         <div class="fetch-and-deliver-rate-show-text">{{rateValue.remark}}</div>
       </div>
-      <div class="wx-input-wrap port-c" v-else>
+      <div class="wx-input-wrap port-c" v-else  v-show="showComit">
         <div class="wx-content">
           <textarea
             class="wx-input wx-textarea"
             rows="4"
-            placeholder="欢迎留下您的宝贵意见"
+            placeholder="看来您对我们的服务不太满意？请留下宝贵意见，帮助我们进一步改进。"
             v-model="userRateText"
             maxlength="50"
             @blur="onblurBottom()"
@@ -33,7 +33,7 @@
       <div :class="{'visibility-hidden':hasRated}" class="fetch-and-deliver-rate-button">
         <mt-button
           type="default"
-          :disabled="userRate==''||driverRate==''||userRateText==''"
+          :disabled="userRate==''||driverRate==''"
           @click="backUserRate()"
         >确认提交</mt-button>
       </div>
@@ -56,9 +56,22 @@ export default {
     },
     rateValue: {
       type: Object
+    },
+    remark:{
+      type:String
     }
   },
-  computed: {},
+  computed: {
+    showComit(){
+      var showComit=false;
+      if(this.userRate=="90061003"||this.userRate=="90061004"||this.driverRate=="90061003"||this.driverRate=="90061004"){
+          showComit=true;
+      }
+      return showComit;
+    },
+  
+ 
+  },
   data() {
     return {
       userRate: "",

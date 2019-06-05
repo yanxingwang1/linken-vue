@@ -24,12 +24,16 @@ export const initPanel = function (params) {
         <div>${params.appointmentPhone}</div>
       </div>
       <div>
-        <div>${params.serviceType == 1 ? '代步车：' : ''}</div>
-        <div>${params.serviceType == 1 ? (params.scootor == 0 ? '是' : '否') : ''}</div>
+        <div>${params.serviceType == 1 ? (params.scootor == 0 ? '代步车：' : '') : ''}</div>
+        <div>${params.serviceType == 1 ? (params.scootor == 0 ? '需要' : '') : ''}</div>
       </div>
       <div>
-        <div>送车服务：</div>
-        <div>${params.isPud == '12781001' ? '是' : '否'}</div>
+        <div>${params.isTake == '12781001' ? '上门取车：' : ''}</div>
+        <div>${params.isTake == '12781001' ? '需要' : ''}</div>
+      </div>
+      <div>
+        <div>${params.isPud == '12781001' ? '送车上门：' : '送车上门：'}</div>
+        <div>${params.isPud == '12781001' ? '需要' : '不需要'}</div>
       </div>
       <div>
         <div>留言：</div>
@@ -38,3 +42,4 @@ export const initPanel = function (params) {
     </div>
     `
 }
+

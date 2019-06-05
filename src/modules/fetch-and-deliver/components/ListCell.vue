@@ -10,10 +10,10 @@
                         <div class="show-main-content-tab-title">车辆信息：</div>
                         <div class="show-main-content-tab-con">{{subscribe.carModelName}}&nbsp;&nbsp;&nbsp;{{subscribe.carNo}}</div>
                         <div class="car-status show-main-content-tab-rig">
-                            {{subscribe.orderStatus==90041001?'待确认':subscribe.orderStatus==90041002?'派单中':subscribe.orderStatus==90041003?'已接单':subscribe.orderStatus==90041004?'订单开启':subscribe.orderStatus==90041005?'代驾中':subscribe.orderStatus==90041006?'已到达':subscribe.orderStatus==90041007?'已完成':subscribe.orderStatus==90041008?'已取消':''}}
+                            {{subscribe.orderStatus==90041001?'待确认':subscribe.orderStatus==90041002?'派单中':subscribe.orderStatus==90041003?'已接单':subscribe.orderStatus==90041004?'送车订单开启':subscribe.orderStatus==90041005?'送车中':subscribe.orderStatus==90041006?'已送达':subscribe.orderStatus==90041007?'已完成':subscribe.orderStatus==90041008?'已取消':''}}
                         </div>
                     </div>
-                    <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">客户称谓：</div><div class="show-main-content-tab-con">{{subscribe.lastName}}{{subscribe.sex==0?'先生':subscribe.sex==1?'女士':''}}&nbsp;&nbsp;&nbsp;{{subscribe.phone}}</div></div>
+                    <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">车主信息：</div><div class="show-main-content-tab-con">{{subscribe.lastName}}{{subscribe.sex==0?'先生':subscribe.sex==1?'女士':''}}&nbsp;&nbsp;&nbsp;{{subscribe.phone}}</div></div>
                     <div class="content-label show-main-content-tab"><div class="show-main-content-tab-title">服务工程师：</div><div class="show-main-content-tab-con">{{subscribe.engineerName}}</div></div>
                 </div>
         </div>
@@ -93,9 +93,10 @@
                     }
                     .show-main-content-tab-con {
                         flex-grow: 3;
+                        width: 100px;
                     }
                     .show-main-content-tab-rig {
-                        align-self: center;
+                        align-self: flex-start;
                     }
                 }
                 .car-status {
@@ -106,15 +107,6 @@
                 .content-label {
                     margin-top: 5px;
                 }
-            }
-        }
-        .daibuche {
-            display: flex;
-            flex-direction: row-reverse;
-            margin-top: -39px;
-            .content-img {
-                width:39px;
-                height:39px;
             }
         }
     }

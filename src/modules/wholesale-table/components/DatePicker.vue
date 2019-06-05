@@ -103,15 +103,15 @@ export default {
   },
   data() {
     const date = moment();
-    var spectial = false;
+    // var spectial = false;
     var weekFlagDate;
-    if (moment().format("E") == "7" && moment().format("HH") >= "20") {
-      spectial = true; //标记周日八点以后可以查看当周报表
+    // if (moment().format("E") == "7" && moment().format("HH") >= "20") {
+    //   spectial = true; //标记周日八点以后可以查看当周报表
       weekFlagDate = thisWeek(moment(), -1)[0];
-    } else {
-      spectial = false;
-      weekFlagDate = nextWeek(moment(), -1)[0];
-    }
+    // } else {
+    //   spectial = false;
+      // weekFlagDate = nextWeek(moment(), -1)[0];
+    // }
 
     const week_s = naWeek(weekFlagDate)[0];
     const week_e = naWeek(weekFlagDate)[1];
@@ -126,7 +126,7 @@ export default {
       month,
       month_t: month.format("MM"),
       quarter_count: 0,
-      spectial: spectial
+      // spectial: spectial
       // quarter_s: moment().startOf("quarter")
     };
   },
@@ -145,21 +145,21 @@ export default {
       let flag = false;
       if (this.timetype === 2) {
         //周
-        if (this.spectial) {
+        // if (this.spectial) {
+        //   if (
+        //     this.week_e.format("YYYY-MM-DD") ===
+        //     thisWeek(moment(), -1)[1].format("YYYY-MM-DD")
+        //   ) {
+        //     flag = true;
+        //   }
+        // } else {
           if (
             this.week_e.format("YYYY-MM-DD") ===
             thisWeek(moment(), -1)[1].format("YYYY-MM-DD")
           ) {
             flag = true;
           }
-        } else {
-          if (
-            this.week_e.format("YYYY-MM-DD") ===
-            nextWeek(moment(), -1)[1].format("YYYY-MM-DD")
-          ) {
-            flag = true;
-          }
-        }
+        // }
       } else if (this.timetype === 3) {
         //月
         if (this.month_t === moment().format("MM")) {
@@ -200,7 +200,7 @@ export default {
         month_e: this.month.endOf("month").format("YYYY-MM-DD"),
         quarter_s: this.quarter_s.format("YYYY-MM-DD")
       };
-
+   console.log("parmas",parmas)
       this.$emit("updatetime", parmas);
     },
     //时间减
@@ -229,21 +229,21 @@ export default {
         }
         this.date.add(1, "d");
       } else if (timetype == 2) {
-        if (this.spectial) {
+        // if (this.spectial) {
+        //   if (
+        //     this.week_e.format("YYYY-MM-DD") ===
+        //     thisWeek(moment(), -1)[1].format("YYYY-MM-DD")
+        //   ) {
+        //     return;
+        //   }
+        // } else {
           if (
             this.week_e.format("YYYY-MM-DD") ===
             thisWeek(moment(), -1)[1].format("YYYY-MM-DD")
           ) {
             return;
           }
-        } else {
-          if (
-            this.week_e.format("YYYY-MM-DD") ===
-            nextWeek(moment(), -1)[1].format("YYYY-MM-DD")
-          ) {
-            return;
-          }
-        }
+        // }
         this.week_s = nextWeek(this.weekFlagDate, 1)[0];
         this.week_e = nextWeek(this.weekFlagDate, 1)[1];
         this.weekFlagDate = this.week_s;

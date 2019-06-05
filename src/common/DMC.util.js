@@ -134,6 +134,36 @@ class Util {
       });
     }
   }
+  /**
+   * 计算地址 之间 的 驾车时间
+   * @param address1 [121.423596,31.211773]
+   * @param address2 [117.956833,30.952209]
+   * @returns {Promise<any>}
+   */
+  computedDrivingDuration(lnglat1,lnglat2){
+    return new Promise((resolve, reject) => {
+      Promise.all([lnglat1, lnglat2]).then((result) => {
+        const [p1, p2] = result
+        AMap.plugin('AMap.Driving', () => {
+          var driving = new AMap.Driving({
+            policy: AMap.DrivingPolicy.LEAST_TIME
+          })
+          driving.search(p1, p2, function (status, result) {
+            if (status === 'complete' && result.info === 'OK') {
+              const [line] = result.routes
+              if (line) {
+                resolve(parseInt(line.time/60) + 5)
+              }
+              reject('no line')
+            }
+            reject('driving status error')
+          })
+        })
+      }).catch((error) => {
+        reject(error)
+      })
+    })
+  }
 
   /**
    * 计算地址 之间 的 驾车距离
@@ -144,7 +174,6 @@ class Util {
   computedDrivingDistance(address1, address2) {
     return new Promise((resolve, reject) => {
       Promise.all([getLinLat(address1), getLinLat(address2)]).then((result) => {
-     
         const [p1, p2] = result
         AMap.plugin('AMap.Driving', () => {
           var driving = new AMap.Driving({
@@ -213,6 +242,27 @@ class Util {
           })
         })
       })
+    }
+    //判断 设备是否 iPhoneX XR XS XS-MAX
+    isIPhoneX(){
+      // iPhone X、iPhone XS
+      const isIPhoneX = /iphone/gi.test(window.navigator.userAgent) && window.devicePixelRatio && window.devicePixelRatio === 3 && window.screen.width === 375 && window.screen.height === 812;
+      // iPhone XS Max
+      const isIPhoneXSMax = /iphone/gi.test(window.navigator.userAgent) && window.devicePixelRatio && window.devicePixelRatio === 3 && window.screen.width === 414 && window.screen.height === 896;
+      // iPhone XR
+      const isIPhoneXR = /iphone/gi.test(window.navigator.userAgent) && window.devicePixelRatio && window.devicePixelRatio === 2 && window.screen.width === 414 && window.screen.height === 896;
+
+      return isIPhoneX || isIPhoneXSMax || isIPhoneXR
+    }
+
+    //判断 是否 企业微信 客户端
+    isWeiXinWork(){
+      const ua = window.navigator.userAgent.toLowerCase();
+      if ((ua.match(/MicroMessenger/i) == 'micromessenger') && (ua.match(/wxwork/i) == 'wxwork')) {
+        return true
+      }else {
+        return false
+      }
     }
 }
 

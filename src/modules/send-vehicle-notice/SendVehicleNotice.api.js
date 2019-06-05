@@ -32,6 +32,24 @@ try {
 			url: 'PUD/api/v1/assess',
 			format: false
 		},
+		// 取车详情
+		{
+			id: 'detail',
+			url: 'OSB/api/v1/appointment/detail',
+			format: false
+		},
+		//取消订单
+		{ 
+		id: 'cancelAftersale', 
+		url: 'OSB/api/v1/dealer/cancelAftersale',
+		 format: false 
+		},
+		// 获取轨迹路径
+		{ 
+			id: 'getDriverTrace', 
+			url: 'PUD/api/v1/pay/driverTrace',
+			format: false 
+		},
 		
 		
 	];

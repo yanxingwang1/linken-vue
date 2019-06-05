@@ -1,5 +1,5 @@
 <template>
-  <div class="index" v-show="pageShow">
+  <div class="index" v-show="pageShow" style="background-color: #FFFFFF;">
     <!--车辆信息-->
     <div class="vehicle-info-wrap">
       <div class="vehicle-info">
@@ -25,7 +25,7 @@
         @click.native="goAgentlistPage"
         :dealerInfo="dealersInfo">
       </dealer-info-panel>
-      <div class="wx-form" style="padding: 0;">
+      <div class="wx-form booking-time-wrap">
         <booking-time-picker-view
           :dealerCode="dealersInfo.dealerCode"
           v-model="testTime"
@@ -36,25 +36,31 @@
       <switch-cell
         title="是否申请代步车"
         tips="提示：代步车实际提供情况，以经销商线下反馈为准。"
-        :label="true"
+        :label="false"
         v-show="serviceType==1"
         v-model="scootor">
       </switch-cell>
       <!--取车-->
       <take-and-send-switch
+        v-if="0"
         v-model="isTake"
         :data="takeVehicleData"
-        :switch-disabled="isTakeDisabled">
+        :switch-disabled="isTakeDisabled"
+        :switch-show="true"
+        :switch-on-click="takeAndSendSwitchOnClick"
+      >
       </take-and-send-switch>
       <!--送车-->
       <switch-cell
-        title="开启送车服务意向"
-        tips="具体送车服务以林肯中心确认为准"
+        title="送车上门"
         :label="true"
         v-model="isPud"
+        :disabled="isTakeDisabled"
+        v-if="1"
+        :on-click="pudSwitchHandleClick"
       >
       </switch-cell>
-      <div class="wx-form">
+      <div class="wx-form wx-form2">
         <wx-input label="联系电话" type="tel" v-model="appointmentPhone" :maxlength="11" :required="true"
                   port="c"></wx-input>
         <wx-verification-code-input
@@ -67,7 +73,7 @@
         <wx-input type="textarea" v-model="remark" :maxlength="50" placeholder="备注信息" port="c"></wx-input>
       </div>
       <div class="btn-wrap">
-        <wx-button :disabled="submitdisabled" @click.native="baocunyuyuedan">服务预约</wx-button>
+        <wx-button :disabled="submitdisabled" @click.native="baocunyuyuedan">提交</wx-button>
       </div>
     </div>
   </div>
@@ -144,11 +150,16 @@
         scootor: false,//是否代步车
         isTake: false,//取车服务 预留字段
         isPud: false,//送车服务 预留字段
+        isTakeAndPubSwitch: true, //经销商是否支持取送车
         takeVehicleData: {
           taketime: '',
           isAgree: false,
           startName: '我的位置',//
           startAddress: '我的位置',
+          startAddressLat: '',
+          startAddressLng: '',
+          showStartHouseNumber: false,
+          startHouseNumber: '',//门牌号
           endName: '经销商地址',
           endAddress: '',
           latitude: "",
@@ -232,10 +243,21 @@
           if (newVal.dealerName !== oldVal.dealerName) {
             this.takeVehicleData.endName = newVal.dealerName
             if (newVal.address && this.takeVehicleData.startAddress) {
-              util.computedDrivingDistance(this.dealersInfo.address, this.takeVehicleData.startAddress).then(res => {
-                this.takeVehicleData.endAddress = `预估距离：${res} 千米`
-              })
+              // util.computedDrivingDistance(this.dealersInfo.address, this.takeVehicleData.startAddress).then(res => {
+              //   this.takeVehicleData.endAddress = `预估距离：${res} 千米`
+              // })
             }
+
+          }
+          //经销商代码变化(只能是从新选择经销商才发生变化) 判断取送车开关显示与否
+          if (newVal.dealerCode && newVal.dealerCode !== oldVal.dealerCode) {
+            this.httpQueryDealerIsTake(newVal.dealerCode).then((flag) => {
+              this.isTakeAndPubSwitch = flag
+            })
+            if (!this.isTakeAndPubSwitch){
+              this.isPud = false
+            }
+
 
           }
         }
@@ -244,14 +266,16 @@
         deep: true,
         handler(newVal, oldVal) {
           if (newVal.startAddress && this.dealersInfo.address) {
-            util.computedDrivingDistance(this.takeVehicleData.startAddress, this.dealersInfo.address).then(res => {
-              this.takeVehicleData.endAddress = `预估距离：${res} 千米`
-            })
+            // util.computedDrivingDistance(this.takeVehicleData.startAddress, this.dealersInfo.address).then(res => {
+            //   this.takeVehicleData.endAddress = `预估距离：${res} 千米`
+            // })
           }
         }
       },
-      isTake(newVal){
-        if (newVal){
+      isTake(newVal) {
+        if (newVal) {
+          //上门取车 开关打开时
+          //客户选择服务类型为"维修""检查""其他"，打开取车服务开关，需弹窗提示：【请确保您的车辆XXX可以正常行驶 返回 确认】
 
         }
       }
@@ -261,6 +285,7 @@
     },
     mounted() {
       window.app = this
+      window.util = util
       //查询用户绑车信息
       this.getBaseInfo()
       //键盘bug
@@ -269,6 +294,39 @@
       })
     },
     methods: {
+      //上门送车开关点击 拦截事件
+      pudSwitchHandleClick() {
+        //若 经销商 不支持 提示文案，支持 改true
+        if (!this.isTakeAndPubSwitch) {
+          $.toast('该经销商暂未开通送车上门服务')
+        } else {
+          this.isPud = !this.isPud
+        }
+      },
+      //上门取车 开关点击 客户选择服务类型为"维修""检查""其他"，打开取车服务开关，需弹窗提示：【请确保您的车辆XXX可以正常行驶 返回 确认】
+      takeAndSendSwitchOnClick() {
+        const {serviceType, isTake} = this
+        if (isTake) {
+          this.isTake = false
+          return
+        }
+        if (serviceType == '1' || serviceType == '3' || serviceType == '4') {
+          $.dialog({
+            title: '提示',
+            message: `请确保您的车辆${this.plateNumber}可以驾驶`,
+            buttons: [
+              {title: '取消'},
+              {
+                title: '确认',
+                isBold: true,
+                callback: () => {
+                  this.isTake = true
+                }
+              }
+            ]
+          })
+        }
+      },
       //精确定位
       aMapGeolocation() {
         AMap.plugin('AMap.Geolocation', () => {
@@ -281,6 +339,9 @@
               console.log('具体的定位信息', data)
               // $.toast(JSON.stringify(data))
               this.takeVehicleData.startAddress = data.formattedAddress
+              this.takeVehicleData.startAddressLng = data.position.lng
+              this.takeVehicleData.startAddressLat = data.position.lat
+              this.takeVehicleData.showStartHouseNumber = true
             } else {
               console.log('定位出错', data)
               $.toast('无法获取当前位置')
@@ -397,16 +458,21 @@
           $.toast('请先选择服务类型')
         }
       },
-      //清除部分数据 预约时间  是否代步车  取车 地址
+      //清除部分数据 预约时间  是否代步车  取车 送车 地址
       clearDealersInfoAfter() {
         this.testTime = ''
-        this.scootor = false
+        // this.scootor = false
         this.isTake = false
+        // this.isPud = false
         this.takeVehicleData = {
           taketime: '',
           isAgree: false,
           startName: '我的位置',//
           startAddress: '我的位置',
+          startAddressLat: '',
+          startAddressLng: '',
+          showStartHouseNumber: false,
+          startHouseNumber: '',//门牌号
           endName: '经销商地址',
           endAddress: '距离',
           latitude: "",
@@ -414,18 +480,26 @@
           from: 'reservationService',
         }
         sessionStorage.setItem('reservationServiceSelectAddress', '')
+        sessionStorage.setItem('reservationServiceSelectAddressLng', '')
+        sessionStorage.setItem('reservationServiceSelectAddressLat', '')
       },
       //进入选择地址页面
       goSelectAddressPage() {
         this.saveCache()
       },
+      //选择地址成功回调
       selectAddressPageCallback() {
         // this.reloadCache()
         const item = 'reservationServiceSelectAddress'
         const address = sessionStorage.getItem(item)
+        const lat = sessionStorage.getItem('reservationServiceSelectAddressLat')
+        const lng = sessionStorage.getItem('reservationServiceSelectAddressLng')
         if (address) {
           // $.toast('地址' + address)
           this.takeVehicleData.startAddress = address
+          this.takeVehicleData.showStartHouseNumber = true
+          this.takeVehicleData.startAddressLng = lng
+          this.takeVehicleData.startAddressLat = lat
         } else {
           this.aMapGeolocation()
           // $.toast('选择地址失败')
@@ -532,8 +606,15 @@
           sex: this.sex,  //'性别（0:男；1：女）
           vin: this.vin,  //vin
           scootor: this.serviceType == 1 ? (this.scootor ? 0 : 1) : 1,//是否代步车
-          isPud: this.isPud ? '12781001' : '12781002',//是否∂送车
+          $isTakeAndPubSwitch: this.isTakeAndPubSwitch,//标记字段  经销商没有开通取送车业务的 不显示；开通送车未勾选，显示不需要
+          // isTake: this.isTake ? '12781001' : '12781002',//取车
+          isPud: this.isPud ? '12781001' : '12781002',//是否送车
           id: this.serviceId || '',
+          // pickupAddress: this.takeVehicleData.startAddress,//取车地址
+          // pickupAddressLng: this.takeVehicleData.startAddressLng, //经度
+          // pickupAddressLat: this.takeVehicleData.startAddressLat, //维度
+          // bookingTime: moment(this.takeVehicleData.taketime).toDate().getTime(),//取车预约时间
+          // houseNumber: this.takeVehicleData.startHouseNumber || '', //取车门牌号
           //以下字段传空
           outFactoryMileage: '',  //出厂里程数
           enterFactoryMileage: '',   //进厂里程数
@@ -685,6 +766,8 @@
           this.testTime = moment(Number(detailDto.appointmentDateTimeStamp))
           //预约电话
           this.appointmentPhone = detailDto.appointmentPhone
+          //是否送车
+          this.isPud = detailDto.isPud == '12781001' ? true : false
           //备注
           this.remark = detailDto.remark
         })
@@ -765,6 +848,44 @@
             }
           })
         })
+      },
+      //查询经销商 是否支持取送车
+      httpQueryDealerIsTake(dealerCode) {
+        return new Promise((resolve, reject) => {
+          this.http.get('queryDealerIsTake', {dealerCode}, res => {
+            if (res === true) {
+              resolve(true)
+            }
+            if (res === false) {
+              resolve(false)
+            }
+          })
+        })
+      },
+      //预估时间距离
+      httpGetEstimatedPrice() {
+        return new Promise((resolve, reject) => {
+          this.http.post('getEstimatedPrice', {
+            "endLng": 121.423596,
+            "endLat": 31.211773,
+            "startLng": 121.133652,
+            "startLat": 31.153702,
+            "bookingTime": '20190601121212'
+          }, res => {
+            if (res === true) {
+              /**
+               distance: 33.76  预估距离 千米
+               overFee: 20  超出费用
+               startFee: 50  起步费
+               totalFee: 70  预估价格 元
+               */
+              resolve(true)
+            }
+            if (res === false) {
+              resolve(false)
+            }
+          })
+        })
       }
     }
   }
@@ -798,5 +919,14 @@
         padding: px(15) 0 px(10) 0;
       }
     }
+  }
+
+  .booking-time-wrap {
+    padding: 0;
+    padding-bottom: px(10);
+  }
+
+  .wx-form2 {
+    margin-top: px(10);
   }
 </style>

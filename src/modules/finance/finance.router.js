@@ -4,6 +4,8 @@ const index = () => import(/* webpackChunkName: "group-home" */  './index')
 const detail = ()=> import('./detail')
 const subscribeList = ()=> import('./subscribeList')
 const subscribeDetail = ()=> import('./subscribeDetail')
+const subscribeFetchDetail = ()=> import('./subscribeFetchDetail')
+const workOrderEvaluate = ()=> import('./workOrderEvaluate')
 
 Vue.use(Router)
 
@@ -37,6 +39,18 @@ const financeRouter = new Router({
       path: '/subscribeDetail',
       name: 'subscribeDetail',
       component: subscribeDetail,
+      meta: {keepAlive: false} // 这个是不需要keepalive的
+    },
+    {
+      path: '/subscribeFetchDetail',
+      name: 'subscribeFetchDetail',
+      component: subscribeFetchDetail,
+      meta: {keepAlive: false} // 这个是不需要keepalive的
+    },
+    {
+      path: '/workOrderEvaluate',
+      name: 'workOrderEvaluate',
+      component: workOrderEvaluate,
       meta: {keepAlive: false} // 这个是不需要keepalive的
     },
   ]

@@ -7,6 +7,7 @@
       </div>
       <div class="switch-cell-switch">
         <mt-switch :value="value" @change="switchChange"></mt-switch>
+        <div v-if="isOnClick" @click="switchHandleClick" style="position: absolute;top: 0;right: 0;bottom: 0;left: 0;"></div>
         <div v-if="disabled" style="position: absolute;top: 0;right: 0;bottom: 0;left: 0;"></div>
       </div>
     </div>
@@ -19,20 +20,37 @@
     name: "SwitchCell",
     props: {
       value: Boolean,
-      title: String,
-      tips: String,
-      label: {
+      title: String,  //标题
+      tips: String, //提示文字
+      label: { //限时免费文案
         type: Boolean,
         default: false
       },
       disabled: {
         type: Boolean,
         default: false
+      },
+      onClick: {  //开关点击事件(如果传入，控制开关点击打开或关闭前的逻辑)
+        type: Function
+      }
+    },
+    computed: {
+      isOnClick() {
+        const type = typeof this.onClick
+        if (type === 'function' && !this.disabled){
+          return true
+        }else {
+          return false
+        }
       }
     },
     methods: {
       switchChange(value) {
         this.$emit('input', !value)
+      },
+      switchHandleClick(){
+        console.log('开关点击')
+        this.onClick()
       }
     }
   }
@@ -44,7 +62,7 @@
   }
 
   .switch-cell-wrap {
-    padding-bottom: px(10);
+    /*padding-bottom: px(10);*/
 
     .switch-cell {
       display: flex;

@@ -71,11 +71,6 @@
       var $body = $('body')
 
       var $popupBackdrop = $(`<div class="wx-popup-backdrop" style="display: block;"></div>`)
-      $popupBackdrop.on('click', () => {
-        hideDialog()
-      }).on('touchmove', (e) => {
-        e.preventDefault()
-      })
       setTimeout(() => {
         $popupBackdrop.addClass('wx-active')
       }, 0)
@@ -93,6 +88,7 @@
       </div>
       `)
       $popup.on('touchmove', (e) => {
+
         e.preventDefault()
       })
       var $buttons = $popup.find('.wx-popup-buttons')
@@ -112,7 +108,14 @@
         $buttons.append($btn)
       })
       if (params.isMask) {
-        $popupBackdrop.on('click', params.maskOnClick)
+        $popupBackdrop.on('click', (event) => {
+          if (params.maskOnClick() === false) {
+            return
+          }
+          hideDialog()
+        }).on('touchmove', (e) => {
+          e.preventDefault()
+        })
         $body.append($popupBackdrop)
       }
       $body.append($popup)
@@ -190,7 +193,7 @@
           // $wxtitle.text(setday)
         },
         onMonthChange: function (event, inst) {
-          console.log('onMonthChange',event)
+          console.log('onMonthChange', event)
         }
       }, _params)
       let hideCalendar = function () {
@@ -219,7 +222,7 @@
       }, 200)
     },
     //时间选择
-    date: function (_params){
+    date: function (_params) {
       let $body = $('body')
       let $calendarMask = $('<div class="wx-calendar-mask"></div>')
       let $calendarWrap = $(`
@@ -542,16 +545,18 @@
     })
     return $input
   }
+
   function showKeyboard(_params) {
     const params = Object.assign({
-      type:'license-provice',
+      type: 'license-provice',
       onBlur() {
         console.log('onBlur')
       },
-      onFocus(){
+      onFocus() {
         console.log('onFocus')
       },
-      onClick(value){},
+      onClick(value) {
+      },
     }, _params)
     const provices1 = ["京", "津", "沪", "渝", "翼", "豫", "云", "辽", "黑", "湘"]
     const provices2 = ["皖", "鲁", "新", "苏", "浙", "赣", "鄂", "桂", "甘"]
@@ -621,7 +626,7 @@
       e.preventDefault()
     }).on('click', e => {
       const flag = params.onBlur()
-      if (flag !== false){
+      if (flag !== false) {
         hideLicenseKeyboard()
       }
     })
@@ -633,7 +638,7 @@
     $keyboardWrap.find('.key').on('click', (e) => {
       let $key = $(e.target)
       let keyvalue = $key.attr('data')
-      console.log('键盘:',keyvalue)
+      console.log('键盘:', keyvalue)
       params.onClick(keyvalue)
     })
     $body.append($mask, $keyboardWrap)

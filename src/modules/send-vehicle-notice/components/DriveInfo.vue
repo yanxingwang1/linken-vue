@@ -2,10 +2,18 @@
   <div class="fetch-detail-index-drive">
     <div class="fetch-detail-index-drive-top">
       <div class="fetch-detail-index-drive-top-name">
-        <img src="../imgs/driver.png">
+        <div class="fetch-detail-index-drive-top-name-img">
+          <img :src="driverImg!=null?driverImg:require('../imgs/driver.png')"/>
+        </div>
         <div class="fetch-detail-index-drive-top-name-text">
-          <div>司机：{{driverName}}</div>
-          <div>工号：{{jobNumber}}</div>
+          <div>{{driverName}}</div>
+          <div class="fetch-detail-index-drive-top-name-text-no">工号：{{jobNumber}}</div>
+          <div class="fetch-detail-index-drive-top-name-text-no fetch-detail-index-drive-top-name-text-star">
+              <img v-for="i in starFullRate" :key="'full'+i" src="../imgs/star-full.png"/>
+              <img v-if="starFalfRate" src="../imgs/star-half.png"/>
+              <img v-for="j in starEmptyRate" :key="'empty'+j" src="../imgs/star-empty.png"/>
+              <!-- &nbsp;&nbsp;{{driverStar}}星 -->
+          </div>
         </div>
       </div>
       <div class="fetch-detail-index-drive-top-phone" @click.stop="phoneClick(driverPhone)">
@@ -16,18 +24,18 @@
     </div>
     <div v-show="driverStatus>0" v-if="onBounce" class="fetch-detail-index-drive-down">
       <incoming-state
-        title="司机已到达您的送车地址"
+        title="您的爱车已送达"
         v-show="driverStatus>2"
         :border="true"
         :status="driverStatus=='3'?'3':'1'"
       ></incoming-state>
       <incoming-state
-        title="司机正驾车驶向您的送车地址"
+        title="正护送爱车向您驶来"
         v-show="driverStatus>1"
         :border="true"
         :status="driverStatus=='2'?'3':'1'"
       ></incoming-state>
-      <incoming-state title="司机出发前往林肯中心" :border="false" :status="driverStatus=='1'?'3':'1'"></incoming-state>
+      <incoming-state title="正前往林肯中心" :border="false" :status="driverStatus=='1'?'3':'1'"></incoming-state>
     </div>
     <div
       :class="!onBounce?'active':''"
@@ -48,7 +56,29 @@ export default {
       onBounce: false
     };
   },
-  computed: {},
+  computed: {
+    starFullRate() {
+        if(this.driverStar){
+            return parseInt(this.driverStar);
+        }
+    },
+    starFalfRate() {
+        if(this.driverStar){
+            if((parseFloat(this.driverStar)-parseInt(this.driverStar))>0){
+                return true;
+            }
+            return false;
+        }
+    },
+    starEmptyRate() {
+        if(this.driverStar){
+            if((parseFloat(this.driverStar)-parseInt(this.driverStar))>0){
+                return parseInt(4-parseInt(this.driverStar));
+            }
+            return parseInt(5-parseInt(this.driverStar));
+        }
+    }
+  },
   watch: {},
   props: {
     driverName: {
@@ -65,6 +95,12 @@ export default {
     },
     code: {
       type: String
+    },
+    driverImg: {
+      type: String
+    },
+    driverStar: {
+      type: [Number,String]
     }
   },
   created() {
@@ -105,15 +141,36 @@ export default {
             &-name {
                 width:85%;
                 display:flex;
-                img {
-                    width:46px;
-                    height:46px;
+                align-items: center;
+                &-img {
+                    width: 46px;
+                    height: 46px;
+                    overflow: hidden;
+                    border-radius: 50%;
+                    img {
+                        width:46px;
+                    }
                 }
                 &-text {
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
                     margin-left:15px;
+                    &-no {
+                        font-size: 12px;
+                        transform: scale(0.9,0.9);
+                        transform-origin: 0 50% 0;
+                        img {
+                            width: 12px;
+                            height: 12px;
+                            margin-left: 1px;
+                            border-radius: 0;
+                        }
+                    }
+                    &-star {
+                        display: flex;
+                        align-items: center;
+                    }
                 }
             }
             &-phone {

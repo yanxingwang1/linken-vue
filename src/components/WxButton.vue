@@ -36,8 +36,8 @@
     color: white;
     font-size: 17px;
     &:disabled{
-      background-color: #EBEBEB;
-      color: #8C8C8C;
+      background-color: #9F9F9F;
+      color: #FFFFFF;
     }
     label.mint-button-text{
       margin: 0 !important;

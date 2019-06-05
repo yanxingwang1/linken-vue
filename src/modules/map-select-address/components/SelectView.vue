@@ -24,6 +24,14 @@
         type: Object,
       }
     },
+    watch: {
+      keyword(value) {
+        console.log('keyword change', value)
+        if (value !== ''){
+          this.$emit('change', value)
+        }
+      }
+    },
     mounted() {
       this.initMobiCityPicker()
     },

@@ -44,6 +44,7 @@ import jssdkCommon from '../../common/weixin'
 import util from '../../common/DMC.util.js'
 import {middleUrlConfig} from '../../config/variable.js'
 import detail from './components/detail'
+import { wechatConfigOpenId } from "../../config/variable";
 import { Indicator,Toast } from "mint-ui";
 export default {
     name: "configureShare",
@@ -150,8 +151,10 @@ export default {
         this.openid = sessionStorage.getItem('configureShareOpenId');
         this.subscribe = sessionStorage.getItem('configureShareSubscribe');
       }else {
+        // var GetCodes = wechatConfigOpenId.getCodes; //页面从定向的地址
         const code = await  jssdk.code(util.getQueryWeChatValue("salesCaseID")?util.getQueryWeChatValue("salesCaseID"):(util.getQueryWeChatValue("state")?util.getQueryWeChatValue("state").replace('#/',''):''));//获取code
-        const openid = await  jssdk.openid(code);//获取openid
+         
+       const openid = await  jssdk.openid(code);//获取openid
         const res = await  jssdk.isfoll(openid);//根据openid获取是否关注
         this.openid=res.openid;
         this.subscribe=res.subscribe;

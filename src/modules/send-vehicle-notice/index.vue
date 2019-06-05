@@ -1,22 +1,21 @@
 <template>
   <div>
     <div v-if="isDrawer" id="amap-container"></div>
-
     <drawer-view
       :is-drawer="isDrawer"
       :titleText="titleText"
-      :bodyInitHeight="130"
+      :bodyInitHeight="bodyInitHeight"
       @drawerEnd="drawerEnd"
       @drawerStart="drawerStart"
     >
       <div class="send-vehicle-notice">
-        <div class="daiqueren" v-if="data.orderStatus==90041001">
+        <div class="daiqueren Canscroll" v-if="data.orderStatus==90041001">
           <!-- 头部提示信息 -->
           <div class="index-1">
             <div class="user-name">尊敬的{{data.lastName}}{{data.sex=='1'?'女士':'先生'}}</div>
             <div
               class="information"
-            >您的车辆{{data.carNo}}已完成{{serverStatus[serverCode]}}服务，请确认送车服务信息</div>
+            >您的爱车{{data.carNo}}已完成{{serverStatus[serverCode]}}服务，{{data.updateBy?'原有的送车上门服务信息已更新，请重新确认。':'请确认送车上门服务信息。'}}</div>
           </div>
           <!-- 车辆信息 -->
           <div class="index-2">
@@ -36,13 +35,16 @@
 
           <!-- 用户确认 -->
           <div class="index-4">
-            <wx-button :disabled="submitdisabled" @click.native="obBtnHandleClick">信息无误，确认订单</wx-button>
+            <wx-button :disabled="submitdisabled" @click.native="obBtnHandleClick">确认订单</wx-button>
             <div style="height: 1rem;"></div>
-            <wx-button @click.native="cancelBtnHandleClick">信息有误，联系林肯中心</wx-button>
+            <div class="index-4-inner">
+              <wx-button @click.native="cancelBtnHandleClick">信息有误，联系林肯中心</wx-button>
+            </div>
           </div>
         </div>
         <!-- 待确认 -->
         <!-- 查看订单详情 -->
+
         <send-vehicle v-else :data="data" :code="code" :orderDetailDrive="orderDetailDrive"></send-vehicle>
       </div>
     </drawer-view>
@@ -62,6 +64,7 @@ import UserCard from "./components/UserCard";
 import { Toast } from "mint-ui";
 import { setTimeout } from "timers";
 import DrawerView from "./../map-select-address/components/DrawerView";
+import { debuglog } from "util";
 
 const drivingLine = require("./../map-select-address/script/drivingLine");
 const testArr = [
@@ -86,13 +89,6 @@ const testArr = [
   [121.50927, 31.236986],
   [121.511292, 31.235538]
 ];
-
-const serverStatus = {
-  'S001': "维修",
-  'S002': "保养",
-  'S003': "检查",
-  'S004': "其他"
-};
 
 export default {
   name: "index",
@@ -137,16 +133,16 @@ export default {
       currentPos: null, //途径点
       drivingPos: null, //司机坐标,
       // titleText:"",文字标题
-      bodyInitHeight: 114,
+      // bodyInitHeight: 114,
       // onBounce: false //司机进程默认隐藏
       //
-      serverStatus : {
+      serverStatus: {
         S001: "维修",
         S002: "保养",
         S003: "检查",
-        S004: "其他"
+        S004: ""
       },
-     serverCode:'S001',
+      serverCode: "S001"
       // startAndEndPointViewData: {}
     };
   },
@@ -162,23 +158,36 @@ export default {
       return {
         startName: data.dealerName,
         startAddress: data.pickupAddress,
-        endName: data.returnAddress,
+        endName: `${data.returnAddress + data.houseNumber}`,
         endAddress: "",
-        latitude: "31.306374",
-        longitude: "121.434909",
+        showHouseNumber: false,
+        houseNumber: "",
+        // latitude: "31.306374",
+        // longitude: "121.434909",
         from: "createSendOrder"
       };
     },
     titleText() {
       var titleText = "";
       if (this.data.orderStatus == 90041004) {
-        titleText = "订单开启";
+        titleText = "送车订单开启";
       } else if (this.data.orderStatus == 90041005) {
-        titleText = "代驾中";
+        titleText = "送车中";
       } else if (this.data.orderStatus == 90041006) {
-        titleText = "已到达";
+        titleText = "已送达";
       }
       return titleText;
+    },
+    bodyInitHeight() {
+      var Height;
+      if (this.data.orderStatus == 90041004) {
+        Height = 90;
+      } else if (this.data.orderStatus == 90041005) {
+        Height = 90;
+      } else if (this.data.orderStatus == 90041006) {
+        Height = 140;
+      }
+      return Height;
     }
     // 控制是否显示地图
     // isDrawer(){
@@ -217,6 +226,7 @@ export default {
     $(document).attr("title", "我的预约");
   },
   mounted() {
+      window.app = this;
     this.$nextTick(() => {
       this.init();
       console.log(this.distanse);
@@ -232,28 +242,37 @@ export default {
     //初始化地图
     initAmap() {
       drivingLine.initMap(() => {
-        this.initData();
         //模拟更新数据
-        let index = 1;
         const timer = setInterval(() => {
-          const arr = [...testArr];
-          arr.length = index;
-          this.drivingPos = arr[arr.length - 1];
-          this.currentPos = arr;
-          drivingLine.createLine(this.startPos, this.endPos, [
-            ...this.currentPos,
-            this.drivingPos
-          ]);
-          index += 1;
-          if (index === 21) {
-            clearInterval(timer);
-          }
-        }, 2000);
-        drivingLine.createLine(this.startPos, this.endPos, [
-          ...this.currentPos,
-          this.drivingPos
-        ]);
+          this.testDriverTrace()
+        }, 60000)
+        setTimeout(() => {
+          this.testDriverTrace()
+        }, 500)
       });
+    },
+    //完成地图轨迹
+    testDriverTrace() {
+      this.http.get('getDriverTrace', {
+        orderId: this.orderDetailDrive.orderId  // 32646
+      }, res => {
+        console.log('轨迹', res.data)
+        const data = res.data
+        const startPos = [data.startPos.lng, data.startPos.lat]
+        const endPos = [data.endPos.lng, data.endPos.lat]
+        let drivingPos
+        if (data.currentPos) {
+          drivingPos = [data.currentPos.lng, data.currentPos.lat]
+        }
+        let currentPos = []
+        if (data.drivingPos){
+          currentPos = data.drivingPos.map(item => {
+            const {lng, lat} = item
+            return [lng, lat]
+          })
+        }
+        drivingLine.createLine(startPos, endPos, [...currentPos], drivingPos)
+      })
     },
     drawerStart(data) {
       //监听开始拖动
@@ -264,6 +283,13 @@ export default {
       //监听拖动结束
       this.$Bus.$emit("onBounce", { state: data });
     },
+    phoneClick(phone) {
+      // if (phone) {
+
+      console.log("打电话", phone);
+      window.location.href = "tel:10086";
+      // }
+    },
     async init() {
       // 获取验证码
 
@@ -273,7 +299,6 @@ export default {
       var _this = this;
       this.http.get("OrderDetails", parmas, res => {
         if (res.resultCode) {
-        
           // 待确认
           this.data = res.data.data;
           // 订单详情
@@ -281,7 +306,7 @@ export default {
             this.orderDetailDrive = res.data.data2;
             // console.log(JSON.parse(res.data.data2))
           }
-          this.serverCode=res.data.data3;
+          this.serverCode = res.data.data3;
           // debugger
           // 是否允许获取验证码
           if (
@@ -322,10 +347,20 @@ export default {
     },
     //提交评论接口
     Commit() {
+      if (
+        (this.userRate.assStatus == "90061001" ||
+          this.userRate.assStatus == "90061002") &&
+        (this.userRate.eAssStatus == "90061001" ||
+          this.userRate.eAssStatus == "90061002")
+      ) {
+        this.userRate.remark = "";
+      }
+
       var parmas = {
         ...this.userRate,
         id: this.$route.query.id
       };
+
       this.http.get("assess", parmas, res => {
         if (res.resultCode) {
           //  this.popupVisible=false;
@@ -339,12 +374,13 @@ export default {
     },
     obBtnHandleClick() {
       console.log("obBtnHandleClick");
+      // 地址一致
       $.dialog({
         title: "提示",
         message: "确认提交后如需修改或取消请联系林肯中心。",
         buttons: [
           {
-            title: "取消"
+            title: "返回"
           },
           {
             title: "确认",
@@ -356,6 +392,26 @@ export default {
         ],
         isMask: true
       });
+      // 地址不一致
+      // $.dialog({
+      //   title: "提示",
+      //   message:
+      //     "送达地址与取车地址不一致，确认提交后需修改或取消请联系林肯中心。",
+      //   buttons: [
+      //     {
+      //       title: "返回"
+      //     },
+      //     {
+      //       title: "确认",
+      //       isBold: true,
+      //       callback: () => {
+      //         console.log("点击确认");
+      //         window.location.href = `tel://${this.data.serviceHotline}`;
+      //       }
+      //     }
+      //   ],
+      //   isMask: true
+      // });
     },
     submit() {
       var parmas = {
@@ -365,7 +421,6 @@ export default {
       };
       this.http.post("order", parmas, res => {
         if (res.resultCode) {
-           
           if (Boolean(parseInt(res.data))) {
             console.log("下单成功,单号", res.data);
             window.location.reload();
@@ -382,25 +437,6 @@ export default {
         console.log("打电话", this.data.engineerPhone);
         window.location.href = `tel:${this.data.engineerPhone}`;
       }
-      // $.dialog({
-      //   title: "提示",
-      //   message:
-      //     "送达地址与您的取车地址不一致，是否确认送达该目的地，确认提交后需修改或取消请联系林肯中心。",
-      //   buttons: [
-      //     {
-      //       title: "取消"
-      //     },
-      //     {
-      //       title: "确认",
-      //       isBold: true,
-      //       callback: () => {
-      //         console.log("点击确认");
-      //         window.location.href = `tel://${this.data.serviceHotline}`;
-      //       }
-      //     }
-      //   ],
-      //   isMask: true
-      // });
     }
   }
 };
@@ -468,6 +504,16 @@ export default {
   .index-4 {
     padding: px(20);
     background-color: #F5F5F5;
-
+    .index-4-inner {
+      .mint-button{
+        background-color: #F5F5F5;
+        color: #b45f1a;
+        border: 1px solid #b45f1a;
+      }
+    }
   }
+  .Canscroll{
+  height: 100vh;
+  overflow:scroll;
+}
 </style>

@@ -19,6 +19,9 @@ try {
 		{ id: 'creatOrder', url: 'PUD/api/v1/pay/creatOrder', format: false },
 		// 订单取消
 		{ id: 'orderCancel', url: 'PUD/api/v1/pay/orderCancel', format: false },
+		// “该工单已经存在未完成的送车服务订单”
+		{ id: 'checkOrder', url: 'PUD/api/v1/pay/checkOrder', format: false },
+		
 		// 修改和重新下单
 		{
 			id: 'updateOrder',
@@ -27,6 +30,18 @@ try {
 		},
 		// 获取司机信息
 		{ id: 'driverInfo', url: 'PUD/api/v1/driverInfo', format: false },
+		// 计算预估距离
+		{ 
+			id: 'getEstimatedPrice', 
+			url: 'PUD/api/v1/pay/getEstimatedPrice',
+			format: false 
+		},
+		// 获取轨迹路径
+		{ 
+			id: 'getDriverTrace', 
+			url: 'PUD/api/v1/pay/driverTrace',
+			format: false 
+		},
 	];
 
 	//默认不开启，开启后读取本地模拟数据

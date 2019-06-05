@@ -1,8 +1,10 @@
 <template>
-  <div ref="drawerwarp" @touchmove.prevent>
+  <div ref="drawerwarp" @touchmove="wrapTouchmove">
+    <!--<div ref="drawerwarp" @touchmove.prevent>-->
+    <div class="drawer-mask" :style="wrapMaskStyle" v-if="maskShow"></div>
     <div v-if="isDrawer" ref="drawer-view-wrap" class="drawer-view-wrap" :style="wrapStyle" :class="{open:isOpen}">
       <div ref="drawer-title" class="drawer-title" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
-        <img ref="arrow" class="arrow" src="./../imgs/up.png" alt="">
+        <img ref="arrow" class="arrow" src="./../imgs/up.gif" alt="">
         <div class="title-text">{{titleText}}</div>
       </div>
       <div ref="drawer-view-body" class="drawer-view-body">
@@ -20,7 +22,13 @@
 </template>
 
 <script>
+  import util from '../../../common/DMC.util'
   import BScroll from 'better-scroll'
+
+  //是否iPhoneX 和 企业微信
+  const isIPhoneX = util.isIPhoneX()
+  const isWxWork = util.isWeiXinWork()
+
 
   export default {
     components: {},
@@ -31,12 +39,18 @@
         state: 'close',
         scroll: null,
         wrapStyle: {
-          top: `calc(100vh - ${this.bodyInitHeight + 50}px)`,
+          top: `calc(100vh - 150px)`,
           transition: 'initial'
         },
+        wrapMaskStyle: {
+          height: `calc(100vh - 150px)`,
+          opacity: 0
+        },
+        maskShow: false,
         startY: 0,
         warpTop: 0,
-        drawerStartFlag: false
+        drawerStartFlag: false,
+        moveY:0,
       }
     },
     props: {
@@ -59,19 +73,49 @@
         handler(newVal) {
           this.$nextTick(() => {
             if (newVal) {
-              this.scroll = new BScroll(this.$refs['drawer-view-body'])
+              this.scroll = new BScroll(this.$refs['drawer-view-body'], {
+                preventDefault: false
+              })
               this.scroll.disable()
             } else {
-              this.scroll = new BScroll(this.$refs['wrapper'])
+              // this.scroll = new BScroll(this.$refs['wrapper'],{
+              //   preventDefault:false
+              // })
             }
           })
         }
       },
+      bodyInitHeight: {
+        immediate: true,
+        handler(newVal) {
+          this.wrapStyle.top = `calc(100vh - ${newVal + 50}px)`
+          if (isIPhoneX && isWxWork) {
+            this.wrapStyle.top = `calc(100vh - ${newVal + 50 + 35}px)`
+          }
+          this.wrapMaskStyle.height = this.wrapStyle.top
+        }
+      },
+      isOpen: {
+        immediate: true,
+        handler(newVal, oldVal) {
+          if (newVal) {
+            this.wrapMaskStyle.opacity = 1
+            $('#amap-container').css('filter', 'blur(1px)')
+          } else {
+            this.wrapMaskStyle.opacity = 0
+            $('#amap-container').css('filter', 'blur(0px)')
+          }
+        }
+      },
     },
     mounted() {
-
     },
     methods: {
+      wrapTouchmove(e) {
+        if (this.isDrawer) {
+          e.preventDefault()
+        }
+      },
       onBounce(flag) {
         // console.log('onBounce', flag)
         if (flag) {
@@ -87,23 +131,26 @@
         this.startY = e.targetTouches[0].clientY
         this.warpTop = parseInt($(this.$refs['drawer-view-wrap']).css('top'))
         this.wrapStyle.transition = 'initial'
+        this.maskShow = true
       },
       touchMove(e) {
         const cY = e.targetTouches[0].clientY
         const moveY = this.startY - cY
-        if (moveY > 10 && this.warpTop !== 60) {
-          if (!this.drawerStartFlag) {
-            this.$emit('drawerStart', 'up')
-            this.drawerStartFlag = true
-          }
-        }
-        if (moveY < -10 && this.warpTop === 60) {
-          if (!this.drawerStartFlag) {
-            console.log(-1)
-            this.$emit('drawerStart', 'down')
-            this.drawerStartFlag = true
-          }
-        }
+        console.log('touchMove', moveY)
+        this.moveY = moveY
+        // if (moveY > 10 && this.warpTop !== 60) {
+        //   if (!this.drawerStartFlag) {
+        //     this.$emit('drawerStart', 'up')
+        //     this.drawerStartFlag = true
+        //   }
+        // }
+        // if (moveY < -10 && this.warpTop === 60) {
+        //   if (!this.drawerStartFlag) {
+        //     console.log(-1)
+        //     this.$emit('drawerStart', 'down')
+        //     this.drawerStartFlag = true
+        //   }
+        // }
         let topV = this.warpTop - moveY
         if (topV < 60) {
           topV = 60
@@ -112,20 +159,54 @@
           topV = window.innerHeight - (this.bodyInitHeight + 50)
         }
         if (topV < 250) {
-          this.isOpen = true
+          // this.isOpen = true
         } else {
-          this.isOpen = false
+          // this.isOpen = false
         }
         this.wrapStyle.top = topV + 'px'
       },
       touchEnd(e) {
-        // console.log('touchEnd')
+        console.log('touchEnd')
         this.wrapStyle.transition = 'top .2s ease'
-        if (parseInt(this.wrapStyle.top) < 250) {
+        if (this.moveY > 1){
+          //置顶
+          if (!this.drawerStartFlag) {
+            this.$emit('drawerStart', 'up')
+            this.drawerStartFlag = true
+          }
+
+          this.isOpen = true
+
           this.wrapStyle.top = 60 + 'px'
-        } else {
-          this.wrapStyle.top = `calc(100vh - ${this.bodyInitHeight + 50}px)`
+          this.maskShow = true
         }
+        if (this.moveY < -1){
+          //置底
+          if (!this.drawerStartFlag) {
+            console.log(-1)
+            this.$emit('drawerStart', 'down')
+            this.drawerStartFlag = true
+          }
+
+          this.isOpen = false
+
+          this.wrapStyle.top = `calc(100vh - ${this.bodyInitHeight + 50}px)`
+          if (isIPhoneX && isWxWork) {
+            this.wrapStyle.top = `calc(100vh - ${this.bodyInitHeight + 50 + 35}px)`
+          }
+          this.maskShow = false
+        }
+
+        // if (parseInt(this.wrapStyle.top) < 250) {
+        //   this.wrapStyle.top = 60 + 'px'
+        //   this.maskShow = true
+        // } else {
+        //   this.wrapStyle.top = `calc(100vh - ${this.bodyInitHeight + 50}px)`
+        //   if (isIPhoneX && isWxWork) {
+        //     this.wrapStyle.top = `calc(100vh - ${this.bodyInitHeight + 50 + 35}px)`
+        //   }
+        //   this.maskShow = false
+        // }
         this.drawerStartFlag = false
         setTimeout(() => {
           this.onBounce(this.isOpen)
@@ -138,6 +219,15 @@
 <style lang="sass" type="text/scss" scoped>
   @function px($px) {
     @return ($px/20)+rem;
+  }
+
+  .drawer-mask {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, .1);
+    transition: opacity .3s ease;
   }
 
   .drawer-view-wrap {
@@ -174,8 +264,8 @@
       }
 
       .arrow {
-        width: 10px;
-        height: 8px;
+        width: 14px;
+        height: 10px;
         margin-bottom: 2px;
         transition: all .3s ease;
       }

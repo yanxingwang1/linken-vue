@@ -1,5 +1,5 @@
 <template>
-    <div class="bound-car-index">
+    <div class="bound-car-index" style="background-color: #FFFFFF;">
         <img width="100%" :src="require('./imgs/bound-car-index.png')" />
         <div class="user-bound-car">
             用户车辆绑定
@@ -100,7 +100,7 @@
             registerAgree:true,
             hasRead:true,
             content: '获取验证码',
-            totalTime: 60 , 
+            totalTime: 60 ,
             vercode: false,
             newCustomer: false,
             canClick: true,
@@ -283,7 +283,7 @@
     beforeMount() {
         $(document).attr('title','林肯之道');
     },
-  
+
 
     mounted() {
       return this.$nextTick(() => this.init());
@@ -469,5 +469,5 @@
             border-radius: 7px 7px 0 0;
         }
     }
-  
+
 </style>

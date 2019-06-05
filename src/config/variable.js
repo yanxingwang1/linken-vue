@@ -18,11 +18,12 @@ export const wechatConfig = {
 // Created by lincoln on 2019/3/22
 
 // test
-// //微信获取openid接口
+// 微信获取openid接口
 // export const wechatConfigOpenId = {
 //   appId:'wx4d85c20a03879912',
 //   secret:'322be62c3979df32a77552fa82bb11d5',
 //   getCodes: location.origin +"/modules/configureShareSave.html",
+//   eLincoln: location.origin + "/modules/yourEfriend.html",//通过页面入口获取e闺蜜用户openid
 //   accessToken:location.origin + '/qy/Token',
 // };
 // //接口地址配置
@@ -30,19 +31,24 @@ export const wechatConfig = {
 // //座驾定制跳转
 // //uat
 // export const middleUrlConfig='https://qa.wechat.lincoln.imagination-dev.cn/';
+// export const login="http://lincoln.iooo.net/test/user_info.php" 
 
 //uat
 //微信获取openid接口
 export const wechatConfigOpenId = {
 	appId: 'wx235b2abcc8c160dc',
 	secret: 'b9cf93fcc593ab143d7b65a3f3eb73a1',
-	getCodes: location.origin + '/modules/configureShareSave.html',
+	getCodes: location.origin + '/modules/configureShareSave.html',//通过分享获取openid
+	eLincoln: location.origin + '/modules/yourEfriend.html',//通过页面入口获取e闺蜜用户openid
 	accessToken: location.origin + '/qy/Token'
 };
 //接口地址配置
-export const domainUrlConfig = 'https://lincoln-mp-dev.yonyouauto.com/qy/';
+// export const domainUrlConfig = 'https://lincoln-mp-dev.yonyouauto.com/qy/';
+export const domainUrlConfig = 'https://www.easy-mock.com/mock/5cf72b0fccb1f01a29f72b11/qy/'
 //座驾定制跳转
 export const middleUrlConfig = 'https://qa.wechat.lincoln.imagination-dev.cn/';
+// e闺蜜注册地址
+export const login="http://lincoln.iooo.net/test/bd.php?act=miss_lincoln" 
 
 //生产
 //微信获取openid接口
@@ -50,9 +56,12 @@ export const middleUrlConfig = 'https://qa.wechat.lincoln.imagination-dev.cn/';
 // 	appId: 'wx77d29b0a35fdcb33',
 // 	secret: '721d1f678db67699917dce5ea57ab147',
 // 	getCodes: location.origin + '/modules/configureShareSave.html',
+//  eLincoln: location.origin + '/modules/yourEfriend.html',//通过页面入口获取e闺蜜用户openid
 // 	accessToken: location.origin + '/qy/Token'
 // };
 // //接口地址配置
 // export const domainUrlConfig = 'https://lincoln-mp.yonyouauto.com/qy/';
 // //座驾定制跳转
 // export const middleUrlConfig = 'https://lincoln.ps-dev.cn/';
+// e闺蜜注册地址
+// export const login="" 

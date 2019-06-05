@@ -110,7 +110,7 @@
         &-title {
             font-size: 14px;
             text-align: center;
-            color: #C6C6C6;
+            // color: #C6C6C6;
             padding: px(25) 0 px(15) 0;
         }
         .vux-checker-box {

@@ -5,6 +5,8 @@ import http from './SendVehicleNotice.api';
 const index = () => import(/* webpackChunkName: "group-home" */ './index');
 const SendVehicle = () => import(/* webpackChunkName: "group-home" */ './SendVehicle');
 const test = () => import('./test');
+const PickVehicle=()=>import("./PickVehicle")
+const userRate = ()=>import("./userRate")
 
 Vue.use(Router);
 
@@ -27,6 +29,18 @@ const applyRouter = new Router({
 			name: 'SendVehicle',
 			component: SendVehicle,
 			meta: { keepAlive: true } // 这个是不需要keepalive的
+		},
+		{
+			path: '/PickVehicle', //表示其他送车状态
+			name: 'PickVehicle',
+			component: PickVehicle,
+			meta: { keepAlive: false } // 这个是不需要keepalive的
+		},
+		{
+			path: '/userRate',
+			name: 'userRate',
+			component: userRate,
+			meta: { keepAlive: false } // 这个是不需要keepalive的
 		},
 		{
 			path: '/test',

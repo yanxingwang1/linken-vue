@@ -5,17 +5,17 @@
     <div style="position: fixed;top: 0;left: 0;width: 100%;background: white;">
       <div style="width:100%;height:48px;background:#f8f8f8;padding:10px 0">
         <!-- <group title="1234"> -->
-          <x-input v-model="queryParam.pram" style="width:64%;float:left;background:white;margin-left:4%;height: 28px;box-shadow: 0 0 3px 0 rgba(0,0,0,0.10);border-radius: 3px;" @on-blur="queryList()" placeholder="搜索">
+          <x-input v-model="queryParam.pram" style="width:58%;float:left;background:white;margin-left:4%;height: 28px;box-shadow: 0 0 3px 0 rgba(0,0,0,0.10);border-radius: 3px;" @on-blur="queryList()" placeholder="搜索">
             <img slot="label" style="display:block;" src="../../assets/img/search.png" width="15" height="15">
           </x-input>
-          <n3-select v-model="queryParam.orderStatus" :cancelled="false" style="float:right;width:27%;margin-right:2%" @change='queryList()'>
+          <n3-select v-model="queryParam.orderStatus" :cancelled="false" style="float:right;width:33%;margin-right:2%" @change='queryList()'>
             <n3-option value="">全部状态</n3-option>
             <n3-option value="90041001">待确认</n3-option>
             <n3-option value="90041002">派单中</n3-option>
             <n3-option value="90041003">已接单</n3-option>
-            <n3-option value="90041004">订单开启</n3-option>
-            <n3-option value="90041005">代驾中</n3-option>
-            <n3-option value="90041006">已到达</n3-option>
+            <n3-option value="90041004">送车订单开启</n3-option>
+            <n3-option value="90041005">送车中</n3-option>
+            <n3-option value="90041006">已送达</n3-option>
             <n3-option value="90041007">已完成</n3-option>
             <n3-option value="90041008">已取消</n3-option>
           </n3-select>
@@ -146,7 +146,7 @@
       }
     },
     beforeMount() {
-      $(document).attr('title','取送车服务');
+      $(document).attr('title','送车上门服务');
     },
   
 
@@ -157,6 +157,9 @@
 
           
       return this.$nextTick(() => this.init());
+    },
+    activated() {
+      $(document).attr('title','送车上门服务');
     }
   };
 

@@ -5,7 +5,7 @@ import Vue from 'vue'
 import cover from './SendVehicleNotice.app'
 import http from './SendVehicleNotice.api'
 import '../../config/rem'
-import '../../config/click'
+// import '../../config/click'
 import router from './SendVehicleNotice.router'
 
 import MintUI from 'mint-ui'

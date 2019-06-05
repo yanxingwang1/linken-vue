@@ -7,7 +7,9 @@ let routeLine = null  //全部路线
 let routeLine2 = null  //已经过路线
 
 export const initMap = (callback) => {
-  $('#amap-container').on('touchmove',(e)=>{e.preventDefault()})
+  $('#amap-container').on('touchmove', (e) => {
+    e.preventDefault()
+  })
   aMap = new AMap.Map('amap-container', {
     zoom: 10,
     resizeEnable: true
@@ -16,14 +18,32 @@ export const initMap = (callback) => {
     callback()
   })
 }
+export const testCreateLine = (path) => {
+  // const route = path.map(item=>{
+  //   const {lng,lat} = item
+  //   return [lng,lat]
+  // })
+  // console.log(route)
+  // return
+  path.forEach(item => {
+    const {lng, lat} = item
+    console.log(lng, lat)
+    var marker = new AMap.Marker({
+      position: new AMap.LngLat(lng, lat),   // 经纬度对象，也可以是经纬度构成的一维数组[116.39, 39.9]
+    });
+    aMap.add(marker);
+  })
+}
 
 /**
  * 生成一条 路线
  * @param start 起点
  * @param end 终点
- * @param currents 途径点
+ * @param drivings 途径点
+ * @param currents 司机坐标
  */
-export const createLine = (start, end, currents) => {
+export const createLine = (start, end, drivings, current) => {
+  // return
   var driving = new AMap.Driving({
     // 驾车路线规划策略
     policy: AMap.DrivingPolicy.LEAST_TIME, //最快捷模式
@@ -33,7 +53,7 @@ export const createLine = (start, end, currents) => {
   var endLngLat = end
 
   driving.search(startLngLat, endLngLat, {
-    waypoints: currents
+    waypoints: drivings
   }, (status, result) => {
     console.log(status, result)
     // 未出错时，result即是对应的路线规划方案
@@ -48,7 +68,7 @@ export const createLine = (start, end, currents) => {
   //绘制路线
   function drawRoute(route) {
     var path = parseRouteToPath(route)
-    var path2 = parseRouteToPath2(path)
+    console.log(path2, route)
     //起点标点
     if (!startMarker) {
       startMarker = new AMap.Marker({
@@ -70,31 +90,34 @@ export const createLine = (start, end, currents) => {
       })
     }
     //司机标点
-    if (!curMarker) {
-      curMarker = new AMap.Marker({
-        position: path2[path2.length - 1],
-        anchor: 'center',
-        offset: new AMap.Pixel(0, -23),
-        icon: 'https://zhoujie16.gitee.io/static/assets/images/lk-p3.png',
-        map: aMap
-      })
-    } else {
-      curMarker.setPosition(path2[path2.length - 1])
+    if (current) {
+      //司机标点
+      const pcurrent = new AMap.LngLat(current[0],current[1]);
+      if (!curMarker) {
+        curMarker = new AMap.Marker({
+          position: pcurrent,
+          anchor: 'center',
+          offset: new AMap.Pixel(0, -23),
+          icon: 'https://zhoujie16.gitee.io/static/assets/images/lk-p3.png',
+          map: aMap
+        })
+      } else {
+        curMarker.setPosition(pcurrent)
+      }
+      //司机光环
+      if (!circleMarker) {
+        circleMarker = new AMap.CircleMarker({
+          center: pcurrent,
+          radius: 38,//3D视图下，CircleMarker半径不要超过64px
+          strokeOpacity: 0,
+          fillColor: '#FF7200',
+          fillOpacity: 0.3,
+        })
+        circleMarker.setMap(aMap)
+      } else {
+        circleMarker.setCenter(pcurrent)
+      }
     }
-    //司机光环
-    if (!circleMarker) {
-      circleMarker = new AMap.CircleMarker({
-        center: path2[path2.length - 1],
-        radius: 38,//3D视图下，CircleMarker半径不要超过64px
-        strokeOpacity: 0,
-        fillColor: '#FF7200',
-        fillOpacity: 0.3,
-      })
-      circleMarker.setMap(aMap)
-    } else {
-      circleMarker.setCenter(path2[path2.length - 1])
-    }
-
     //绘制全部路线
     if (!routeLine) {
       routeLine = new AMap.Polyline({
@@ -109,20 +132,24 @@ export const createLine = (start, end, currents) => {
     } else {
       routeLine.setPath(path)
     }
-    //绘制 已经过路线
-    if (!routeLine2) {
-      routeLine2 = new AMap.Polyline({
-        path: path2,
-        borderWeight: 0,
-        strokeWeight: 8,
-        strokeColor: '#ACACAC',
-        lineJoin: 'round',
-        lineCap: 'round'
-      })
-      routeLine2.setMap(aMap)
-    } else {
-      routeLine2.setPath(path2)
+    if (drivings && drivings.length > 0) {
+      var path2 = parseRouteToPath2(path)
+      //绘制 已经过路线
+      if (!routeLine2) {
+        routeLine2 = new AMap.Polyline({
+          path: path2,
+          borderWeight: 0,
+          strokeWeight: 8,
+          strokeColor: '#ACACAC',
+          lineJoin: 'round',
+          lineCap: 'round'
+        })
+        routeLine2.setMap(aMap)
+      } else {
+        routeLine2.setPath(path2)
+      }
     }
+
     // 调整视野达到最佳显示区域
     aMap.setFitView([startMarker, endMarker, routeLine])
     // 解析DrivingRoute对象，构造成AMap.Polyline的path参数需要的格式
@@ -148,7 +175,7 @@ export const createLine = (start, end, currents) => {
       const aaa = path.map((item) => {
         const {lng, lat} = item
         // console.log(lng, lat)
-        return geoDistance([lng, lat], currents[currents.length - 1])
+        return geoDistance([lng, lat], current)
       })
       const min = Math.min(...aaa)
       const minIndex = aaa.indexOf(min)

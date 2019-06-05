@@ -1,9 +1,8 @@
 <template>
   <div class="user-info-wrap">
     <div class="user-info">
-      <img class="driver" src="../imgs/driver.png" alt>
       <div class="user">
-        <div class="name">{{data.userName||data.lastName}} {{data.sex=='1'?'女士':'先生'}}</div>
+        <div class="name"><img class="driver" src="../imgs/user.png" alt>{{data.userName||data.lastName}} {{data.sex=='1'?'女士':'先生'}}</div>
         <div class="phone">{{data.phone}}</div>
       </div>
       <div class="call" @click.stop="phoneClick(data.phone)"></div>
@@ -47,7 +46,7 @@ export default {
     position: relative;
     .driver {
       position: absolute;
-      width: 18px;
+      width: 12px;
       left: 8px;
       top: 20px;
     }
